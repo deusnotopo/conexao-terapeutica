@@ -1,20 +1,54 @@
+import React from 'react';
+import { View, Text, ScrollView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { AppNavigator } from './src/navigation/AppNavigator';
+
+// Error Boundary to catch and display runtime errors on screen
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null, errorInfo: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    this.setState({ errorInfo });
+    console.error('App Error Boundary caught:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20, backgroundColor: '#1a1a2e' }}>
+          <Text style={{ color: '#e94560', fontSize: 22, fontWeight: 'bold', marginBottom: 12 }}>
+            ⚠️ Erro no Aplicativo
+          </Text>
+          <ScrollView style={{ maxHeight: 400, width: '100%' }}>
+            <Text style={{ color: '#ffffff', fontSize: 14, fontFamily: 'monospace' }}>
+              {this.state.error?.toString()}
+            </Text>
+            <Text style={{ color: '#cccccc', fontSize: 12, marginTop: 10, fontFamily: 'monospace' }}>
+              {this.state.errorInfo?.componentStack}
+            </Text>
+          </ScrollView>
+        </View>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <ErrorBoundary>
+      <SafeAreaProvider style={{ flex: 1 }}>
+        <StatusBar style="auto" />
+        <AppNavigator />
+      </SafeAreaProvider>
+    </ErrorBoundary>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

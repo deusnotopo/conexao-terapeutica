@@ -1,0 +1,281 @@
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
+import { webAlert } from '../../lib/webAlert';
+import { colors, spacing, typography } from '../../theme';
+import { Stethoscope, Star, CalendarDays, Plus } from 'lucide-react-native';
+import { supabase } from '../../lib/supabase';
+import { useUser } from '../../context/UserContext';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+
+export const EvolutionScreen = ({ navigation }) => {
+    const { activeDependent } = useUser();
+    const [notes, setNotes] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
+
+    const fetchNotes = useCallback(async () => {
+        if (!activeDependent) return;
+
+        try {
+            setLoading(true);
+            const { data, error } = await supabase
+                .from('therapy_notes')
+                .select(`
+                    *,
+                    profiles:therapist_id (full_name)
+                `)
+                .eq('dependent_id', activeDependent.id)
+                .order('session_date', { ascending: false });
+
+            if (error) throw error;
+            setNotes(data || []);
+        } catch (error) {
+            console.error('Error fetching therapy notes:', error);
+        } finally {
+            setLoading(false);
+            setRefreshing(false);
+        }
+    }, [activeDependent]);
+
+    useEffect(() => {
+        fetchNotes();
+    }, [fetchNotes]);
+
+    const onRefresh = () => {
+        setRefreshing(true);
+        fetchNotes();
+    };
+
+    const renderStars = (rating) => {
+        return (
+            <View style={styles.starsContainer}>
+                {[1, 2, 3, 4, 5].map((star) => (
+                    <Star 
+                        key={star} 
+                        size={16} 
+                        color={star <= rating ? colors.warning : colors.border} 
+                        fill={star <= rating ? colors.warning : 'transparent'} 
+                    />
+                ))}
+            </View>
+        );
+    };
+
+    const renderNoteCard = (note) => (
+        <View key={note.id} style={styles.timelineItem}>
+            <View style={styles.timelineLine} />
+            <View style={styles.timelineDot}>
+                <View style={styles.innerDot} />
+            </View>
+            <View style={styles.card}>
+                <View style={styles.cardHeader}>
+                    <View style={styles.headerLeft}>
+                        <CalendarDays color={colors.textSecondary} size={16} />
+                        <Text style={styles.dateText}>
+                            {format(new Date(note.session_date), "dd MMM, yyyy", { locale: ptBR })}
+                        </Text>
+                    </View>
+                    {renderStars(note.progress_rating)}
+                </View>
+                <Text style={styles.therapistText}>
+                    {note.profiles?.full_name || 'Terapeuta'}
+                </Text>
+                <Text style={styles.contentText}>{note.content}</Text>
+            </View>
+        </View>
+    );
+
+    return (
+        <SafeAreaView style={styles.safeArea}>
+            <View style={styles.container}>
+                <View style={styles.header}>
+                    <View>
+                        <Text style={styles.title}>Prontuário</Text>
+                        <Text style={styles.subtitle}>Evolução e registros terapêuticos.</Text>
+                    </View>
+                     <TouchableOpacity 
+                        style={styles.addButton}
+                        onPress={() => webAlert('Informação', 'Apenas terapeutas autorizados podem inserir novos registros de evolução.')}
+                     >
+                        <Plus color={colors.surface} size={24} />
+                    </TouchableOpacity>
+                </View>
+
+                {/* Resumo Rápido */}
+                <View style={styles.summaryCard}>
+                    <View style={styles.summaryIcon}>
+                        <Stethoscope color={colors.primaryDark} size={28} />
+                    </View>
+                    <View style={styles.summaryText}>
+                        <Text style={styles.summaryTitle}>Evolução Constante</Text>
+                        <Text style={styles.summaryDesc}>
+                            {notes.length > 0 
+                                ? `Já são ${notes.length} registros de evolução!` 
+                                : 'Acompanhe aqui o desenvolvimento do seu pequeno.'}
+                        </Text>
+                    </View>
+                </View>
+
+                <ScrollView 
+                    showsVerticalScrollIndicator={false} 
+                    contentContainerStyle={styles.scrollContent}
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[colors.primary]} />
+                    }
+                >
+                    {!loading && notes.length > 0 ? (
+                        notes.map(renderNoteCard)
+                    ) : !loading ? (
+                        <View style={styles.emptyState}>
+                            <Text style={styles.emptyText}>Nenhum registro encontrado.</Text>
+                        </View>
+                    ) : (
+                        <View style={styles.emptyState}>
+                            <Text style={styles.emptyText}>Carregando pruntuário...</Text>
+                        </View>
+                    )}
+                </ScrollView>
+            </View>
+        </SafeAreaView>
+    );
+};
+
+const styles = StyleSheet.create({
+    safeArea: { flex: 1, backgroundColor: colors.background },
+    container: { flex: 1, paddingHorizontal: spacing.l, paddingTop: spacing.m },
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: spacing.l,
+    },
+    title: { ...typography.h1, color: colors.primaryDark },
+    subtitle: { ...typography.body1, color: colors.textSecondary, marginTop: spacing.xs },
+    addButton: {
+        backgroundColor: colors.primary,
+        width: 48,
+        height: 48,
+        borderRadius: 24,
+        justifyContent: 'center',
+        alignItems: 'center',
+        shadowColor: colors.primary,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 4,
+    },
+    summaryCard: {
+        flexDirection: 'row',
+        backgroundColor: `${colors.secondary}15`,
+        padding: spacing.m,
+        borderRadius: 16,
+        marginBottom: spacing.xl,
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: `${colors.secondary}30`,
+    },
+    summaryIcon: {
+        marginRight: spacing.m,
+    },
+    summaryText: {
+        flex: 1,
+    },
+    summaryTitle: {
+        ...typography.body1,
+        fontWeight: 'bold',
+        color: colors.primaryDark,
+        marginBottom: 2,
+    },
+    summaryDesc: {
+        ...typography.body2,
+        color: colors.textSecondary,
+    },
+    scrollContent: {
+        paddingBottom: 90,
+    },
+    timelineItem: {
+        flexDirection: 'row',
+        marginBottom: spacing.l,
+    },
+    timelineLine: {
+        position: 'absolute',
+        left: 9, // centraliza na bolinha
+        top: 24,
+        bottom: -spacing.l, // conecta com o próximo
+        width: 2,
+        backgroundColor: colors.border,
+    },
+    timelineDot: {
+        width: 24,
+        height: 24,
+        borderRadius: 12,
+        backgroundColor: `${colors.primary}20`,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: spacing.m,
+        marginTop: 4,
+        borderWidth: 2,
+        borderColor: colors.surface,
+        zIndex: 1,
+    },
+    innerDot: {
+        width: 12,
+        height: 12,
+        borderRadius: 6,
+        backgroundColor: colors.primary,
+    },
+    card: {
+        flex: 1,
+        backgroundColor: colors.surface,
+        borderRadius: 16,
+        padding: spacing.m,
+        borderWidth: 1,
+        borderColor: colors.border,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.05,
+        shadowRadius: 2,
+        elevation: 1,
+    },
+    cardHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: spacing.s,
+    },
+    headerLeft: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    dateText: {
+        ...typography.caption,
+        marginLeft: 6,
+        color: colors.textSecondary,
+        fontWeight: '500',
+    },
+    starsContainer: {
+        flexDirection: 'row',
+        gap: 2,
+    },
+    therapistText: {
+        ...typography.body2,
+        fontWeight: '600',
+        color: colors.text,
+        marginBottom: spacing.s,
+    },
+    contentText: {
+        ...typography.body1,
+        color: colors.textSecondary,
+        lineHeight: 22,
+    },
+    emptyState: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingVertical: spacing.xxl,
+    },
+    emptyText: {
+        ...typography.body2,
+        color: colors.textSecondary,
+    }
+});

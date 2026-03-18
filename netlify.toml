@@ -1,0 +1,18 @@
+[build]
+  command = "npx expo export --platform web"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# SPA redirect: qualquer rota não encontrada serve o index.html
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# CRITICAL: Expo outputs JS bundles to _expo/ directory.
+# Netlify ignores underscore-prefixed folders by default.
+# Esta regra força o Netlify a servir a pasta _expo/
+[build.processing]
+  skip_processing = false

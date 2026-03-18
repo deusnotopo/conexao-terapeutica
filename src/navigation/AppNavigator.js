@@ -7,6 +7,7 @@ import { UserProvider, useUser } from '../context/UserContext';
 import { MainTabs } from './MainTabs';
 import { LoginScreen } from '../screens/auth/LoginScreen';
 import { OnboardingScreen } from '../screens/auth/OnboardingScreen';
+import { TutorialScreen } from '../screens/auth/TutorialScreen';
 import { NotificationsScreen } from '../screens/main/NotificationsScreen';
 import { EditDependentScreen } from '../screens/main/EditDependentScreen';
 import { AddEventScreen } from '../screens/main/AddEventScreen';
@@ -52,10 +53,16 @@ const NavigationContent = () => {
             <Stack.Navigator screenOptions={{ headerShown: false }}>
                 {!user ? (
                     // Usuário deslogado
-                    <Stack.Screen name="Login" component={LoginScreen} />
+                    <>
+                        <Stack.Screen name="Login" component={LoginScreen} />
+                        <Stack.Screen name="Tutorial" component={TutorialScreen} />
+                    </>
                 ) : dependents.length === 0 ? (
-                    // Usuário logado mas sem dependentes (Onboarding)
-                    <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+                    // Usuário logado mas sem dependentes — mostra Tutorial primeiro
+                    <>
+                        <Stack.Screen name="Tutorial" component={TutorialScreen} />
+                        <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+                    </>
                 ) : (
                     // Fluxo normal
                     <>
@@ -96,6 +103,7 @@ const NavigationContent = () => {
                         <Stack.Screen name="AddSleep" component={AddSleepScreen} options={{ presentation: 'modal' }} />
                         <Stack.Screen name="Caregiver" component={CaregiverScreen} />
                         <Stack.Screen name="MedicationAdherence" component={MedicationAdherenceScreen} />
+                        <Stack.Screen name="Tutorial" component={TutorialScreen} options={{ presentation: 'modal' }} />
                     </>
                 )}
                 <Stack.Screen name="Notifications" component={NotificationsScreen} />

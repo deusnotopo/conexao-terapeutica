@@ -14,7 +14,7 @@ import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
 import { colors, spacing, typography } from '../../theme';
 
-export const LoginScreen = () => {
+export const LoginScreen = ({ navigation }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [fullName, setFullName] = useState('');
@@ -152,6 +152,13 @@ export const LoginScreen = () => {
                                     : 'Não tem conta? Cadastre-se'}
                             </Text>
                         </TouchableOpacity>
+
+                        <TouchableOpacity
+                            onPress={() => navigation.navigate('Tutorial')}
+                            style={styles.tourButton}
+                        >
+                            <Text style={styles.tourText}>🦄 Ver tour completo do app</Text>
+                        </TouchableOpacity>
                     </View>
                 </ScrollView>
             </KeyboardAvoidingView>
@@ -203,6 +210,16 @@ const styles = StyleSheet.create({
         ...typography.body2,
         color: colors.primary,
         fontWeight: '600',
+    },
+    tourButton: {
+        marginTop: spacing.m,
+        alignItems: 'center',
+        paddingVertical: spacing.s,
+    },
+    tourText: {
+        ...typography.body2,
+        color: colors.textSecondary,
+        fontWeight: '500',
     },
     errorBox: {
         backgroundColor: '#fee2e2',

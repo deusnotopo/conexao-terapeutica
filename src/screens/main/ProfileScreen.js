@@ -57,6 +57,7 @@ const SECTIONS = [
         title: '⚙️ Conta',
         color: '#6b7280',
         items: [
+            { label: 'Ver Tutorial do App', icon: BookOpen, color: colors.primary, bg: `${colors.primary}15`, route: 'Tutorial', routeParams: { fromProfile: true } },
             { label: 'Sobre a Unicórnio Campina Verde', icon: Heart, color: '#db2777', bg: '#fce7f3', route: null },
         ]
     }
@@ -89,7 +90,7 @@ const CollapsibleSection = ({ section, navigation }) => {
                             Icon={item.icon}
                             color={item.color}
                             bg={item.bg}
-                            onPress={item.route ? () => navigation.navigate(item.route) : undefined}
+                            onPress={item.route ? () => navigation.navigate(item.route, item.routeParams) : undefined}
                         />
                     ))}
                 </View>

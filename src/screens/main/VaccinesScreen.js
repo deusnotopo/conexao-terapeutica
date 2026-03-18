@@ -2,8 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
 import { supabase } from '../../lib/supabase';
 import { useUser } from '../../context/UserContext';
+import { webAlert } from '../../lib/webAlert';
 import { colors, spacing, typography } from '../../theme';
-import { ChevronLeft, Plus, Syringe, Calendar, AlertCircle } from 'lucide-react-native';
+import { ChevronLeft, Plus, Syringe, AlertCircle, Trash2 } from 'lucide-react-native';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -34,6 +35,18 @@ export const VaccinesScreen = ({ navigation }) => {
     }, [activeDependent]);
 
     useEffect(() => { fetchData(); }, [fetchData]);
+
+    const handleDelete = (v) => {
+        webAlert('Excluir Vacina', `Deseja excluir o registro de ${v.name}? Esta ação não pode ser desfeita.`, [
+            { text: 'Cancelar', style: 'cancel' },
+            {
+                text: 'Excluir', style: 'destructive', onPress: async () => {
+                    await supabase.from('vaccines').delete().eq('id', v.id);
+                    fetchData();
+                }
+            }
+        ]);
+    };
 
     const upcoming = vaccines.filter(v => v.next_dose_date && v.next_dose_date >= new Date().toISOString().split('T')[0]);
     const applied = vaccines.filter(v => v.applied_date);
@@ -92,6 +105,9 @@ export const VaccinesScreen = ({ navigation }) => {
                             )}
                             {v.notes && <Text style={styles.vaccineDetail}>{v.notes}</Text>}
                         </View>
+                        <TouchableOpacity onPress={() => handleDelete(v)} style={styles.deleteBtn}>
+                            <Trash2 color={colors.error} size={16} />
+                        </TouchableOpacity>
                     </View>
                 ))}
             </ScrollView>
@@ -132,4 +148,5 @@ const styles = StyleSheet.create({
     vaccineDate: { ...typography.caption, color: colors.textSecondary, marginTop: 4 },
     nextDose: { ...typography.caption, color: '#d97706', marginTop: 4, fontWeight: '600' },
     vaccineDetail: { ...typography.caption, color: colors.textSecondary, marginTop: 2 },
+    deleteBtn: { padding: 6, backgroundColor: `${colors.error}10`, borderRadius: 8, alignSelf: 'flex-start' },
 });

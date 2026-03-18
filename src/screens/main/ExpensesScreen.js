@@ -2,8 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
 import { supabase } from '../../lib/supabase';
 import { useUser } from '../../context/UserContext';
+import { webAlert } from '../../lib/webAlert';
 import { colors, spacing, typography } from '../../theme';
-import { ChevronLeft, Plus, DollarSign, TrendingUp } from 'lucide-react-native';
+import { ChevronLeft, Plus, DollarSign, TrendingUp, Trash2 } from 'lucide-react-native';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -53,6 +54,18 @@ export const ExpensesScreen = ({ navigation }) => {
     }, [activeDependent]);
 
     useEffect(() => { fetchData(); }, [fetchData]);
+
+    const handleDelete = (expense) => {
+        webAlert('Excluir Gasto', `Deseja excluir este gasto de ${formatCurrency(expense.amount_cents)}?`, [
+            { text: 'Cancelar', style: 'cancel' },
+            {
+                text: 'Excluir', style: 'destructive', onPress: async () => {
+                    await supabase.from('expenses').delete().eq('id', expense.id);
+                    fetchData();
+                }
+            }
+        ]);
+    };
 
     const grouped = expenses.reduce((acc, e) => {
         const month = e.date.substring(0, 7); // YYYY-MM
@@ -144,6 +157,9 @@ export const ExpensesScreen = ({ navigation }) => {
                                             {e.reimbursed ? 'Reembolsado' : 'Reembolsável'}
                                         </Text>}
                                     </View>
+                                    <TouchableOpacity onPress={() => handleDelete(e)} style={styles.deleteBtn}>
+                                        <Trash2 color={colors.error} size={16} />
+                                    </TouchableOpacity>
                                 </View>
                             ))}
                         </View>
@@ -206,4 +222,5 @@ const styles = StyleSheet.create({
     catBarBg: { flex: 1, height: 8, backgroundColor: colors.background, borderRadius: 4, overflow: 'hidden' },
     catBar: { height: 8, borderRadius: 4, minWidth: 4 },
     catValue: { ...typography.caption, fontWeight: '600', color: colors.text, width: 75, textAlign: 'right' },
+    deleteBtn: { padding: 6, backgroundColor: `${colors.error}10`, borderRadius: 8 },
 });

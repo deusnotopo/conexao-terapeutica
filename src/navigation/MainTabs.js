@@ -52,7 +52,7 @@ export const MainTabs = () => {
                 name="EvolutionTab" 
                 component={EvolutionScreen} 
                 options={{
-                    tabBarLabel: 'Prontuário',
+                    tabBarLabel: 'Saúde',
                     tabBarIcon: ({ color, size }) => <Stethoscope color={color} size={size} />
                 }}
             />

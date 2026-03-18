@@ -2,9 +2,10 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, TextInput, RefreshControl } from 'react-native';
 import { supabase } from '../../lib/supabase';
 import { useUser } from '../../context/UserContext';
+import { webAlert } from '../../lib/webAlert';
 import { colors, spacing, typography } from '../../theme';
 import { Button } from '../../components/Button';
-import { ChevronLeft, BookOpen, Send } from 'lucide-react-native';
+import { ChevronLeft, BookOpen, Send, Trash2 } from 'lucide-react-native';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -66,6 +67,18 @@ export const ParentDiaryScreen = ({ navigation }) => {
 
     const getMoodConfig = (key) => MOODS.find(m => m.key === key) || MOODS[1];
 
+    const handleDelete = (entry) => {
+        webAlert('Excluir Entrada', 'Deseja excluir esta entrada do diário? Esta ação não pode ser desfeita.', [
+            { text: 'Cancelar', style: 'cancel' },
+            {
+                text: 'Excluir', style: 'destructive', onPress: async () => {
+                    await supabase.from('parent_diary').delete().eq('id', entry.id);
+                    fetchData();
+                }
+            }
+        ]);
+    };
+
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.header}>
@@ -121,17 +134,23 @@ export const ParentDiaryScreen = ({ navigation }) => {
                 {entries.length > 0 && <Text style={styles.section}>Entradas Anteriores</Text>}
                 {entries.map(entry => {
                     const moodCfg = getMoodConfig(entry.mood);
+                    const isPast = entry.date !== today;
                     return (
                         <View key={entry.id} style={styles.entryCard}>
                             <View style={styles.entryHeader}>
                                 <Text style={styles.entryEmoji}>{moodCfg.emoji}</Text>
-                                <View>
+                                <View style={{ flex: 1 }}>
                                     <Text style={styles.entryDate}>
                                         {format(new Date(entry.date + 'T12:00:00'), "EEEE, dd/MM/yyyy", { locale: ptBR }).charAt(0).toUpperCase() +
                                          format(new Date(entry.date + 'T12:00:00'), "EEEE, dd/MM/yyyy", { locale: ptBR }).slice(1)}
                                     </Text>
                                     <Text style={styles.entryMoodLabel}>{moodCfg.label}</Text>
                                 </View>
+                                {isPast && (
+                                    <TouchableOpacity onPress={() => handleDelete(entry)} style={styles.deleteBtn}>
+                                        <Trash2 color={colors.error} size={16} />
+                                    </TouchableOpacity>
+                                )}
                             </View>
                             <Text style={styles.entryContent}>{entry.content}</Text>
                         </View>
@@ -183,4 +202,5 @@ const styles = StyleSheet.create({
     entryDate: { ...typography.body2, fontWeight: '600', color: colors.text },
     entryMoodLabel: { ...typography.caption, color: colors.textSecondary },
     entryContent: { ...typography.body1, color: colors.textSecondary, lineHeight: 22, fontStyle: 'italic' },
+    deleteBtn: { padding: 6, backgroundColor: `${colors.error}10`, borderRadius: 8 },
 });

@@ -2,8 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
 import { supabase } from '../../lib/supabase';
 import { useUser } from '../../context/UserContext';
+import { webAlert } from '../../lib/webAlert';
 import { colors, spacing, typography } from '../../theme';
-import { ChevronLeft, Plus, TrendingUp, Ruler, Weight } from 'lucide-react-native';
+import { ChevronLeft, Plus, TrendingUp, Ruler, Weight, Trash2 } from 'lucide-react-native';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -27,6 +28,18 @@ export const GrowthScreen = ({ navigation }) => {
     }, [activeDependent]);
 
     useEffect(() => { fetchData(); }, [fetchData]);
+
+    const handleDelete = (m) => {
+        webAlert('Excluir Medição', 'Deseja excluir este registro de crescimento?', [
+            { text: 'Cancelar', style: 'cancel' },
+            {
+                text: 'Excluir', style: 'destructive', onPress: async () => {
+                    await supabase.from('growth_measurements').delete().eq('id', m.id);
+                    fetchData();
+                }
+            }
+        ]);
+    };
 
     const latest = measurements[0];
     const prev = measurements[1];
@@ -111,10 +124,15 @@ export const GrowthScreen = ({ navigation }) => {
                     <View key={m.id} style={styles.historyCard}>
                         <View style={styles.historyDot} />
                         <View style={styles.historyContent}>
-                            <Text style={styles.historyDate}>
-                                {format(new Date(m.date + 'T12:00:00'), "dd/MM/yyyy", { locale: ptBR })}
-                                {idx === 0 && <Text style={styles.latestBadge}> (Mais recente)</Text>}
-                            </Text>
+                            <View style={styles.historyHeader}>
+                                <Text style={styles.historyDate}>
+                                    {format(new Date(m.date + 'T12:00:00'), "dd/MM/yyyy", { locale: ptBR })}
+                                    {idx === 0 && <Text style={styles.latestBadge}> (Mais recente)</Text>}
+                                </Text>
+                                <TouchableOpacity onPress={() => handleDelete(m)} style={styles.deleteBtn}>
+                                    <Trash2 color={colors.error} size={15} />
+                                </TouchableOpacity>
+                            </View>
                             <View style={styles.historyMetrics}>
                                 {m.weight_kg != null && <Text style={styles.historyMetric}>⚖️ {m.weight_kg} kg</Text>}
                                 {m.height_cm != null && <Text style={styles.historyMetric}>📏 {m.height_cm} cm</Text>}
@@ -163,8 +181,10 @@ const styles = StyleSheet.create({
         flex: 1, backgroundColor: colors.surface, borderRadius: 12,
         padding: spacing.m, borderWidth: 1, borderColor: colors.border,
     },
-    historyDate: { ...typography.body2, fontWeight: '700', color: colors.text, marginBottom: 6 },
+    historyDate: { ...typography.body2, fontWeight: '700', color: colors.text, flex: 1 },
     latestBadge: { ...typography.caption, color: colors.primary, fontWeight: '700' },
+    historyHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 },
+    deleteBtn: { padding: 4, backgroundColor: `${colors.error}10`, borderRadius: 8 },
     historyMetrics: { flexDirection: 'row', gap: spacing.m, flexWrap: 'wrap' },
     historyMetric: { ...typography.body2, color: colors.textSecondary },
     historyNote: { ...typography.caption, color: colors.textSecondary, marginTop: spacing.s, fontStyle: 'italic' },

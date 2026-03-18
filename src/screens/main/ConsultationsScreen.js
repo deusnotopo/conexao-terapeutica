@@ -2,8 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
 import { supabase } from '../../lib/supabase';
 import { useUser } from '../../context/UserContext';
+import { webAlert } from '../../lib/webAlert';
 import { colors, spacing, typography } from '../../theme';
-import { ChevronLeft, Plus, Stethoscope, Calendar, User } from 'lucide-react-native';
+import { ChevronLeft, Plus, Stethoscope, User, Trash2 } from 'lucide-react-native';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -31,6 +32,18 @@ export const ConsultationsScreen = ({ navigation }) => {
     }, [activeDependent]);
 
     useEffect(() => { fetchData(); }, [fetchData]);
+
+    const handleDelete = (c) => {
+        webAlert('Excluir Consulta', `Deseja excluir a consulta de ${c.specialty}? Esta ação não pode ser desfeita.`, [
+            { text: 'Cancelar', style: 'cancel' },
+            {
+                text: 'Excluir', style: 'destructive', onPress: async () => {
+                    await supabase.from('consultations').delete().eq('id', c.id);
+                    fetchData();
+                }
+            }
+        ]);
+    };
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -72,7 +85,12 @@ export const ConsultationsScreen = ({ navigation }) => {
                                 ) : null}
                             </View>
                         </View>
-                        <Text style={styles.date}>{format(new Date(c.date + 'T12:00:00'), "dd/MM/yy", { locale: ptBR })}</Text>
+                        <View style={styles.cardRight}>
+                            <Text style={styles.date}>{format(new Date(c.date + 'T12:00:00'), "dd/MM/yy", { locale: ptBR })}</Text>
+                            <TouchableOpacity onPress={() => handleDelete(c)} style={styles.deleteBtn}>
+                                <Trash2 color={colors.error} size={16} />
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 ))}
             </ScrollView>
@@ -110,5 +128,7 @@ const styles = StyleSheet.create({
     cid: { ...typography.caption, color: colors.textSecondary, marginTop: 2 },
     notes: { ...typography.caption, color: colors.textSecondary, marginTop: 4, fontStyle: 'italic' },
     nextAppt: { ...typography.caption, color: colors.primary, marginTop: 6, fontWeight: '600' },
-    date: { ...typography.caption, color: colors.textSecondary, marginLeft: spacing.s, marginTop: 2 },
+    cardRight: { alignItems: 'flex-end', gap: spacing.s, marginLeft: spacing.s },
+    date: { ...typography.caption, color: colors.textSecondary },
+    deleteBtn: { padding: 4, backgroundColor: `${colors.error}10`, borderRadius: 8 },
 });

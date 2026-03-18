@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
 import { webAlert } from '../../lib/webAlert';
 import { colors, spacing, typography } from '../../theme';
-import { Stethoscope, Star, CalendarDays, Plus } from 'lucide-react-native';
+import { Stethoscope, Star, CalendarDays, Info } from 'lucide-react-native';
 import { supabase } from '../../lib/supabase';
 import { useUser } from '../../context/UserContext';
 import { format } from 'date-fns';
@@ -95,10 +95,10 @@ export const EvolutionScreen = ({ navigation }) => {
                         <Text style={styles.subtitle}>Evolução e registros terapêuticos.</Text>
                     </View>
                      <TouchableOpacity 
-                        style={styles.addButton}
-                        onPress={() => webAlert('Informação', 'Apenas terapeutas autorizados podem inserir novos registros de evolução.')}
+                        style={styles.infoButton}
+                        onPress={() => webAlert('ℹ️ Registros de Evolução', 'Novos registros de evolução são inseridos pela equipe terapêutica (terapeuta ou responsável autorizado) diretamente no sistema.')}
                      >
-                        <Plus color={colors.surface} size={24} />
+                        <Info color={colors.primaryDark} size={20} />
                     </TouchableOpacity>
                 </View>
 
@@ -132,7 +132,7 @@ export const EvolutionScreen = ({ navigation }) => {
                         </View>
                     ) : (
                         <View style={styles.emptyState}>
-                            <Text style={styles.emptyText}>Carregando pruntuário...</Text>
+                            <Text style={styles.emptyText}>Carregando prontuário...</Text>
                         </View>
                     )}
                 </ScrollView>
@@ -152,18 +152,15 @@ const styles = StyleSheet.create({
     },
     title: { ...typography.h1, color: colors.primaryDark },
     subtitle: { ...typography.body1, color: colors.textSecondary, marginTop: spacing.xs },
-    addButton: {
-        backgroundColor: colors.primary,
-        width: 48,
-        height: 48,
-        borderRadius: 24,
+    infoButton: {
+        backgroundColor: `${colors.secondary}15`,
+        width: 40,
+        height: 40,
+        borderRadius: 20,
         justifyContent: 'center',
         alignItems: 'center',
-        shadowColor: colors.primary,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 8,
-        elevation: 4,
+        borderWidth: 1,
+        borderColor: `${colors.secondary}30`,
     },
     summaryCard: {
         flexDirection: 'row',

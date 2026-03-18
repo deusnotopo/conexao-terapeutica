@@ -93,7 +93,7 @@ export const DashboardScreen = ({ navigation }) => {
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.headerBtn} onPress={() => navigation.navigate('Notifications')}>
                             <Bell color={colors.primaryDark} size={22} />
-                            <View style={styles.badge} />
+                            {stats.eventsToday > 0 && <View style={styles.badge} />}
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.headerBtn} onPress={() => navigation.navigate('ProfileTab')}>
                             <User color={colors.primaryDark} size={22} />

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     View,
     Text,
@@ -8,6 +8,7 @@ import {
     SafeAreaView,
     TouchableOpacity,
     ScrollView,
+    Animated,
 } from 'react-native';
 import { supabase } from '../../lib/supabase';
 import { Button } from '../../components/Button';
@@ -78,6 +79,16 @@ export const LoginScreen = ({ navigation }) => {
         setSuccessMsg('');
     };
 
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+    const scaleAnim = useRef(new Animated.Value(0.8)).current;
+
+    useEffect(() => {
+        Animated.parallel([
+            Animated.timing(fadeAnim, { toValue: 1, duration: 800, useNativeDriver: true }),
+            Animated.spring(scaleAnim, { toValue: 1, friction: 5, useNativeDriver: true }),
+        ]).start();
+    }, []);
+
     return (
         <SafeAreaView style={styles.safeArea}>
             <KeyboardAvoidingView
@@ -89,12 +100,17 @@ export const LoginScreen = ({ navigation }) => {
                     contentContainerStyle={styles.container}
                     keyboardShouldPersistTaps="handled"
                 >
-                    <View style={styles.header}>
-                        <Text style={styles.title}>Conexão Terapêutica</Text>
+                    {/* Logo / Branding */}
+                    <Animated.View style={[styles.header, { opacity: fadeAnim, transform: [{ scale: scaleAnim }] }]}>
+                        <View style={styles.logoCircle}>
+                            <Text style={styles.logoEmoji}>🦄</Text>
+                        </View>
+                        <Text style={styles.appName}>Conexão Terapêutica</Text>
                         <Text style={styles.subtitle}>
-                            A rotina do seu filho, organizada e conectada.
+                            Unicórnio Campina Verde
                         </Text>
-                    </View>
+                        <Text style={styles.tagline}>A rotina do seu filho, organizada e conectada.</Text>
+                    </Animated.View>
 
                     <View style={styles.formContainer}>
                         {isSignUp && (
@@ -140,11 +156,13 @@ export const LoginScreen = ({ navigation }) => {
                             title={isSignUp ? 'Criar Conta' : 'Entrar'}
                             onPress={() => isSignUp ? signUpWithEmail() : signInWithEmail()}
                             loading={loading}
+                            accessibilityLabel={isSignUp ? 'Criar conta no app' : 'Entrar no app'}
                         />
 
                         <TouchableOpacity
                             onPress={handleSwitch}
                             style={styles.toggleButton}
+                            accessibilityLabel={isSignUp ? 'Alternar para login' : 'Alternar para cadastro'}
                         >
                             <Text style={styles.toggleText}>
                                 {isSignUp
@@ -156,6 +174,7 @@ export const LoginScreen = ({ navigation }) => {
                         <TouchableOpacity
                             onPress={() => navigation.navigate('Tutorial')}
                             style={styles.tourButton}
+                            accessibilityLabel="Ver tour completo do aplicativo"
                         >
                             <Text style={styles.tourText}>🦄 Ver tour completo do app</Text>
                         </TouchableOpacity>
@@ -182,15 +201,39 @@ const styles = StyleSheet.create({
     header: {
         alignItems: 'center',
         marginBottom: spacing.xxl,
+        marginTop: spacing.xl,
     },
-    title: {
+    logoCircle: {
+        width: 90,
+        height: 90,
+        borderRadius: 45,
+        backgroundColor: `${colors.primary}15`,
+        borderWidth: 2,
+        borderColor: `${colors.primary}30`,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: spacing.m,
+    },
+    logoEmoji: {
+        fontSize: 48,
+    },
+    appName: {
         ...typography.h1,
         color: colors.primaryDark,
         textAlign: 'center',
         marginBottom: spacing.xs,
     },
     subtitle: {
-        ...typography.body1,
+        ...typography.caption,
+        fontWeight: '700',
+        color: colors.secondary,
+        textAlign: 'center',
+        textTransform: 'uppercase',
+        letterSpacing: 1,
+        marginBottom: spacing.s,
+    },
+    tagline: {
+        ...typography.body2,
         color: colors.textSecondary,
         textAlign: 'center',
     },

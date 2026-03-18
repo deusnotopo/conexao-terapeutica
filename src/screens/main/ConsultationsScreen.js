@@ -5,6 +5,7 @@ import { useUser } from '../../context/UserContext';
 import { webAlert } from '../../lib/webAlert';
 import { colors, spacing, typography } from '../../theme';
 import { ChevronLeft, Plus, Stethoscope, User, Trash2 } from 'lucide-react-native';
+import { LoadingState } from '../../components/LoadingState';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -61,10 +62,19 @@ export const ConsultationsScreen = ({ navigation }) => {
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); fetchData(); }} colors={[colors.primary]} />}>
                 {consultations.length === 0 && !loading ? (
                     <View style={styles.empty}>
-                        <Stethoscope color={colors.border} size={48} />
+                        <Stethoscope color={colors.border} size={56} />
                         <Text style={styles.emptyTitle}>Nenhuma consulta registrada</Text>
-                        <Text style={styles.emptyText}>Toque no + para registrar a primeira consulta.</Text>
+                        <Text style={styles.emptyText}>Mantenha um histórico completo das consultas médicas e retornos.</Text>
+                        <TouchableOpacity
+                            style={styles.emptyBtn}
+                            onPress={() => navigation.navigate('AddConsultation')}
+                        >
+                            <Plus color="#fff" size={18} />
+                            <Text style={styles.emptyBtnText}>Registrar Consulta</Text>
+                        </TouchableOpacity>
                     </View>
+                ) : loading ? (
+                    <LoadingState message="Carregando consultas..." />
                 ) : null}
 
                 {consultations.map(c => (
@@ -110,8 +120,15 @@ const styles = StyleSheet.create({
     headerTitle: { ...typography.h3, color: colors.primaryDark },
     container: { padding: spacing.l, paddingBottom: 100 },
     empty: { alignItems: 'center', paddingVertical: 80, gap: spacing.m },
-    emptyTitle: { ...typography.h3, color: colors.textSecondary },
-    emptyText: { ...typography.body2, color: colors.textSecondary, textAlign: 'center' },
+    emptyTitle: { ...typography.h3, color: colors.text },
+    emptyText: { ...typography.body2, color: colors.textSecondary, textAlign: 'center', paddingHorizontal: spacing.l },
+    emptyBtn: {
+        flexDirection: 'row', alignItems: 'center', gap: spacing.s,
+        backgroundColor: colors.primary, borderRadius: 12,
+        paddingHorizontal: spacing.l, paddingVertical: spacing.m,
+        marginTop: spacing.s,
+    },
+    emptyBtnText: { ...typography.body2, fontWeight: '700', color: '#fff' },
     card: {
         flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start',
         backgroundColor: colors.surface, borderRadius: 16, padding: spacing.m,

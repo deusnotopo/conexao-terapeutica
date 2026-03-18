@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, RefreshControl, Platform, Share } from 'react-native';
 import { webAlert } from '../../lib/webAlert';
 import { colors, spacing, typography } from '../../theme';
-import { FileText, Image as ImageIcon, FileArchive, Download, Share2, Plus, Trash2, Search, X } from 'lucide-react-native';
+import { FileText, Image as ImageIcon, FileArchive, Share2, Plus, Trash2, Search, X } from 'lucide-react-native';
+import { LoadingState } from '../../components/LoadingState';
 import { TextInput } from 'react-native';
 import { supabase } from '../../lib/supabase';
 import { useUser } from '../../context/UserContext';
@@ -94,6 +95,20 @@ export const VaultScreen = ({ navigation }) => {
         );
     };
 
+    const handleShare = async (doc) => {
+        const url = doc.file_url || doc.file_path;
+        if (!url) return;
+        if (Platform.OS === 'web') {
+            window.open(url, '_blank');
+        } else {
+            try {
+                await Share.share({ message: `${doc.title}: ${url}`, url });
+            } catch (e) {
+                console.error('Share error:', e);
+            }
+        }
+    };
+
     const renderIcon = (filePath) => {
         const extension = filePath?.split('.').pop()?.toLowerCase();
         if (['jpg', 'jpeg', 'png'].includes(extension)) return <ImageIcon color={colors.secondary} size={28} />;
@@ -123,8 +138,12 @@ export const VaultScreen = ({ navigation }) => {
                 >
                     <Trash2 color={colors.error} size={18} />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.actionIconButton}>
-                    <Share2 color={colors.textSecondary} size={18} />
+                <TouchableOpacity
+                    style={styles.actionIconButton}
+                    onPress={() => handleShare(doc)}
+                    accessibilityLabel="Compartilhar documento"
+                >
+                    <Share2 color={colors.primary} size={18} />
                 </TouchableOpacity>
             </View>
         </View>
@@ -215,9 +234,7 @@ export const VaultScreen = ({ navigation }) => {
                             </Text>
                         </View>
                     ) : (
-                        <View style={styles.emptyState}>
-                            <Text style={styles.emptySubtitle}>Carregando documentos...</Text>
-                        </View>
+                        <LoadingState message="Carregando documentos..." />
                     )}
                 </ScrollView>
             </View>

@@ -5,6 +5,7 @@ import { useUser } from '../../context/UserContext';
 import { webAlert } from '../../lib/webAlert';
 import { colors, spacing, typography } from '../../theme';
 import { ChevronLeft, Plus, Moon, Sun, Trash2, Clock } from 'lucide-react-native';
+import { LoadingState } from '../../components/LoadingState';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -110,11 +111,19 @@ export const SleepScreen = ({ navigation }) => {
 
                 {logs.length === 0 && !loading && (
                     <View style={styles.empty}>
-                        <Moon color={colors.border} size={48} />
+                        <Moon color={colors.border} size={56} />
                         <Text style={styles.emptyTitle}>Nenhum registro de sono</Text>
                         <Text style={styles.emptyText}>Registre as noites para identificar padrões e compartilhar com o médico.</Text>
+                        <TouchableOpacity
+                            style={styles.emptyBtn}
+                            onPress={() => navigation.navigate('AddSleep')}
+                        >
+                            <Plus color="#fff" size={18} />
+                            <Text style={styles.emptyBtnText}>Registrar Noite</Text>
+                        </TouchableOpacity>
                     </View>
                 )}
+                {loading && <LoadingState message="Carregando diário de sono..." />}
 
                 {logs.map(l => (
                     <View key={l.id} style={[styles.card, l.quality <= 2 && styles.cardBad]}>
@@ -192,8 +201,15 @@ const styles = StyleSheet.create({
     bar: { width: '100%', borderRadius: 6, minHeight: 4 },
     barLabel: { ...typography.caption, fontSize: 9, color: colors.textSecondary },
     empty: { alignItems: 'center', paddingVertical: 80, gap: spacing.m },
-    emptyTitle: { ...typography.h3, color: colors.textSecondary },
-    emptyText: { ...typography.body2, color: colors.textSecondary, textAlign: 'center' },
+    emptyTitle: { ...typography.h3, color: colors.text },
+    emptyText: { ...typography.body2, color: colors.textSecondary, textAlign: 'center', paddingHorizontal: spacing.l },
+    emptyBtn: {
+        flexDirection: 'row', alignItems: 'center', gap: spacing.s,
+        backgroundColor: colors.primary, borderRadius: 12,
+        paddingHorizontal: spacing.l, paddingVertical: spacing.m,
+        marginTop: spacing.s,
+    },
+    emptyBtnText: { ...typography.body2, fontWeight: '700', color: '#fff' },
     card: {
         backgroundColor: colors.surface, borderRadius: 16, padding: spacing.m,
         marginBottom: spacing.m, borderWidth: 1, borderColor: colors.border,

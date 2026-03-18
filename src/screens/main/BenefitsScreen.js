@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Linking } from 'react-native';
+import React, { useState, useMemo } from 'react';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Linking, TextInput } from 'react-native';
 import { colors, spacing, typography } from '../../theme';
-import { ChevronLeft, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react-native';
+import { ChevronLeft, ChevronDown, ChevronUp, ExternalLink, Search, X } from 'lucide-react-native';
 
 const BENEFITS = [
     {
@@ -116,10 +116,36 @@ const BENEFITS = [
     },
 ];
 
+const CATEGORIES = [
+    { id: 'all', label: 'Todos' },
+    { id: 'federal', label: '🇧🇷 Federal', ids: ['bpc', 'isentoipva', 'isetoipi', 'passe', 'aposentadoria'] },
+    { id: 'saude', label: '🏥 Saúde', ids: ['saude', 'bpc'] },
+    { id: 'educacao', label: '🎓 Educação', ids: ['educacao'] },
+];
+
 export const BenefitsScreen = ({ navigation }) => {
     const [expanded, setExpanded] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [activeCat, setActiveCat] = useState('all');
 
     const toggle = (id) => setExpanded(prev => prev === id ? null : id);
+
+    const filtered = useMemo(() => {
+        let list = BENEFITS;
+        if (activeCat !== 'all') {
+            const cat = CATEGORIES.find(c => c.id === activeCat);
+            list = list.filter(b => cat?.ids?.includes(b.id));
+        }
+        if (searchQuery.trim()) {
+            const q = searchQuery.toLowerCase();
+            list = list.filter(b =>
+                b.title.toLowerCase().includes(q) ||
+                b.subtitle.toLowerCase().includes(q) ||
+                b.body.toLowerCase().includes(q)
+            );
+        }
+        return list;
+    }, [searchQuery, activeCat]);
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -140,7 +166,37 @@ export const BenefitsScreen = ({ navigation }) => {
                     </Text>
                 </View>
 
-                {BENEFITS.map(b => {
+                {/* Busca */}
+                <View style={styles.searchBar}>
+                    <Search color={colors.textSecondary} size={18} />
+                    <TextInput
+                        style={styles.searchInput}
+                        value={searchQuery}
+                        onChangeText={setSearchQuery}
+                        placeholder="Buscar benefício..."
+                        placeholderTextColor={colors.textSecondary}
+                    />
+                    {searchQuery.length > 0 && (
+                        <TouchableOpacity onPress={() => setSearchQuery('')}>
+                            <X color={colors.textSecondary} size={16} />
+                        </TouchableOpacity>
+                    )}
+                </View>
+
+                {/* Categoria chips */}
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.catsRow} contentContainerStyle={styles.catsContent}>
+                    {CATEGORIES.map(cat => (
+                        <TouchableOpacity
+                            key={cat.id}
+                            style={[styles.catChip, activeCat === cat.id && styles.catChipActive]}
+                            onPress={() => setActiveCat(cat.id)}
+                        >
+                            <Text style={[styles.catChipText, activeCat === cat.id && styles.catChipTextActive]}>{cat.label}</Text>
+                        </TouchableOpacity>
+                    ))}
+                </ScrollView>
+
+                {filtered.map(b => {
                     const isOpen = expanded === b.id;
                     return (
                         <TouchableOpacity key={b.id} style={[styles.card, isOpen && { borderColor: b.color }]} onPress={() => toggle(b.id)} activeOpacity={0.85}>
@@ -173,6 +229,11 @@ export const BenefitsScreen = ({ navigation }) => {
                     );
                 })}
 
+                {filtered.length === 0 && (
+                    <View style={styles.noResults}>
+                        <Text style={styles.noResultsText}>Nenhum benefício encontrado para "{searchQuery}"</Text>
+                    </View>
+                )}
                 <View style={styles.disclaimer}>
                     <Text style={styles.disclaimerText}>
                         ⚠️ As informações são de caráter informativo. Consulte um advogado, assistente social ou o INSS para orientação específica ao seu caso.
@@ -223,4 +284,22 @@ const styles = StyleSheet.create({
         borderWidth: 1, borderColor: '#fde68a', marginTop: spacing.m,
     },
     disclaimerText: { ...typography.caption, color: '#92400e', lineHeight: 20 },
+    searchBar: {
+        flexDirection: 'row', alignItems: 'center', gap: spacing.s,
+        backgroundColor: colors.surface, borderRadius: 12,
+        paddingHorizontal: spacing.m, paddingVertical: 10,
+        marginBottom: spacing.s, borderWidth: 1, borderColor: colors.border,
+    },
+    searchInput: { flex: 1, ...typography.body2, color: colors.text },
+    catsRow: { maxHeight: 50, marginBottom: spacing.m },
+    catsContent: { gap: spacing.s, alignItems: 'center', paddingRight: spacing.s },
+    catChip: {
+        paddingHorizontal: spacing.m, paddingVertical: 8, borderRadius: 20,
+        backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border,
+    },
+    catChipActive: { backgroundColor: colors.primaryDark, borderColor: colors.primaryDark },
+    catChipText: { ...typography.body2, fontWeight: '500', color: colors.textSecondary },
+    catChipTextActive: { color: colors.surface },
+    noResults: { alignItems: 'center', paddingVertical: spacing.xl },
+    noResultsText: { ...typography.body2, color: colors.textSecondary, textAlign: 'center' },
 });

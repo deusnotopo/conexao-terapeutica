@@ -2,7 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
 import { webAlert } from '../../lib/webAlert';
 import { colors, spacing, typography } from '../../theme';
-import { Stethoscope, Star, CalendarDays, Info } from 'lucide-react-native';
+import { Stethoscope, Star, CalendarDays, Info, ClipboardList } from 'lucide-react-native';
+import { LoadingState } from '../../components/LoadingState';
 import { supabase } from '../../lib/supabase';
 import { useUser } from '../../context/UserContext';
 import { format } from 'date-fns';
@@ -128,12 +129,14 @@ export const EvolutionScreen = ({ navigation }) => {
                         notes.map(renderNoteCard)
                     ) : !loading ? (
                         <View style={styles.emptyState}>
-                            <Text style={styles.emptyText}>Nenhum registro encontrado.</Text>
+                            <ClipboardList color={colors.border} size={56} />
+                            <Text style={styles.emptyTitle}>Nenhum registro ainda</Text>
+                            <Text style={styles.emptyText}>
+                                Os registros de evolução são inseridos pela equipe terapêutica após cada sessão.
+                            </Text>
                         </View>
                     ) : (
-                        <View style={styles.emptyState}>
-                            <Text style={styles.emptyText}>Carregando prontuário...</Text>
-                        </View>
+                        <LoadingState message="Carregando prontuário..." />
                     )}
                 </ScrollView>
             </View>
@@ -270,9 +273,18 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         paddingVertical: spacing.xxl,
+        gap: spacing.m,
+        paddingHorizontal: spacing.l,
+    },
+    emptyTitle: {
+        ...typography.h3,
+        color: colors.text,
+        textAlign: 'center',
     },
     emptyText: {
         ...typography.body2,
         color: colors.textSecondary,
+        textAlign: 'center',
+        lineHeight: 22,
     }
 });

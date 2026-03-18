@@ -41,6 +41,7 @@ import { SleepScreen } from '../screens/main/SleepScreen';
 import { AddSleepScreen } from '../screens/main/AddSleepScreen';
 import { CaregiverScreen } from '../screens/main/CaregiverScreen';
 import { MedicationAdherenceScreen } from '../screens/main/MedicationAdherenceScreen';
+import { AboutScreen } from '../screens/main/AboutScreen';
 
 const Stack = createStackNavigator();
 
@@ -106,6 +107,7 @@ const NavigationContent = () => {
                         <Stack.Screen name="AddSleep" component={AddSleepScreen} options={{ presentation: 'modal' }} />
                         <Stack.Screen name="Caregiver" component={CaregiverScreen} />
                         <Stack.Screen name="MedicationAdherence" component={MedicationAdherenceScreen} />
+                        <Stack.Screen name="About" component={AboutScreen} />
                         <Stack.Screen name="Tutorial" component={TutorialScreen} options={{ presentation: 'modal' }} />
                     </>
                 )}

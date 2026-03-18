@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
 import { webAlert } from '../../lib/webAlert';
 import { colors, spacing, typography } from '../../theme';
-import { Calendar, Clock, MapPin, Pill, Activity, Plus, Trash2, Edit2 } from 'lucide-react-native';
+import { Calendar, Clock, MapPin, Pill, Activity, Plus, Trash2, Edit2, CalendarX } from 'lucide-react-native';
 import { supabase } from '../../lib/supabase';
 import { useUser } from '../../context/UserContext';
-import { format } from 'date-fns';
+import { format, isToday, isTomorrow, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 export const AgendaScreen = ({ navigation }) => {
@@ -295,16 +295,57 @@ export const AgendaScreen = ({ navigation }) => {
                                 </>
                             )}
 
-                            <Text style={styles.sectionHeader}>
-                                {activeTab === 'upcoming' ? 'Compromissos' : 'Eventos Passados'}
-                            </Text>
-                            {events.map(renderCard)}
+                            {activeTab === 'upcoming' ? (
+                                // Upcoming: group by date
+                                (() => {
+                                    const grouped = events.reduce((acc, ev) => {
+                                        const key = ev.date;
+                                        if (!acc[key]) acc[key] = [];
+                                        acc[key].push(ev);
+                                        return acc;
+                                    }, {});
+                                    return Object.entries(grouped).map(([date, evs]) => {
+                                        const d = parseISO(date);
+                                        let label;
+                                        if (isToday(d)) label = '📆 Hoje';
+                                        else if (isTomorrow(d)) label = '🚀 Amanhã';
+                                        else label = format(d, "EEEE, dd/MM", { locale: ptBR });
+                                        label = label.charAt(0).toUpperCase() + label.slice(1);
+                                        return (
+                                            <View key={date}>
+                                                <Text style={styles.sectionHeader}>{label}</Text>
+                                                {evs.map(renderCard)}
+                                            </View>
+                                        );
+                                    });
+                                })()
+                            ) : (
+                                <>
+                                    <Text style={styles.sectionHeader}>Eventos Passados</Text>
+                                    {events.map(renderCard)}
+                                </>
+                            )}
                         </>
                     ) : !loading ? (
                         <View style={styles.emptyState}>
-                            <Text style={styles.emptyText}>
-                                {activeTab === 'upcoming' ? 'Sem atividades para hoje.' : 'Sem histórico disponível.'}
+                            <CalendarX color={`${colors.primary}40`} size={56} />
+                            <Text style={styles.emptyTitle}>
+                                {activeTab === 'upcoming' ? 'Nenhum compromisso agendado' : 'Sem eventos passados'}
                             </Text>
+                            <Text style={styles.emptySubtitle}>
+                                {activeTab === 'upcoming'
+                                    ? 'Toque no + e adicione consultas, sessões de equoterapia e muito mais.'
+                                    : 'Os eventos passados aparecerão aqui automaticamente.'}
+                            </Text>
+                            {activeTab === 'upcoming' && (
+                                <TouchableOpacity
+                                    style={styles.emptyBtn}
+                                    onPress={() => navigation.navigate('AddEvent')}
+                                >
+                                    <Plus color={colors.surface} size={18} />
+                                    <Text style={styles.emptyBtnText}>Adicionar Compromisso</Text>
+                                </TouchableOpacity>
+                            )}
                         </View>
                     ) : (
                         <View style={styles.emptyState}>
@@ -445,8 +486,23 @@ const styles = StyleSheet.create({
         flex: 1, 
         justifyContent: 'center', 
         alignItems: 'center', 
-        paddingVertical: spacing.xxl 
+        paddingVertical: spacing.xxl,
+        paddingHorizontal: spacing.l,
+        gap: spacing.m,
     },
     emptyText: { ...typography.body2, color: colors.textSecondary },
+    emptyTitle: { ...typography.h3, color: colors.textSecondary, textAlign: 'center' },
+    emptySubtitle: { ...typography.body2, color: colors.textSecondary, textAlign: 'center', lineHeight: 20 },
+    emptyBtn: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: spacing.s,
+        backgroundColor: colors.primary,
+        paddingHorizontal: spacing.l,
+        paddingVertical: spacing.m,
+        borderRadius: 50,
+        marginTop: spacing.s,
+    },
+    emptyBtnText: { ...typography.body2, fontWeight: '700', color: colors.surface },
     scrollContent: { paddingBottom: 100 },
 });

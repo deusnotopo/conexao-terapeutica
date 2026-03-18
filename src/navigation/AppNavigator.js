@@ -132,13 +132,11 @@ export const AppNavigator = () => {
 const styles = StyleSheet.create({
     root: {
         flex: 1,
-        backgroundColor: '#000',
-        alignItems: 'center',
+        backgroundColor: colors.background,
     },
     container: {
         flex: 1,
         width: '100%',
-        maxWidth: Platform.OS === 'web' ? 480 : undefined,
         backgroundColor: colors.background,
         overflow: 'hidden',
     },

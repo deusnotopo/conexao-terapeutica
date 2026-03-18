@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
+import { showToast } from '../../components/Toast';
 import { supabase } from '../../lib/supabase';
 import { useUser } from '../../context/UserContext';
 import { colors, spacing, typography } from '../../theme';
@@ -40,6 +41,7 @@ export const AddGrowthScreen = ({ navigation }) => {
                 notes,
             }]);
             if (error) throw error;
+            showToast('Medição registrada!');
             navigation.goBack();
         } catch (e) { setErrorMsg(e?.message || 'NÃ£o foi possÃ­vel salvar.'); }
         finally { setLoading(false); }
@@ -93,3 +95,4 @@ const styles = StyleSheet.create({
     errorBox: { backgroundColor: '#fee2e2', borderRadius: 10, padding: spacing.m, marginVertical: spacing.m, borderLeftWidth: 4, borderLeftColor: colors.error },
     errorText: { color: colors.error, fontWeight: '500' },
 });
+

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Switch } from 'react-native';
+import { showToast } from '../../components/Toast';
 import { supabase } from '../../lib/supabase';
 import { useUser } from '../../context/UserContext';
 import { colors, spacing, typography } from '../../theme';
@@ -62,6 +63,7 @@ export const AddExpenseScreen = ({ navigation }) => {
                 reimbursable,
             }]);
             if (error) throw error;
+            showToast('Gasto registrado!');
             navigation.goBack();
         } catch (e) {
             setErrorMsg(e?.message || 'Não foi possível salvar.');
@@ -128,3 +130,4 @@ const styles = StyleSheet.create({
     errorBox: { backgroundColor: '#fee2e2', borderRadius: 10, padding: spacing.m, marginVertical: spacing.m, borderLeftWidth: 4, borderLeftColor: colors.error },
     errorText: { color: colors.error, fontWeight: '500' },
 });
+

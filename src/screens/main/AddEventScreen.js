@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
 import { webAlert } from '../../lib/webAlert';
+import { showToast } from '../../components/Toast';
 import { supabase } from '../../lib/supabase';
 import { useUser } from '../../context/UserContext';
 import { colors, spacing, typography } from '../../theme';
@@ -81,6 +82,7 @@ export const AddEventScreen = ({ navigation }) => {
                     location,
                 }]);
             if (error) throw error;
+            showToast('Evento adicionado!');
             navigation.goBack();
         } catch (error) {
             console.error('Error saving event:', error);
@@ -252,3 +254,4 @@ const styles = StyleSheet.create({
     },
     errorText: { color: colors.error, fontSize: 14, fontWeight: '500' },
 });
+

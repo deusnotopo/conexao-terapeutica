@@ -9,6 +9,8 @@ import { ChevronLeft, Stethoscope, User, Calendar } from 'lucide-react-native';
 
 const SPECIALTIES = ['Equoterapia', 'Neuropediatria', 'Fisioterapia', 'Fonoaudiologia', 'Terapia Ocupacional', 'Pediatria', 'Psicologia', 'Ortopedia', 'Outro'];
 
+import { showToast } from '../../components/Toast';
+
 export const AddConsultationScreen = ({ navigation }) => {
     const { activeDependent } = useUser();
     const [loading, setLoading] = useState(false);
@@ -55,6 +57,7 @@ export const AddConsultationScreen = ({ navigation }) => {
             };
             const { error } = await supabase.from('consultations').insert([payload]);
             if (error) throw error;
+            showToast('Consulta registrada com sucesso! ✅');
             navigation.goBack();
         } catch (e) {
             setErrorMsg(e?.message || 'Não foi possível salvar.');

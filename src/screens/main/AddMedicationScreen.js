@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
+import { showToast } from '../../components/Toast';
 import { supabase } from '../../lib/supabase';
 import { useUser } from '../../context/UserContext';
 import { colors, spacing, typography } from '../../theme';
@@ -54,6 +55,7 @@ export const AddMedicationScreen = ({ navigation }) => {
                 reminder_times: reminderTimes,
             }]);
             if (error) throw error;
+            showToast('Medicamento cadastrado!');
             navigation.goBack();
         } catch (error) {
             setErrorMsg('Não foi possível cadastrar o medicamento.');
@@ -167,3 +169,4 @@ const styles = StyleSheet.create({
     },
     errorText: { color: colors.error, fontSize: 14, fontWeight: '500' },
 });
+

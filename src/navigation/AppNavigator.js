@@ -1,7 +1,10 @@
 import React from 'react';
+import { View, StyleSheet, Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { UserProvider, useUser } from '../context/UserContext';
+import { Toast } from '../components/Toast';
+import { colors } from '../theme';
 
 // Nests
 import { MainTabs } from './MainTabs';
@@ -116,7 +119,27 @@ const NavigationContent = () => {
 export const AppNavigator = () => {
     return (
         <UserProvider>
-            <NavigationContent />
+            <View style={styles.root}>
+                <View style={styles.container}>
+                    <NavigationContent />
+                    <Toast />
+                </View>
+            </View>
         </UserProvider>
     );
 };
+
+const styles = StyleSheet.create({
+    root: {
+        flex: 1,
+        backgroundColor: '#000',
+        alignItems: 'center',
+    },
+    container: {
+        flex: 1,
+        width: '100%',
+        maxWidth: Platform.OS === 'web' ? 480 : undefined,
+        backgroundColor: colors.background,
+        overflow: 'hidden',
+    },
+});

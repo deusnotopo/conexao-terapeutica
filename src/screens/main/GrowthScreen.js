@@ -4,9 +4,8 @@ import { supabase } from '../../lib/supabase';
 import { useUser } from '../../context/UserContext';
 import { webAlert } from '../../lib/webAlert';
 import { colors, spacing, typography } from '../../theme';
-import { ChevronLeft, Plus, TrendingUp, Ruler, Weight, Trash2 } from 'lucide-react-native';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { ChevronLeft, Plus, TrendingUp, Trash2, Ruler, Weight } from 'lucide-react-native';
+import { formatLong, formatShort } from '../../utils/formatDate';
 
 export const GrowthScreen = ({ navigation }) => {
     const { activeDependent } = useUser();
@@ -72,7 +71,7 @@ export const GrowthScreen = ({ navigation }) => {
                     <View style={styles.latestCard}>
                         <Text style={styles.latestLabel}>Última Medição</Text>
                         <Text style={styles.latestDate}>
-                            {format(new Date(latest.date + 'T12:00:00'), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+                            {formatLong(latest.date)}
                         </Text>
                         <View style={styles.metricsRow}>
                             {latest.weight_kg != null && (
@@ -126,7 +125,7 @@ export const GrowthScreen = ({ navigation }) => {
                         <View style={styles.historyContent}>
                             <View style={styles.historyHeader}>
                                 <Text style={styles.historyDate}>
-                                    {format(new Date(m.date + 'T12:00:00'), "dd/MM/yyyy", { locale: ptBR })}
+                                    {formatShort(m.date)}
                                     {idx === 0 && <Text style={styles.latestBadge}> (Mais recente)</Text>}
                                 </Text>
                                 <TouchableOpacity onPress={() => handleDelete(m)} style={styles.deleteBtn}>

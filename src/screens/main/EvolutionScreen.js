@@ -6,8 +6,7 @@ import { Stethoscope, Star, CalendarDays, Info, ClipboardList } from 'lucide-rea
 import { LoadingState } from '../../components/LoadingState';
 import { supabase } from '../../lib/supabase';
 import { useUser } from '../../context/UserContext';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { formatMedium } from '../../utils/formatDate';
 
 export const EvolutionScreen = ({ navigation }) => {
     const { activeDependent } = useUser();
@@ -74,7 +73,7 @@ export const EvolutionScreen = ({ navigation }) => {
                     <View style={styles.headerLeft}>
                         <CalendarDays color={colors.textSecondary} size={16} />
                         <Text style={styles.dateText}>
-                            {format(new Date(note.session_date), "dd MMM, yyyy", { locale: ptBR })}
+                            {formatMedium(note.session_date)}
                         </Text>
                     </View>
                     {renderStars(note.progress_rating)}

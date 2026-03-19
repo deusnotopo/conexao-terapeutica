@@ -4,9 +4,8 @@ import { supabase } from '../../lib/supabase';
 import { useUser } from '../../context/UserContext';
 import { webAlert } from '../../lib/webAlert';
 import { colors, spacing, typography } from '../../theme';
-import { ChevronLeft, Plus, Syringe, AlertCircle, Trash2 } from 'lucide-react-native';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { ChevronLeft, Plus, Syringe, AlertCircle, Trash2, Calendar } from 'lucide-react-native';
+import { formatShort, formatLong } from '../../utils/formatDate';
 
 const COMMON_VACCINES = [
     'BCG', 'Hepatite B', 'Rotavírus', 'Pentavalente (DTP+Hib+HepB)',
@@ -73,7 +72,7 @@ export const VaccinesScreen = ({ navigation }) => {
                             <Text style={styles.alertTitle}>Próximas doses agendadas</Text>
                             {upcoming.slice(0, 3).map(v => (
                                 <Text key={v.id} style={styles.alertText}>
-                                    {v.name} — {format(new Date(v.next_dose_date + 'T12:00:00'), "dd/MM/yyyy", { locale: ptBR })}
+                                    {v.name} — {formatShort(v.next_dose_date)}
                                 </Text>
                             ))}
                         </View>
@@ -96,13 +95,13 @@ export const VaccinesScreen = ({ navigation }) => {
                             <Text style={styles.vaccineName}>{v.name}</Text>
                             {v.dose_number > 1 && <Text style={styles.vaccineDetail}>Dose {v.dose_number}</Text>}
                             <Text style={styles.vaccineDate}>
-                                📅 {format(new Date(v.applied_date + 'T12:00:00'), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+                                📅 {formatLong(v.applied_date)}
                             </Text>
-                            {v.next_dose_date && (
+                            {v.next_dose_date ? (
                                 <Text style={styles.nextDose}>
-                                    🔄 Próxima dose: {format(new Date(v.next_dose_date + 'T12:00:00'), "dd/MM/yyyy", { locale: ptBR })}
+                                    🔄 Próxima dose: {formatShort(v.next_dose_date)}
                                 </Text>
-                            )}
+                            ) : null}
                             {v.notes && <Text style={styles.vaccineDetail}>{v.notes}</Text>}
                         </View>
                         <TouchableOpacity onPress={() => handleDelete(v)} style={styles.deleteBtn}>

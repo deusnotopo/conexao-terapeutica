@@ -5,9 +5,8 @@ import { useUser } from '../../context/UserContext';
 import { webAlert } from '../../lib/webAlert';
 import { colors, spacing, typography } from '../../theme';
 import { ChevronLeft, Plus, Stethoscope, User, Trash2 } from 'lucide-react-native';
+import { formatShort, formatShortYear2 } from '../../utils/formatDate';
 import { LoadingState } from '../../components/LoadingState';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 
 export const ConsultationsScreen = ({ navigation }) => {
     const { activeDependent } = useUser();
@@ -90,13 +89,13 @@ export const ConsultationsScreen = ({ navigation }) => {
                                 {c.notes ? <Text style={styles.notes} numberOfLines={2}>{c.notes}</Text> : null}
                                 {c.next_appointment ? (
                                     <Text style={styles.nextAppt}>
-                                        📅 Retorno: {format(new Date(c.next_appointment + 'T12:00:00'), "dd/MM/yyyy", { locale: ptBR })}
+                                        📅 Retorno: {formatShort(c.next_appointment)}
                                     </Text>
                                 ) : null}
                             </View>
                         </View>
                         <View style={styles.cardRight}>
-                            <Text style={styles.date}>{format(new Date(c.date + 'T12:00:00'), "dd/MM/yy", { locale: ptBR })}</Text>
+                            <Text style={styles.date}>{formatShortYear2(c.date)}</Text>
                             <TouchableOpacity onPress={() => handleDelete(c)} style={styles.deleteBtn}>
                                 <Trash2 color={colors.error} size={16} />
                             </TouchableOpacity>

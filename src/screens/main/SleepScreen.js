@@ -6,8 +6,7 @@ import { webAlert } from '../../lib/webAlert';
 import { colors, spacing, typography } from '../../theme';
 import { ChevronLeft, Plus, Moon, Sun, Trash2, Clock } from 'lucide-react-native';
 import { LoadingState } from '../../components/LoadingState';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { formatWeekday } from '../../utils/formatDate';
 
 const QUALITY_LABELS = ['', '😣 Péssimo', '😕 Ruim', '😐 Regular', '😊 Bom', '😴 Ótimo'];
 const QUALITY_COLORS = ['', '#dc2626', '#ea580c', '#d97706', '#65a30d', '#16a34a'];

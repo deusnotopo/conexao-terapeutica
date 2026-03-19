@@ -8,8 +8,7 @@ import { useUser } from '../../context/UserContext';
 import { webAlert } from '../../lib/webAlert';
 import { colors, spacing, typography } from '../../theme';
 import { ChevronLeft, UserPlus, Mail, Users, CheckCircle, Clock, XCircle, Trash2 } from 'lucide-react-native';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { formatShort } from '../../utils/formatDate';
 
 export const CaregiverScreen = ({ navigation }) => {
     const { activeDependent, user } = useUser();
@@ -149,7 +148,7 @@ export const CaregiverScreen = ({ navigation }) => {
                                 <View style={{ flex: 1 }}>
                                     <Text style={styles.inviteEmail}>{inv.invited_email}</Text>
                                     <Text style={styles.inviteDate}>
-                                        {format(new Date(inv.created_at), "dd/MM/yyyy", { locale: ptBR })}
+                                        {formatShort(inv.created_at)}
                                     </Text>
                                 </View>
                                 <View style={styles.inviteStatus}>

@@ -6,8 +6,7 @@ import { webAlert } from '../../lib/webAlert';
 import { colors, spacing, typography } from '../../theme';
 import { ChevronLeft, Plus, Zap, Clock, Trash2, AlertTriangle } from 'lucide-react-native';
 import { LoadingState } from '../../components/LoadingState';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { formatLong } from '../../utils/formatDate';
 
 const SEVERITY_LABELS = ['', '🟢 Leve', '🟡 Moderada', '🟠 Intensa', '🔴 Severa', '🆘 Emergência'];
 

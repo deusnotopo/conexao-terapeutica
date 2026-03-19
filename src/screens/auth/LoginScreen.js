@@ -23,6 +23,7 @@ export const LoginScreen = ({ navigation }) => {
     const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
     const [successMsg, setSuccessMsg] = useState('');
+    const [waitingEmailConfirm, setWaitingEmailConfirm] = useState(false);
 
     async function signInWithEmail() {
         if (!email || !password) {
@@ -68,7 +69,8 @@ export const LoginScreen = ({ navigation }) => {
         if (error) {
             setErrorMsg(error.message);
         } else if (!session) {
-            setSuccessMsg('Quase lá! Verifique sua caixa de entrada para ativar a conta.');
+            // Email confirmation required — show dedicated screen
+            setWaitingEmailConfirm(true);
         }
         setLoading(false);
     }
@@ -77,6 +79,7 @@ export const LoginScreen = ({ navigation }) => {
         setIsSignUp(!isSignUp);
         setErrorMsg('');
         setSuccessMsg('');
+        setWaitingEmailConfirm(false);
     };
 
     const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -88,6 +91,45 @@ export const LoginScreen = ({ navigation }) => {
             Animated.spring(scaleAnim, { toValue: 1, friction: 5, useNativeDriver: true }),
         ]).start();
     }, []);
+
+    // Tela intermediária: aguardando confirmação de email
+    if (waitingEmailConfirm) {
+        return (
+            <SafeAreaView style={styles.safeArea}>
+                <ScrollView contentContainerStyle={[styles.container, { justifyContent: 'center', flex: 1 }]}>
+                    <View style={styles.confirmContainer}>
+                        <Text style={styles.confirmEmoji}>📧</Text>
+                        <Text style={styles.confirmTitle}>Verifique seu email!</Text>
+                        <Text style={styles.confirmBody}>
+                            Enviamos um link de confirmação para{' '}
+                            <Text style={{ fontWeight: '700', color: colors.primaryDark }}>{email}</Text>.{' '}
+                            Abra o email, clique no link e depois volte aqui para entrar.
+                        </Text>
+                        <View style={styles.confirmSteps}>
+                            <Text style={styles.confirmStep}>1️⃣  Abra seu aplicativo de email</Text>
+                            <Text style={styles.confirmStep}>2️⃣  Procure o email da Conexão Terapêutica</Text>
+                            <Text style={styles.confirmStep}>3️⃣  Clique em "Confirmar email"</Text>
+                            <Text style={styles.confirmStep}>4️⃣  Volte aqui e clique em Entrar abaixo</Text>
+                        </View>
+                        <Button
+                            title="Já confirmei — Ir para Login"
+                            onPress={() => {
+                                setWaitingEmailConfirm(false);
+                                setIsSignUp(false);
+                                setSuccessMsg('');
+                            }}
+                        />
+                        <TouchableOpacity
+                            style={styles.toggleButton}
+                            onPress={() => setWaitingEmailConfirm(false)}
+                        >
+                            <Text style={styles.toggleText}>← Voltar para o cadastro</Text>
+                        </TouchableOpacity>
+                    </View>
+                </ScrollView>
+            </SafeAreaView>
+        );
+    }
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -289,5 +331,41 @@ const styles = StyleSheet.create({
         color: '#166534',
         fontSize: 14,
         fontWeight: '500',
+    },
+    // Tela de confirmação de email
+    confirmContainer: {
+        alignItems: 'center',
+        paddingVertical: spacing.xl,
+        gap: spacing.l,
+    },
+    confirmEmoji: {
+        fontSize: 64,
+        marginBottom: spacing.s,
+    },
+    confirmTitle: {
+        ...typography.h1,
+        color: colors.primaryDark,
+        textAlign: 'center',
+    },
+    confirmBody: {
+        ...typography.body1,
+        color: colors.textSecondary,
+        textAlign: 'center',
+        lineHeight: 24,
+        paddingHorizontal: spacing.m,
+    },
+    confirmSteps: {
+        width: '100%',
+        backgroundColor: `${colors.primary}08`,
+        borderRadius: 16,
+        padding: spacing.l,
+        gap: spacing.m,
+        borderWidth: 1,
+        borderColor: `${colors.primary}20`,
+    },
+    confirmStep: {
+        ...typography.body2,
+        color: colors.text,
+        lineHeight: 22,
     },
 });

@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -44,11 +44,9 @@ const COMMON_VACCINES = [
 
 export const VaccinesScreen = ({ navigation }: any) => {
   const { activeDependent } = useUser();
-  const { vaccines, loading, refreshing, refresh, deleteVaccine } = useVaccines(
-    activeDependent?.id
-  );
+  const { vaccines, loading, refreshing, refresh, deleteVaccine } = useVaccines(activeDependent?.id ?? "");
 
-  const handleDelete = (v) => {
+  const handleDelete = (v: any) => {
     webAlert(
       'Excluir Vacina',
       `Deseja excluir o registro de ${v.name}? Esta ação não pode ser desfeita.`,
@@ -125,7 +123,7 @@ export const VaccinesScreen = ({ navigation }: any) => {
               Acompanhe as vacinas recebidas para manter tudo em dia.
             </Text>
             <TouchableOpacity
-              style={styles.emptyText}
+              style={styles.emptyBtn}
               onPress={() => navigation.navigate('VaccineForm')}
             >
               <Text style={styles.emptyText}>Registrar vacina</Text>
@@ -225,6 +223,13 @@ const styles = StyleSheet.create({
   alertText: { ...(typography.caption as object), color: '#92400e' },
   empty: { alignItems: 'center', paddingVertical: 80, gap: spacing.m },
   emptyTitle: { ...(typography.h3 as object), color: colors.textSecondary },
+  emptyBtn: {
+    marginTop: 8,
+    paddingHorizontal: spacing.l,
+    paddingVertical: spacing.m,
+    backgroundColor: `${colors.primary}15`,
+    borderRadius: 50,
+  },
   emptyText: {
     ...(typography.body2 as object),
     color: colors.textSecondary,

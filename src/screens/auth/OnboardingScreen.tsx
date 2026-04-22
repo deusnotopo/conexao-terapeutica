@@ -28,7 +28,7 @@ export const OnboardingScreen = ({ navigation }: any) => {
   const [birthDate, setBirthDate] = useState('');
   const [diagnosis, setDiagnosis] = useState('');
 
-  const handleDateChange = (text) => {
+  const handleDateChange = (text: any) => {
     let raw = text.replace(/\D/g, '');
     if (raw.length > 8) raw = raw.substring(0, 8);
     let masked = raw;
@@ -76,9 +76,9 @@ export const OnboardingScreen = ({ navigation }: any) => {
       setTimeout(() => {
         try {
           navigation.reset({ index: 0, routes: [{ name: 'MainTabs' }] });
-        } catch (_) {}
+        } catch (_: any) {}
       }, 300);
-    } catch (error) {
+    } catch (error: any) {
       const msg = (error as Error)?.message || 'Não foi possível salvar os dados. Verifique a conexão.';
       setErrorMsg(msg);
     } finally {

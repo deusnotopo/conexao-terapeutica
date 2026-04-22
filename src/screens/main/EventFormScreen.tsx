@@ -36,7 +36,7 @@ const EVENT_TYPES = [
   'Outro',
 ];
 
-const toDisplayDate = (iso) => {
+const toDisplayDate = (iso: any) => {
   if (!iso) return '';
   const d = new Date(iso);
   const dd = String(d.getDate()).padStart(2, '0');
@@ -45,7 +45,7 @@ const toDisplayDate = (iso) => {
   return `${dd}/${mm}/${yyyy}`;
 };
 
-const toDisplayTime = (iso) => {
+const toDisplayTime = (iso: any) => {
   if (!iso) return '';
   const d = new Date(iso);
   const hh = String(d.getHours()).padStart(2, '0');
@@ -55,7 +55,7 @@ const toDisplayTime = (iso) => {
 
 export const EventFormScreen = ({ navigation, route }: any) => {
   const { activeDependent } = useUser();
-  const { addEvent, updateEvent, deleteEvent } = useAgenda();
+  const { addEvent, updateEvent, deleteEvent } = useAgenda(activeDependent?.id ?? "", "upcoming");
   const event = route.params?.event || null;
   const isEditing = !!event;
 
@@ -76,7 +76,7 @@ export const EventFormScreen = ({ navigation, route }: any) => {
   const [description, setDescription] = useState(event?.description || '');
   const [preNotes, setPreNotes] = useState(event?.pre_notes || '');
 
-  const handleDateChange = (text) => {
+  const handleDateChange = (text: any) => {
     let raw = text.replace(/\D/g, '').substring(0, 8);
     if (raw.length > 4)
       raw = raw.substring(0, 2) + '/' + raw.substring(2, 4) + '/' + raw.substring(4);
@@ -85,7 +85,7 @@ export const EventFormScreen = ({ navigation, route }: any) => {
     setErrorMsg('');
   };
 
-  const handleTimeChange = (text) => {
+  const handleTimeChange = (text: any) => {
     let raw = text.replace(/\D/g, '').substring(0, 4);
     if (raw.length > 2) raw = raw.substring(0, 2) + ':' + raw.substring(2);
     setTime(raw);
@@ -130,7 +130,7 @@ export const EventFormScreen = ({ navigation, route }: any) => {
         if (!isEditing) {
           // Schedule reminder for new events
           scheduleEventReminder({ 
-            id: Date.now(), 
+            id: String(Date.now()), 
             title, 
             date: isoDate, 
             time 
@@ -138,9 +138,9 @@ export const EventFormScreen = ({ navigation, route }: any) => {
         }
         navigation.goBack();
       } else {
-        setErrorMsg(result.error);
+        setErrorMsg(result.error ?? "");
       }
-    } catch (e) {
+    } catch (e: any) {
       setErrorMsg('Não foi possível salvar o compromisso.');
     } finally {
       setLoading(false);
@@ -164,7 +164,7 @@ export const EventFormScreen = ({ navigation, route }: any) => {
       if (result.success) {
         navigation.goBack();
       } else {
-        setErrorMsg(result.error);
+        setErrorMsg(result.error ?? "");
       }
     })();
   };

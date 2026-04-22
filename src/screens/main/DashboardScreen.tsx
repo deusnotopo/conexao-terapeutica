@@ -50,7 +50,7 @@ export const DashboardScreen = ({ navigation }: any) => {
     loading,
     refreshing,
     refetch
-  } = useDashboardMetrics(activeDependent?.id);
+  } = useDashboardMetrics(activeDependent?.id ?? "");
 
   const [tip] = useState(TIPS[Math.floor(Math.random() * TIPS.length)]);
   const fadeAnim = useRef(new Animated.Value(0)).current;

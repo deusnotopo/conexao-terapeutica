@@ -35,7 +35,7 @@ const CATEGORIES = [
 
 export const ExpenseFormScreen = ({ navigation, route }: any) => {
   const { activeDependent } = useUser();
-  const { addExpense, updateExpense, removeExpense } = useExpenses(activeDependent?.id);
+  const { addExpense, updateExpense, removeExpense } = useExpenses(activeDependent?.id ?? "");
   const expense = route.params?.expense || null;
   const isEditing = !!expense;
 
@@ -55,13 +55,13 @@ export const ExpenseFormScreen = ({ navigation, route }: any) => {
     ).padStart(2, '0')}/${d.getFullYear()}`;
   };
 
-  const toDisplayDate = (iso) => {
+  const toDisplayDate = (iso: any) => {
     if (!iso) return '';
     const [y, m, d] = iso.split('-');
     return `${d}/${m}/${y}`;
   };
 
-  const toDisplayAmount = (cents) => {
+  const toDisplayAmount = (cents: any) => {
     if (cents === undefined || cents === null) return '';
     return (cents / 100).toFixed(2).replace('.', ',');
   };
@@ -73,7 +73,7 @@ export const ExpenseFormScreen = ({ navigation, route }: any) => {
     isEditing ? toDisplayAmount(expense.amount_cents) : ''
   );
 
-  const handleDateChange = (text) => {
+  const handleDateChange = (text: any) => {
     let raw = text.replace(/\D/g, '').substring(0, 8);
     if (raw.length > 4)
       raw =
@@ -84,7 +84,7 @@ export const ExpenseFormScreen = ({ navigation, route }: any) => {
     setErrorMsg('');
   };
 
-  const handleAmountChange = (text) => {
+  const handleAmountChange = (text: any) => {
     const clean = text.replace(/[^\d,]/g, '').replace(',', '.');
     setAmountStr(clean);
     setErrorMsg('');
@@ -135,7 +135,7 @@ export const ExpenseFormScreen = ({ navigation, route }: any) => {
       if (success) {
         navigation.goBack();
       }
-    } catch (e) {
+    } catch (e: any) {
       setErrorMsg((e as Error)?.message || 'Não foi possível salvar o gasto.');
     } finally {
       setLoading(false);

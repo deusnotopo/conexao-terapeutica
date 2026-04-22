@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TextInputProps, ViewStyle } from 'react-native';
 import { colors, spacing, typography } from '../theme';
 
@@ -28,8 +28,8 @@ export const Input: React.FC<InputProps> = ({ label, error, icon, rightIcon, sty
           style={[
             styles.input,
             icon && styles.inputWithIcon,
-            rightIcon ? { paddingRight: 40 } : undefined,
-          ]}
+            rightIcon ? { paddingRight: 40 } : {},
+          ] as any}
           placeholderTextColor={colors.textSecondary}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
   wrapper: { marginBottom: spacing.m },
   label: {
     ...(typography.body2 as object),
-    fontWeight: '600' as const as const,
+    fontWeight: '600' as const,
     color: colors.text,
     marginBottom: spacing.s,
   },

@@ -32,7 +32,7 @@ const COMMON_VACCINES = [
   'Outra',
 ];
 
-const toDisplay = (iso) => {
+const toDisplay = (iso: any) => {
   if (!iso) return '';
   const [y, m, d] = iso.split('-');
   return `${d}/${m}/${y}`;
@@ -40,7 +40,7 @@ const toDisplay = (iso) => {
 
 export const VaccineFormScreen = ({ navigation, route }: any) => {
   const { activeDependent } = useUser();
-  const { addVaccine, updateVaccine } = useVaccines(activeDependent?.id);
+  const { addVaccine, updateVaccine } = useVaccines(activeDependent?.id ?? "");
   const vaccine = route.params?.vaccine || null;
   const isEditing = !!vaccine;
 
@@ -53,7 +53,7 @@ export const VaccineFormScreen = ({ navigation, route }: any) => {
   const [doseNumber, setDoseNumber] = useState(vaccine?.dose_number ? String(vaccine.dose_number) : '1');
   const [notes, setNotes] = useState(vaccine?.notes || '');
 
-  const maskDate = (text, setter) => {
+  const maskDate = (text: any, setter: any) => {
     let raw = text.replace(/\D/g, '').substring(0, 8);
     if (raw.length > 4)
       raw =
@@ -66,7 +66,7 @@ export const VaccineFormScreen = ({ navigation, route }: any) => {
     setter(raw);
   };
 
-  const toISO = (d) => {
+  const toISO = (d: any) => {
     const p = d.split('/');
     return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : null;
   };
@@ -92,7 +92,7 @@ export const VaccineFormScreen = ({ navigation, route }: any) => {
       if (isEditing) {
         result = await updateVaccine(vaccine.id, payload);
       } else {
-        (payload as any).dependent_id = activeDependent.id;
+        (payload as any).dependent_id = activeDependent?.id;
         result = await addVaccine(payload);
       }
 
@@ -101,7 +101,7 @@ export const VaccineFormScreen = ({ navigation, route }: any) => {
       } else {
         setErrorMsg(result.error || 'Erro ao salvar.');
       }
-    } catch (e) {
+    } catch (e: any) {
       setErrorMsg((e as Error)?.message || 'Não foi possível salvar.');
     } finally {
       setLoading(false);

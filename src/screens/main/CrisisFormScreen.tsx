@@ -46,7 +46,7 @@ const TRIGGER_OPTS = [
   'Sem causa aparente',
 ];
 
-const toDisplay = (iso) => {
+const toDisplay = (iso: any) => {
   if (!iso) return '';
   const [y, m, d] = iso.split('-');
   return `${d}/${m}/${y}`;
@@ -54,7 +54,7 @@ const toDisplay = (iso) => {
 
 export const CrisisFormScreen = ({ navigation, route }: any) => {
   const { activeDependent } = useUser();
-  const { addCrisis, updateCrisis } = useCrises(activeDependent?.id);
+  const { addCrisis, updateCrisis } = useCrises(activeDependent?.id ?? "");
   const crisis = route.params?.crisis || null;
   const isEditing = !!crisis;
 
@@ -72,7 +72,7 @@ export const CrisisFormScreen = ({ navigation, route }: any) => {
   const [medicationGiven, setMedicationGiven] = useState(crisis?.medication_given || '');
   const [notes, setNotes] = useState(crisis?.notes || '');
 
-  const maskDate = (text) => {
+  const maskDate = (text: any) => {
     let raw = text.replace(/\D/g, '').substring(0, 8);
     if (raw.length > 4)
       raw =
@@ -85,19 +85,19 @@ export const CrisisFormScreen = ({ navigation, route }: any) => {
     return raw;
   };
   
-  const maskTime = (text) => {
+  const maskTime = (text: any) => {
     let raw = text.replace(/\D/g, '').substring(0, 4);
     if (raw.length > 2) raw = raw.substring(0, 2) + ':' + raw.substring(2);
     return raw;
   };
   
-  const toISO = (d) => {
+  const toISO = (d: any) => {
     const p = d.split('/');
     return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : null;
   };
 
-  const toggleTrigger = (t) =>
-    setTriggers((prev) =>
+  const toggleTrigger = (t: any) =>
+    setTriggers((prev: any) =>
       prev.includes(t) ? prev.filter((x: any) => x !== t) : [...prev, t]
     );
 
@@ -129,16 +129,16 @@ export const CrisisFormScreen = ({ navigation, route }: any) => {
 
       let success = false;
       if (isEditing) {
-        success = await updateCrisis(crisis.id, payload);
+        success = await updateCrisis(crisis.id, payload as any);
       } else {
         if (activeDependent) (payload as any).dependent_id = activeDependent.id;
-        success = await addCrisis(payload);
+        success = await addCrisis(payload as any);
       }
 
       if (success) {
         navigation.goBack();
       }
-    } catch (e) {
+    } catch (e: any) {
       setErrorMsg((e as Error)?.message || 'Não foi possível salvar.');
     } finally {
       setLoading(false);

@@ -40,9 +40,9 @@ export const AgendaScreen = ({ navigation }: any) => {
     refresh,
     deleteEvent,
     logMedication,
-  } = useAgenda(activeDependent?.id, activeTab);
+  } = useAgenda(activeDependent?.id ?? "", activeTab as any);
 
-  const handleDeleteEvent = async (event) => {
+  const handleDeleteEvent = async (event: any) => {
     webAlert(
       'Excluir Compromisso',
       `Deseja realmente excluir "${event.title}"?`,
@@ -59,13 +59,13 @@ export const AgendaScreen = ({ navigation }: any) => {
     );
   };
 
-  const handleCheckMedication = async (med) => {
+  const handleCheckMedication = async (med: any) => {
     if (med.taken) return;
     await logMedication(med.id);
   };
 
 
-  const renderIcon = (type) => {
+  const renderIcon = (type: any) => {
     switch (type?.toLowerCase()) {
       case 'equoterapia':
       case 'therapy':
@@ -78,7 +78,7 @@ export const AgendaScreen = ({ navigation }: any) => {
     }
   };
 
-  const renderCard = (event) => (
+  const renderCard = (event: any) => (
     <View key={event.id} style={styles.eventCard}>
       <View style={styles.cardHeader}>
         <View style={styles.iconContainer}>{renderIcon(event.event_type)}</View>
@@ -236,7 +236,7 @@ export const AgendaScreen = ({ navigation }: any) => {
                     acc[key].push(ev);
                     return acc;
                   }, {});
-                  return Object.entries(grouped).map(([date, evs]) => {
+                  return (Object.entries(grouped) as [string, any[]][]).map(([date, evs]: [string, any[]]) => {
                     const d = parseISO(date);
                     let label;
                     if (isToday(d)) label = '📆 Hoje';

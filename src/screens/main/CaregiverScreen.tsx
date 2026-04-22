@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -37,7 +37,7 @@ export const CaregiverScreen = ({ navigation }: any) => {
     sendInvite,
     revokeAccess,
     revokeInvite,
-  } = useCaregivers(activeDependent?.id);
+  } = useCaregivers(activeDependent?.id ?? "");
 
   const [email, setEmail] = useState('');
   const [sending, setSending] = useState(false);
@@ -52,11 +52,11 @@ export const CaregiverScreen = ({ navigation }: any) => {
     setErrorMsg('');
     try {
       const result = await sendInvite({
-        invited_by: user.id,
+        invited_by: user?.id ?? "",
         invited_email: email.trim().toLowerCase(),
-      });
+      } as any);
 
-      if (!result.success) throw new Error(result.error);
+      if (!result.success) throw new Error(result.error ?? undefined);
 
       setEmail('');
       // Open default email client to help user send manual message (Best effort)
@@ -66,17 +66,16 @@ export const CaregiverScreen = ({ navigation }: any) => {
       const subject = encodeURIComponent(
         `Convite para o app Conexão Terapêutica — ${(activeDependent?.name ?? "")}`
       );
-      Linking.openURL(
-        `mailto:${email.trim()}?subject=${subject}&body=${body}`
+      void Linking.openURL(`mailto:${email.trim()}?subject=${subject}&body=${body}`
       ).catch(() => {});
-    } catch (e) {
+    } catch (e: any) {
       setErrorMsg(e.message || 'Erro ao enviar convite.');
     } finally {
       setSending(false);
     }
   };
 
-  const handleRevokeAccess = (caregiver) => {
+  const handleRevokeAccess = (caregiver: any) => {
     const name =
       caregiver.profiles?.full_name ||
       caregiver.invited_email ||
@@ -91,7 +90,7 @@ export const CaregiverScreen = ({ navigation }: any) => {
     ]);
   };
 
-  const handleRevokeInvite = (invite) => {
+  const handleRevokeInvite = (invite: any) => {
     webAlert(
       'Revogar Convite',
       `Deseja cancelar o convite para ${invite.invited_email}?`,
@@ -229,9 +228,9 @@ export const CaregiverScreen = ({ navigation }: any) => {
                   </Text>
                 </View>
                 <View style={styles.inviteStatus}>
-                  {STATUS_ICON[inv.status]}
+                  {(STATUS_ICON as any)[inv.status]}
                   <Text style={styles.inviteStatusText}>
-                    {STATUS_LABEL[inv.status]}
+                    {(STATUS_LABEL as any)[inv.status]}
                   </Text>
                 </View>
                 {inv.status === 'pending' && (

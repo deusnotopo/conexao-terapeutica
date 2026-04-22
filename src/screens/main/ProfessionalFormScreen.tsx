@@ -41,7 +41,7 @@ const SPECIALTIES = [
 
 export const ProfessionalFormScreen = ({ navigation, route }: any) => {
   const { activeDependent } = useUser();
-  const { addProfessional, updateProfessional } = useProfessionals(activeDependent?.id);
+  const { addProfessional, updateProfessional } = useProfessionals(activeDependent?.id ?? "");
   const professional = route.params?.professional || null;
   const isEditing = !!professional;
 
@@ -91,9 +91,9 @@ export const ProfessionalFormScreen = ({ navigation, route }: any) => {
       if (result.success) {
         navigation.goBack();
       } else {
-        setErrorMsg(result.error);
+        setErrorMsg(result.error ?? "");
       }
-    } catch (e) {
+    } catch (e: any) {
       setErrorMsg('Não foi possível salvar.');
     } finally {
       setLoading(false);

@@ -25,11 +25,9 @@ import { formatMedium } from '../../utils/formatDate';
 
 export const EvolutionScreen = ({ navigation }: any) => {
   const { activeDependent } = useUser();
-  const { notes, loading, refreshing, refresh } = useTherapyNotes(
-    activeDependent?.id
-  );
+  const { notes, loading, refreshing, refresh } = useTherapyNotes(activeDependent?.id ?? "");
 
-  const renderStars = (rating) => {
+  const renderStars = (rating: any) => {
     return (
       <View style={styles.starsContainer}>
         {[1, 2, 3, 4, 5].map((star: any) => (
@@ -44,7 +42,7 @@ export const EvolutionScreen = ({ navigation }: any) => {
     );
   };
 
-  const renderNoteCard = (note) => (
+  const renderNoteCard = (note: any) => (
     <View key={note.id} style={styles.timelineItem}>
       <View style={styles.timelineLine} />
       <View style={styles.timelineDot}>

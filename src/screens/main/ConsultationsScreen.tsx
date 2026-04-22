@@ -35,9 +35,9 @@ export const ConsultationsScreen = ({ navigation }: any) => {
     refresh,
     loadMore,
     deleteById,
-  } = useConsultations(activeDependent?.id);
+  } = useConsultations(activeDependent?.id ?? "");
 
-  const handleDelete = (c) => {
+  const handleDelete = (c: any) => {
     webAlert(
       'Excluir Consulta',
       `Deseja excluir a consulta de ${c.specialty}? Esta ação não pode ser desfeita.`,

@@ -10,7 +10,7 @@ import {
 import { Button } from '../../components/Button';
 import { colors, spacing, typography } from '../../theme';
 
-export const EmailConfirmationScreen = ({ email, onConfirm, onBack }) => {
+export const EmailConfirmationScreen = ({ email, onConfirm, onBack }: any) => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView

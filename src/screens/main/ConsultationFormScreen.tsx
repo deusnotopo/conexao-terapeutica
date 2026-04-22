@@ -28,19 +28,19 @@ const SPECIALTIES = [
   'Outro',
 ];
 
-const toDisplay = (iso) => {
+const toDisplay = (iso: any) => {
   if (!iso) return '';
   const [y, m, d] = iso.split('-');
   return `${d}/${m}/${y}`;
 };
-const toISO = (masked) => {
+const toISO = (masked: any) => {
   const p = masked.split('/');
   return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : null;
 };
 
 export const ConsultationFormScreen = ({ navigation, route }: any) => {
   const { activeDependent } = useUser();
-  const { addConsultation, updateConsultation } = useAgenda(activeDependent?.id);
+  const { addConsultation, updateConsultation } = useAgenda(activeDependent?.id ?? "");
   const consultation = route.params?.consultation || null;
   const isEditing = !!consultation;
 
@@ -54,7 +54,7 @@ export const ConsultationFormScreen = ({ navigation, route }: any) => {
   const [notes, setNotes] = useState(consultation?.notes || '');
   const [nextAppointment, setNextAppointment] = useState(toDisplay(consultation?.next_appointment) || '');
 
-  const handleDateChange = (text, setter) => {
+  const handleDateChange = (text: any, setter: any) => {
     let raw = text.replace(/\D/g, '');
     if (raw.length > 8) raw = raw.substring(0, 8);
     let masked = raw;
@@ -96,9 +96,9 @@ export const ConsultationFormScreen = ({ navigation, route }: any) => {
       if (result.success) {
         navigation.goBack();
       } else {
-        setErrorMsg(result.error);
+        setErrorMsg(result.error ?? "");
       }
-    } catch (e) {
+    } catch (e: any) {
       setErrorMsg('Não foi possível salvar.');
     } finally {
       setLoading(false);

@@ -42,7 +42,7 @@ export const MedicalRecordScreen = ({ navigation }: any) => {
   const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
-  const { record: fetchedRecord, loading, saveRecord } = useMedicalRecord(activeDependent?.id);
+  const { record: fetchedRecord, loading, saveRecord } = useMedicalRecord(activeDependent?.id ?? "");
   const [record, setRecord] = useState({
     blood_type: '',
     health_plan: '',
@@ -57,7 +57,7 @@ export const MedicalRecordScreen = ({ navigation }: any) => {
 
   useEffect(() => {
     if (fetchedRecord) {
-      setRecord(fetchedRecord);
+      setRecord(fetchedRecord as any);
       setEditing(false);
     } else if (!loading) {
       setEditing(true);
@@ -74,14 +74,14 @@ export const MedicalRecordScreen = ({ navigation }: any) => {
     setSaving(false);
   };
 
-  const handleCall = (phone) => {
+  const handleCall = (phone: any) => {
     if (!phone) return;
     Linking.openURL(`tel:${phone.replace(/\D/g, '')}`);
   };
 
-  const update = (field, val) => setRecord((r) => ({ ...r, [field]: val }));
+  const update = (field: any, val: any) => setRecord((r) => ({ ...r, [field]: val }));
 
-  const Section = ({ icon, title, children }) => (
+  const Section = ({ icon, title, children }: any) => (
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
         {icon}
@@ -302,7 +302,7 @@ export const MedicalRecordScreen = ({ navigation }: any) => {
   );
 };
 
-const InfoRow = ({ label, value }) => (
+const InfoRow = ({ label, value }: any) => (
   <View style={styles.infoRow}>
     {label ? <Text style={styles.infoLabel}>{label}</Text> : null}
     <Text style={styles.infoValue}>
@@ -311,7 +311,7 @@ const InfoRow = ({ label, value }) => (
   </View>
 );
 
-const CallRow = ({ label, value, onCall }) => (
+const CallRow = ({ label, value, onCall }: any) => (
   <View style={styles.infoRow}>
     <Text style={styles.infoLabel}>{label}</Text>
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>

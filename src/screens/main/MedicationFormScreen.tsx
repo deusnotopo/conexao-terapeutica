@@ -27,7 +27,7 @@ import { requestNotificationPermission } from '../../lib/notifications';
 
 export const MedicationFormScreen = ({ navigation, route }: any) => {
   const { activeDependent } = useUser();
-  const { addMedication, updateMedication } = useMedications(activeDependent?.id);
+  const { addMedication, updateMedication } = useMedications(activeDependent?.id ?? "");
   const medication = route.params?.medication || null;
   const isEditing = !!medication;
 
@@ -37,7 +37,7 @@ export const MedicationFormScreen = ({ navigation, route }: any) => {
   const [name, setName] = useState('');
   const [dosage, setDosage] = useState('');
   const [frequency, setFrequency] = useState('');
-  const [reminderTimes, setReminderTimes] = useState([]);
+  const [reminderTimes, setReminderTimes] = useState<string[]>([]);
   const [newTime, setNewTime] = useState('');
 
   useEffect(() => {
@@ -64,10 +64,10 @@ export const MedicationFormScreen = ({ navigation, route }: any) => {
     setErrorMsg('');
   };
 
-  const removeTime = (t) =>
+  const removeTime = (t: any) =>
     setReminderTimes((prev) => prev.filter((x: any) => x !== t));
 
-  const maskTime = (text) => {
+  const maskTime = (text: any) => {
     let raw = text.replace(/\D/g, '').substring(0, 4);
     if (raw.length > 2) return raw.substring(0, 2) + ':' + raw.substring(2);
     return raw;
@@ -116,9 +116,9 @@ export const MedicationFormScreen = ({ navigation, route }: any) => {
       if (result.success) {
         navigation.goBack();
       } else {
-        setErrorMsg(result.error);
+        setErrorMsg(result.error ?? "");
       }
-    } catch (error) {
+    } catch (error: any) {
       setErrorMsg('Não foi possível salvar o medicamento.');
     } finally {
       setLoading(false);

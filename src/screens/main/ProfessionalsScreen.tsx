@@ -52,7 +52,7 @@ const COLORS = [
   '#6b7280',
 ];
 
-const getColor = (specialty) => {
+const getColor = (specialty: any) => {
   const idx = SPECIALTIES.indexOf(specialty) % COLORS.length;
   return COLORS[Math.max(0, idx)];
 };
@@ -65,9 +65,9 @@ export const ProfessionalsScreen = ({ navigation }: any) => {
     refreshing,
     refresh,
     deleteProfessional,
-  } = useProfessionals(activeDependent?.id);
+  } = useProfessionals(activeDependent?.id ?? "");
 
-  const handleDelete = (p) => {
+  const handleDelete = (p: any) => {
     webAlert('Excluir', `Remover ${p.name} do diretório?`, [
       { text: 'Cancelar', style: 'cancel' },
       {

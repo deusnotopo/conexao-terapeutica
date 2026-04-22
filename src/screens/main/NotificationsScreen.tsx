@@ -36,19 +36,19 @@ export const NotificationsScreen = ({ navigation }: any) => {
     medications, 
     loading: loadingMeds, 
     refresh: refreshMeds 
-  } = useMedications(activeDependent?.id);
+  } = useMedications(activeDependent?.id ?? "");
   
   const { 
     events, 
     loading: loadingEvents, 
     refresh: refreshEvents 
-  } = useAgenda(activeDependent?.id, 'upcoming');
+  } = useAgenda(activeDependent?.id ?? "", 'upcoming');
   
   const { 
     goals, 
     loading: loadingGoals, 
     refresh: refreshGoals 
-  } = useGoals(activeDependent?.id);
+  } = useGoals(activeDependent?.id ?? "");
 
   const loading = loadingMeds || loadingEvents || loadingGoals;
 
@@ -92,7 +92,7 @@ export const NotificationsScreen = ({ navigation }: any) => {
     refreshGoals();
   };
 
-  const formatEventTime = (ts) => {
+  const formatEventTime = (ts: any) => {
     const d = new Date(ts);
     if (isToday(d)) return `Hoje às ${format(d, 'HH:mm')}`;
     if (isTomorrow(d)) return `Amanhã às ${format(d, 'HH:mm')}`;

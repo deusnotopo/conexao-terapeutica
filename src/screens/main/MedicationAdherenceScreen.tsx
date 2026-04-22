@@ -26,9 +26,9 @@ export const MedicationAdherenceScreen = ({ navigation }: any) => {
     loading,
     refreshing,
     refresh
-  } = useMedicationAdherence(activeDependent?.id);
+  } = useMedicationAdherence(activeDependent?.id ?? "");
 
-  const getColor = (pct) => {
+  const getColor = (pct: any) => {
     if (pct === null) return colors.textSecondary;
     if (pct >= 90) return '#16a34a';
     if (pct >= 70) return '#d97706';
@@ -56,10 +56,7 @@ export const MedicationAdherenceScreen = ({ navigation }: any) => {
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
-            onRefresh={() => {
-              setRefreshing(true);
-              refresh();
-            }}
+            onRefresh={refresh}
             colors={[colors.primary]}
           />
         }

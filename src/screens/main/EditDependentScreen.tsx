@@ -41,7 +41,7 @@ export const EditDependentScreen = ({ navigation, route }: any) => {
   const [birthDate, setBirthDate] = useState(initialFormattedDate);
   const [diagnosis, setDiagnosis] = useState(dependent.diagnosis || '');
 
-  const handleDateChange = (text) => {
+  const handleDateChange = (text: any) => {
     let raw = text.replace(/\D/g, '');
     if (raw.length > 8) raw = raw.substring(0, 8);
     let masked = raw;
@@ -83,7 +83,7 @@ export const EditDependentScreen = ({ navigation, route }: any) => {
       } else {
         setErrorMsg(result.error || 'Não foi possível salvar as alterações.');
       }
-    } catch (error) {
+    } catch (error: any) {
       setErrorMsg('Ocorreu um erro inesperado.');
     } finally {
       setLoading(false);
@@ -112,7 +112,7 @@ export const EditDependentScreen = ({ navigation, route }: any) => {
               } else {
                 setErrorMsg(result.error || 'Não foi possível excluir o perfil.');
               }
-            } catch (error) {
+            } catch (error: any) {
               setErrorMsg('Erro ao excluir dependente.');
             } finally {
               setLoading(false);

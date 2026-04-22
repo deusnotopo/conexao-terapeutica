@@ -45,11 +45,9 @@ const QUALITY_COLORS = [
 
 export const SleepScreen = ({ navigation }: any) => {
   const { activeDependent } = useUser();
-  const { logs, loading, refreshing, refresh, deleteLog } = useSleep(
-    activeDependent?.id
-  );
+  const { logs, loading, refreshing, refresh, deleteLog } = useSleep(activeDependent?.id ?? "");
 
-  const handleDelete = (log) => {
+  const handleDelete = (log: any) => {
     webAlert('Excluir Registro', 'Deseja excluir este registro de sono?', [
       { text: 'Cancelar', style: 'cancel' },
       {
@@ -65,7 +63,7 @@ export const SleepScreen = ({ navigation }: any) => {
   const avgHours =
     recent7.length > 0
       ? (
-          recent7.reduce((s: any, l: any) => s + parseFloat(l.duration_hours), 0) /
+          recent7.reduce((s: any, l: any) => s + parseFloat(String(l.duration_hours ?? 0)), 0) /
           recent7.length
         ).toFixed(1)
       : null;
@@ -148,7 +146,7 @@ export const SleepScreen = ({ navigation }: any) => {
                 const maxH = 10;
                 const pct = Math.min(
                   100,
-                  (parseFloat(l.duration_hours) / maxH) * 100
+                  (parseFloat(String(l.duration_hours ?? 0)) / maxH) * 100
                 );
                 const color = QUALITY_COLORS[l.quality || 3];
                 return (
@@ -160,7 +158,7 @@ export const SleepScreen = ({ navigation }: any) => {
                       ]}
                     />
                     <Text style={styles.barLabel}>
-                      {parseFloat(l.duration_hours).toFixed(0)}h
+                      {(l.duration_hours != null ? parseFloat(String(l.duration_hours)).toFixed(0) : "0")}h
                     </Text>
                   </View>
                 );
@@ -231,7 +229,7 @@ export const SleepScreen = ({ navigation }: any) => {
                   <Clock color={colors.textSecondary} size={12} />
                   <Text style={styles.chipText}>
                     {' '}
-                    {parseFloat(l.duration_hours).toFixed(1)}h
+                    {parseFloat(String(l.duration_hours ?? 0)).toFixed(1)}h
                   </Text>
                 </View>
               )}

@@ -196,7 +196,7 @@ const SECTIONS = [
   },
 ];
 
-const ActionRow = ({ label, Icon, color, bg, onPress }) => (
+const ActionRow = ({ label, Icon, color, bg, onPress }: any) => (
   <TouchableOpacity
     style={styles.actionRow}
     onPress={onPress}
@@ -215,7 +215,7 @@ const ActionRow = ({ label, Icon, color, bg, onPress }) => (
   </TouchableOpacity>
 );
 
-const CollapsibleSection = ({ section, navigation }) => {
+const CollapsibleSection = ({ section, navigation }: any) => {
   const [open, setOpen] = useState(true);
   return (
     <View style={styles.section}>
@@ -294,7 +294,7 @@ export const ProfileScreen = ({ navigation }: any) => {
         fileBody = await response.blob();
       }
 
-      const res = await updateAvatar(fileBody, ext);
+      const res = await updateAvatar(fileBody as any, ext);
       
       if (res.success) {
         if (res.data?.avatar_url) {
@@ -305,7 +305,7 @@ export const ProfileScreen = ({ navigation }: any) => {
       } else {
         webAlert('Erro', 'Não foi possível atualizar o avatar.');
       }
-    } catch (_) {
+    } catch (_: any) {
       // Best-effort: picker cancelled or unavailable, previous avatar unchanged
     } finally {
       setUploadingAvatar(false);

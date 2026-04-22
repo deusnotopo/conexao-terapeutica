@@ -51,7 +51,7 @@ export const VaultScreen = ({ navigation }: any) => {
     refresh,
     loadMore,
     deleteDocument,
-  } = useDocuments(activeDependent?.id);
+  } = useDocuments(activeDependent?.id ?? "");
 
   const [activeCategory, setActiveCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -70,7 +70,7 @@ export const VaultScreen = ({ navigation }: any) => {
       )
     : documents;
 
-  const handleDeleteDocument = async (doc) => {
+  const handleDeleteDocument = async (doc: any) => {
     webAlert('Excluir Documento', `Deseja realmente excluir "${doc.title}"?`, [
       { text: 'Cancelar', style: 'cancel' },
       {
@@ -83,7 +83,7 @@ export const VaultScreen = ({ navigation }: any) => {
     ]);
   };
 
-  const handleShare = async (doc) => {
+  const handleShare = async (doc: any) => {
     const url = doc.file_url || doc.file_path;
     if (!url) return;
     if (Platform.OS === 'web') {
@@ -91,13 +91,13 @@ export const VaultScreen = ({ navigation }: any) => {
     } else {
       try {
         await Share.share({ message: `${doc.title}: ${url}`, url });
-      } catch (e) {
+      } catch (e: any) {
         // Silent
       }
     }
   };
 
-  const renderIcon = (filePath) => {
+  const renderIcon = (filePath: any) => {
     const extension = filePath?.split('.').pop()?.toLowerCase();
     if (['jpg', 'jpeg', 'png'].includes(extension))
       return <ImageIcon color={colors.secondary} size={28} />;
@@ -106,7 +106,7 @@ export const VaultScreen = ({ navigation }: any) => {
     return <FileArchive color={colors.textSecondary} size={28} />;
   };
 
-  const renderDocCard = (doc) => (
+  const renderDocCard = (doc: any) => (
     <View key={doc.id} style={styles.docCard}>
       <View style={styles.docIconContainer}>{renderIcon(doc.file_path)}</View>
       <View style={styles.docInfo}>

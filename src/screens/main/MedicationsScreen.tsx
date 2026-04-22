@@ -38,7 +38,7 @@ export const MedicationsScreen = ({ navigation }: any) => {
 
   const [activeTab, setActiveTab] = useState('active'); // 'active' | 'inactive'
 
-  const handleToggleActive = (med) => {
+  const handleToggleActive = (med: any) => {
     const action = med.is_active ? 'desativar' : 'reativar';
     webAlert(
       `${med.is_active ? 'Desativar' : 'Reativar'} Medicamento`,
@@ -53,7 +53,7 @@ export const MedicationsScreen = ({ navigation }: any) => {
     );
   };
 
-  const handleDelete = (med) => {
+  const handleDelete = (med: any) => {
     webAlert(
       'Excluir Medicamento',
       `Deseja excluir permanentemente "${med.name}"?`,
@@ -68,7 +68,7 @@ export const MedicationsScreen = ({ navigation }: any) => {
     );
   };
 
-  const handleUpdateStock = (med, delta) => {
+  const handleUpdateStock = (med: any, delta: any) => {
     const next = Math.max(0, (med.stock_count || 0) + delta);
     updateStock(med.id, next);
   };

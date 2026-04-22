@@ -22,9 +22,9 @@ import {
 
 export const EmergencyScreen = ({ navigation }: any) => {
   const { activeDependent } = useUser();
-  const { record, loading } = useMedicalRecord(activeDependent?.id);
+  const { record, loading } = useMedicalRecord(activeDependent?.id ?? "");
 
-  const call = (phone) => {
+  const call = (phone: any) => {
     if (!phone) return;
     Linking.openURL(`tel:${phone.replace(/\D/g, '')}`);
   };

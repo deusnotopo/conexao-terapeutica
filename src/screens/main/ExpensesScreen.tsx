@@ -1,5 +1,6 @@
 ﻿import React, { useState, useEffect, useCallback } from 'react';
 import { useUser } from '../../context/UserContext';
+import { useExpenses } from '../../hooks/useExpenses';
 import {
   View,
   Text,
@@ -33,7 +34,7 @@ const CATEGORY_COLORS = {
   Outro: colors.textSecondary,
 };
 
-const formatCurrency = (cents) => {
+const formatCurrency = (cents: any) => {
   return `R$ ${(cents / 100).toFixed(2).replace('.', ',')}`;
 };
 
@@ -51,9 +52,9 @@ export const ExpensesScreen = ({ navigation }: any) => {
     refresh,
     loadMore,
     removeExpense,
-  } = useExpenses(activeDependent?.id);
+  } = useExpenses(activeDependent?.id ?? "");
 
-  const handleDelete = (expense) => {
+  const handleDelete = (expense: any) => {
     webAlert(
       'Excluir Gasto',
       `Deseja excluir este gasto de ${formatCurrency(expense.amount_cents)}?`,
@@ -63,9 +64,7 @@ export const ExpensesScreen = ({ navigation }: any) => {
           text: 'Excluir',
           style: 'destructive',
           onPress: async () => {
-            const result = await removeExpense(expense.id);
-            if (!result.success) {
-              webAlert('Erro', result.error);
+            const ok = await removeExpense(expense.id); if (!ok) {
             }
           },
         },
@@ -138,13 +137,13 @@ export const ExpensesScreen = ({ navigation }: any) => {
                 return acc;
               }, {})
             ).sort((a: any, b: any) => b[1] - a[1]);
-            const total = cats.reduce((s, [, v]) => s + v, 0);
+            const total = cats.reduce((s: number, [, v]: any) => s + (v as number), 0);
             return (
               <View style={styles.catCard}>
                 <Text style={styles.catTitle}>📊 Por Categoria (total)</Text>
-                {cats.map(([cat, val]) => {
+                {cats.map(([cat, val]: any) => {
                   const pct = total > 0 ? (val / total) * 100 : 0;
-                  const col = CATEGORY_COLORS[cat] || colors.textSecondary;
+                  const col = (CATEGORY_COLORS as any)[cat] || colors.textSecondary;
                   return (
                     <View key={cat} style={styles.catRow}>
                       <Text style={[styles.catLabel, { color: col }]}>
@@ -176,7 +175,7 @@ export const ExpensesScreen = ({ navigation }: any) => {
           </View>
         ) : null}
 
-        {Object.entries(grouped).map(([month, items]) => {
+        {Object.entries(grouped).map(([month, items]: any) => {
           const monthTotal = items.reduce((s: any, e: any) => s + e.amount_cents, 0);
           const [year, m] = month.split('-');
           const label = format(
@@ -201,7 +200,7 @@ export const ExpensesScreen = ({ navigation }: any) => {
                       styles.categoryDot,
                       {
                         backgroundColor:
-                          CATEGORY_COLORS[e.category] || colors.textSecondary,
+                          (CATEGORY_COLORS as any)[e.category] || colors.textSecondary,
                       },
                     ]}
                   />

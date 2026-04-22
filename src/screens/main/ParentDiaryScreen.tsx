@@ -27,8 +27,8 @@ const MOODS = [
 ];
 
 export const ParentDiaryScreen = ({ navigation }: any) => {
-  const { activeDependent } = useUser();
-  const { entries: diary, loading, addEntry, deleteEntry, refresh } = useDiary(activeDependent?.id);
+  const { activeDependent, user } = useUser();
+  const { entries: diary, loading, addEntry, deleteEntry, refresh } = useDiary(user?.id ?? "", activeDependent?.id ?? "");
   const [saving, setSaving] = useState(false);
   const [mood, setMood] = useState('good');
   const [content, setContent] = useState('');
@@ -48,9 +48,9 @@ export const ParentDiaryScreen = ({ navigation }: any) => {
     setSaving(false);
   };
 
-  const getMoodConfig = (key) => MOODS.find((m: any) => m.key === key) || MOODS[1];
+  const getMoodConfig = (key: any) => MOODS.find((m: any) => m.key === key) || MOODS[1];
 
-  const handleDelete = (entry) => {
+  const handleDelete = (entry: any) => {
     webAlert(
       'Excluir Entrada',
       'Deseja excluir esta entrada do diário? Esta ação não pode ser desfeita.',

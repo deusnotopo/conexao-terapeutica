@@ -148,7 +148,7 @@ export const BenefitsScreen = ({ navigation }: any) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCat, setActiveCat] = useState('all');
 
-  const toggle = (id) => setExpanded((prev) => (prev === id ? null : id));
+  const toggle = (id: any) => setExpanded((prev) => (prev === id ? null : id));
 
   const filtered = useMemo(() => {
     let list = BENEFITS;
@@ -272,7 +272,7 @@ export const BenefitsScreen = ({ navigation }: any) => {
                 <View style={styles.details}>
                   <Text style={styles.bodyText}>{b.body}</Text>
                   <Text style={styles.reqTitle}>📋 Como ter acesso:</Text>
-                  {b.requirements.map((r, i) => (
+                  {b.requirements.map((r: any, i: any) => (
                     <Text key={i} style={styles.reqItem}>
                       • {r}
                     </Text>

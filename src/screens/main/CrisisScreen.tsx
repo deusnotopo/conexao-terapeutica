@@ -50,9 +50,9 @@ export const CrisisScreen = ({ navigation }: any) => {
     refresh,
     loadMore,
     deleteCrisis,
-  } = useCrises(activeDependent?.id);
+  } = useCrises(activeDependent?.id ?? "");
 
-  const handleDelete = (ev) => {
+  const handleDelete = (ev: any) => {
     webAlert('Excluir Registro', 'Deseja excluir este registro de crise?', [
       { text: 'Cancelar', style: 'cancel' },
       {

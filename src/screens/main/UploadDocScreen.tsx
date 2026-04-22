@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -23,7 +23,7 @@ import {
 import * as DocumentPicker from 'expo-document-picker';
 export const UploadDocScreen = ({ navigation }: any) => {
   const { activeDependent, user } = useUser();
-  const { addDocument } = useDocuments(activeDependent?.id);
+  const { addDocument } = useDocuments(activeDependent?.id ?? "");
   const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('Laudo');
@@ -39,7 +39,7 @@ export const UploadDocScreen = ({ navigation }: any) => {
       if (!result.canceled) {
         setSelectedFile(result.assets[0]);
       }
-    } catch (err) {
+    } catch (err: any) {
       // Silent error during picker
     }
   };
@@ -66,7 +66,7 @@ export const UploadDocScreen = ({ navigation }: any) => {
       const fileName = `${Date.now()}-${sf.name}`;
       const filePath = `${user?.id}/${activeDependent.id}/${fileName}`;
       
-      const metadata = {
+      const metadata: any = {
         title,
         category,
         file_path: filePath,
@@ -78,7 +78,7 @@ export const UploadDocScreen = ({ navigation }: any) => {
       if (success) {
         navigation.goBack();
       }
-    } catch (error) {
+    } catch (error: any) {
       webAlert(
         'Erro',
         'Ocorreu um problema no processamento do upload.'

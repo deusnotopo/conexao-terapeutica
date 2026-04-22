@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
   outline: { backgroundColor: 'transparent', borderWidth: 1.5, borderColor: colors.primary },
   danger: { backgroundColor: colors.error },
   disabled: { opacity: 0.5 },
-  text: { ...(typography.body1 as object), fontWeight: '700' as const as const },
+  text: { ...(typography.body1 as object), fontWeight: '700' as const },
   text_primary: { color: colors.surface },
   text_secondary: { color: colors.primaryDark },
   text_outline: { color: colors.primary },

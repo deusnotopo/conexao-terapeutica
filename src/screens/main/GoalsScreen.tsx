@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -50,21 +50,21 @@ export const GoalsScreen = ({ navigation }: any) => {
     updateGoal,
     getGoalNotes,
     addGoalNote,
-  } = useGoals(activeDependent?.id);
+  } = useGoals(activeDependent?.id ?? "");
 
   const [expanded, setExpanded] = useState(null);
   const [notes, setNotes] = useState({});
   const [newNote, setNewNote] = useState({});
   const [addingNote, setAddingNote] = useState(null);
 
-  const fetchNotes = async (goalId) => {
+  const fetchNotes = async (goalId: any) => {
     const result = await getGoalNotes(goalId);
     if (result.success) {
-      setNotes((prev) => ({ ...prev, [goalId]: result.data }));
+      setNotes((prev: any) => ({ ...prev, [goalId]: result.data }));
     }
   };
 
-  const handleExpand = (goalId) => {
+  const handleExpand = (goalId: any) => {
     if (expanded === goalId) {
       setExpanded(null);
       return;
@@ -73,8 +73,8 @@ export const GoalsScreen = ({ navigation }: any) => {
     fetchNotes(goalId);
   };
 
-  const handleAddNote = async (goalId) => {
-    const text = (newNote[goalId] || '').trim();
+  const handleAddNote = async (goalId: any) => {
+    const text = ((newNote as any)[goalId] || '').trim();
     if (!text) return;
     
     const result = await addGoalNote(goalId, text);
@@ -85,19 +85,19 @@ export const GoalsScreen = ({ navigation }: any) => {
     }
   };
 
-  const handleStatusChange = async (goal) => {
+  const handleStatusChange = async (goal: any) => {
     const nextStatus = {
       pending: 'in_progress',
       in_progress: 'achieved',
       achieved: 'pending',
     };
-    const next = nextStatus[goal.status];
+    const next = (nextStatus as any)[goal.status];
     const labels = {
       pending: 'Pendente',
       in_progress: 'Em Progresso',
       achieved: 'Conquistado 🎉',
     };
-    webAlert('Atualizar Meta', `Marcar como: "${labels[next]}"?`, [
+    webAlert('Atualizar Meta', `Marcar como: "${(labels as any)[next]}"?`, [
       { text: 'Cancelar', style: 'cancel' },
       {
         text: 'Confirmar',
@@ -115,11 +115,11 @@ export const GoalsScreen = ({ navigation }: any) => {
   const achieved = goals.filter((g: any) => g.status === 'achieved');
   const active = goals.filter((g: any) => g.status !== 'achieved');
 
-  const renderGoalCard = (goal) => {
-    const cfg = STATUS_CONFIG[goal.status] || STATUS_CONFIG.pending;
+  const renderGoalCard = (goal: any) => {
+    const cfg = (STATUS_CONFIG as any)[goal.status] || STATUS_CONFIG.pending;
     const Icon = cfg.icon;
     const isOpen = expanded === goal.id;
-    const goalNotes = notes[goal.id] || [];
+    const goalNotes = (notes as any)[goal.id] || [];
     return (
       <View
         key={goal.id}
@@ -189,7 +189,7 @@ export const GoalsScreen = ({ navigation }: any) => {
               <View style={styles.noteInputRow}>
                 <TextInput
                   style={styles.noteInput}
-                  value={newNote[goal.id] || ''}
+                  value={(newNote as any)[goal.id] || ''}
                   onChangeText={(t) =>
                     setNewNote((prev) => ({ ...prev, [goal.id]: t }))
                   }

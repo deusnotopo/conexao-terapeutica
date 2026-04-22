@@ -23,7 +23,7 @@ const QUALITY_OPTS = [
   { value: 5, label: '😴 Ótimo', color: '#16a34a' },
 ];
 
-const toDisplay = (iso) => {
+const toDisplay = (iso: any) => {
   if (!iso) return '';
   const [y, m, d] = iso.split('-');
   return `${d}/${m}/${y}`;
@@ -31,7 +31,7 @@ const toDisplay = (iso) => {
 
 export const SleepFormScreen = ({ navigation, route }: any) => {
   const { activeDependent } = useUser();
-  const { addLog, updateLog } = useSleep(activeDependent?.id);
+  const { addLog, updateLog } = useSleep(activeDependent?.id ?? "");
   const sleep = route.params?.sleep || null;
   const isEditing = !!sleep;
 
@@ -45,7 +45,7 @@ export const SleepFormScreen = ({ navigation, route }: any) => {
   const [awakenings, setAwakenings] = useState(sleep?.awakenings != null ? String(sleep.awakenings) : '0');
   const [notes, setNotes] = useState(sleep?.notes || '');
 
-  const maskDate = (t) => {
+  const maskDate = (t: any) => {
     let r = t.replace(/\D/g, '').substring(0, 8);
     if (r.length > 4)
       r = r.substring(0, 2) + '/' + r.substring(2, 4) + '/' + r.substring(4);
@@ -53,13 +53,13 @@ export const SleepFormScreen = ({ navigation, route }: any) => {
     return r;
   };
   
-  const maskTime = (t) => {
+  const maskTime = (t: any) => {
     let r = t.replace(/\D/g, '').substring(0, 4);
     if (r.length > 2) r = r.substring(0, 2) + ':' + r.substring(2);
     return r;
   };
   
-  const toISO = (d) => {
+  const toISO = (d: any) => {
     const p = d.split('/');
     return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : null;
   };
@@ -102,10 +102,10 @@ export const SleepFormScreen = ({ navigation, route }: any) => {
 
       let result;
       if (isEditing) {
-        result = await updateLog(sleep.id, payload);
+        result = await updateLog(sleep.id, payload as any);
       } else {
-        (payload as any).dependent_id = activeDependent.id;
-        result = await addLog(payload);
+        (payload as any).dependent_id = activeDependent?.id;
+        result = await addLog(payload as any);
       }
 
       if (result.success) {
@@ -113,7 +113,7 @@ export const SleepFormScreen = ({ navigation, route }: any) => {
       } else {
         setErrorMsg(result.error || 'Erro ao salvar.');
       }
-    } catch (e) {
+    } catch (e: any) {
       setErrorMsg((e as Error)?.message || 'Não foi possível salvar.');
     } finally {
       setLoading(false);

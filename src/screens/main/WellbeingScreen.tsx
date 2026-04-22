@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -44,7 +44,7 @@ export const WellbeingScreen = ({ navigation }: any) => {
     tip, 
     todayEntry, 
     today 
-  } = useWellbeing(user?.id);
+  } = useWellbeing(user?.id ?? "");
   
   const [saving, setSaving] = useState(false);
   const [mood, setMood] = useState('good');
@@ -54,7 +54,7 @@ export const WellbeingScreen = ({ navigation }: any) => {
   useEffect(() => {
     if (todayEntry) {
       setMood(todayEntry.mood);
-      setNotes(todayEntry.notes);
+      setNotes(todayEntry.notes ?? "");
     }
   }, [todayEntry]);
 
@@ -72,7 +72,7 @@ export const WellbeingScreen = ({ navigation }: any) => {
     setSaving(false);
   };
 
-  const getMoodCfg = (key) => MOODS.find((m: any) => m.key === key) || MOODS[1];
+  const getMoodCfg = (key: any) => MOODS.find((m: any) => m.key === key) || MOODS[1];
 
   return (
     <SafeAreaView style={styles.safeArea}>

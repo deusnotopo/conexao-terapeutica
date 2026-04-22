@@ -59,7 +59,7 @@ export const LoginScreen = ({ navigation }: any) => {
 
     const result = await authService.signUp(email, password, fullName);
     if (!result.success) {
-      setErrorMsg(result.error);
+      setErrorMsg(result.error ?? "");
     } else {
       if (!result.data.session) {
         setWaitingEmailConfirm(true);

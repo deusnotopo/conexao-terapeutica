@@ -28,9 +28,9 @@ import { LoadingState } from '../../components/LoadingState';
 export const GrowthScreen = ({ navigation }: any) => {
   const { activeDependent } = useUser();
   const { measurements, loading, refreshing, refresh, deleteMeasurement } =
-    useGrowth(activeDependent?.id);
+    useGrowth(activeDependent?.id ?? "");
 
-  const handleDelete = (m) => {
+  const handleDelete = (m: any) => {
     webAlert('Excluir Medição', 'Deseja excluir este registro de crescimento?', [
       { text: 'Cancelar', style: 'cancel' },
       {
@@ -44,7 +44,7 @@ export const GrowthScreen = ({ navigation }: any) => {
   const latest = measurements[0];
   const prev = measurements[1];
 
-  const diff = (field) => {
+  const diff = (field: any) => {
     if (!latest || !prev || latest[field] == null || prev[field] == null)
       return null;
     return (latest[field] - prev[field]).toFixed(1);

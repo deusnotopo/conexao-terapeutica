@@ -1,4 +1,4 @@
-﻿import React, { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -205,7 +205,7 @@ export const TutorialScreen = ({ navigation, route }: any) => {
   const scrollRef = useRef<any>(null);
   const fromProfile = route?.params?.fromProfile || false;
 
-  const goTo = (index) => {
+  const goTo = (index: any) => {
     if (index < 0 || index >= SLIDES.length) return;
     setCurrent(index);
     scrollRef.current?.scrollTo({ x: index * width, animated: true });
@@ -250,21 +250,25 @@ export const TutorialScreen = ({ navigation, route }: any) => {
         scrollEnabled={false}
         style={styles.scrollView}
       >
-        {SLIDES.map((slide, idx) => (
-          <View key={slide.key} style={[styles.slide, { width }]}>
-            <View style={[styles.iconWrapper, { backgroundColor: slide.bg }]}>
-              {slide.iconType === 'emoji' ? (
-                <Text style={styles.emoji}>{slide.emoji}</Text>
-              ) : (
-                <slide.Icon color={slide.iconColor} size={52} />
-              )}
+        {SLIDES.map((slide, idx) => {
+          const SlideIcon = (slide as any).Icon as React.ComponentType<{ color?: string; size?: number }> | undefined;
+          return (
+            <View key={slide.key} style={[styles.slide, { width }]}>
+              <View style={[styles.iconWrapper, { backgroundColor: slide.bg }]}>
+                {slide.iconType === 'emoji' ? (
+                  <Text style={styles.emoji}>{slide.emoji}</Text>
+                ) : SlideIcon ? (
+                  <SlideIcon color={(slide as any).iconColor} size={52} />
+                ) : null}
+              </View>
+              <Text style={[styles.slideTitle, { color: slide.color }]}>
+                {slide.title}
+              </Text>
+              <Text style={styles.slideSubtitle}>{slide.subtitle}</Text>
             </View>
-            <Text style={[styles.slideTitle, { color: slide.color }]}>
-              {slide.title}
-            </Text>
-            <Text style={styles.slideSubtitle}>{slide.subtitle}</Text>
-          </View>
-        ))}
+          );
+        })}
+
       </ScrollView>
 
       {/* Dots */}

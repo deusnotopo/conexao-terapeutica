@@ -37,7 +37,7 @@ export const GoalFormScreen = ({ navigation, route }: any) => {
   const goal = route.params?.goal;
   const isEdit = !!goal;
 
-  const { createGoal, updateGoal, deleteGoal } = useGoals(activeDependent?.id);
+  const { createGoal, updateGoal, deleteGoal } = useGoals(activeDependent?.id ?? "");
 
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -48,13 +48,13 @@ export const GoalFormScreen = ({ navigation, route }: any) => {
   const [targetDate, setTargetDate] = useState('');
 
   // Date handlers
-  const toDisplay = (iso) => {
+  const toDisplay = (iso: any) => {
     if (!iso) return '';
     const [y, m, d] = iso.split('-');
     return `${d}/${m}/${y}`;
   };
 
-  const toISO = (masked) => {
+  const toISO = (masked: any) => {
     const p = masked.split('/');
     return p.length === 3 && p[2].length === 4 ? `${p[2]}-${p[1]}-${p[0]}` : null;
   };
@@ -65,7 +65,7 @@ export const GoalFormScreen = ({ navigation, route }: any) => {
     }
   }, [goal]);
 
-  const handleDateChange = (text) => {
+  const handleDateChange = (text: any) => {
     let raw = text.replace(/\D/g, '');
     if (raw.length > 8) raw = raw.substring(0, 8);
     let masked = raw;
@@ -99,7 +99,7 @@ export const GoalFormScreen = ({ navigation, route }: any) => {
         description: description || null,
         target_date: isoDate,
         status,
-        dependent_id: activeDependent.id,
+        dependent_id: activeDependent?.id,
       };
 
       let success;
@@ -113,7 +113,7 @@ export const GoalFormScreen = ({ navigation, route }: any) => {
         showToast(isEdit ? 'Meta atualizada! ✅' : 'Meta criada com sucesso! 🎯');
         navigation.goBack();
       }
-    } catch (e) {
+    } catch (e: any) {
       setErrorMsg((e as Error)?.message || 'Não foi possível salvar.');
     } finally {
       setLoading(false);

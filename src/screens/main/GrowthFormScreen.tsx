@@ -15,7 +15,7 @@ import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
 import { ChevronLeft, Calendar } from 'lucide-react-native';
 
-const toDisplay = (iso) => {
+const toDisplay = (iso: any) => {
   if (!iso) return '';
   const [y, m, d] = iso.split('-');
   return `${d}/${m}/${y}`;
@@ -23,7 +23,7 @@ const toDisplay = (iso) => {
 
 export const GrowthFormScreen = ({ navigation, route }: any) => {
   const { activeDependent } = useUser();
-  const { addMeasurement, updateMeasurement } = useGrowth(activeDependent?.id);
+  const { addMeasurement, updateMeasurement } = useGrowth(activeDependent?.id ?? "");
   const growth = route.params?.growth || null;
   const isEditing = !!growth;
 
@@ -36,7 +36,7 @@ export const GrowthFormScreen = ({ navigation, route }: any) => {
   const [head, setHead] = useState(growth?.head_cm ? String(growth.head_cm) : '');
   const [notes, setNotes] = useState(growth?.notes || '');
 
-  const maskDate = (text) => {
+  const maskDate = (text: any) => {
     let raw = text.replace(/\D/g, '').substring(0, 8);
     if (raw.length > 4)
       raw =
@@ -49,7 +49,7 @@ export const GrowthFormScreen = ({ navigation, route }: any) => {
     return raw;
   };
   
-  const toISO = (d) => {
+  const toISO = (d: any) => {
     const p = d.split('/');
     return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : null;
   };
@@ -79,14 +79,14 @@ export const GrowthFormScreen = ({ navigation, route }: any) => {
       if (isEditing) {
         success = await updateMeasurement(growth.id, payload);
       } else {
-        (payload as any).dependent_id = activeDependent.id;
+        (payload as any).dependent_id = activeDependent?.id;
         success = await addMeasurement(payload);
       }
 
       if (success) {
         navigation.goBack();
       }
-    } catch (e) {
+    } catch (e: any) {
       setErrorMsg((e as Error)?.message || 'Não foi possível salvar.');
     } finally {
       setLoading(false);

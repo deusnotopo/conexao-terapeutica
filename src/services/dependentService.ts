@@ -31,7 +31,7 @@ export const dependentService = {
       }
 
       const [primaryRes, sharedRes] = await Promise.all([
-        supabase.from('dependents').select('*').eq('primary_user_id', userId),
+        supabase.from('dependents').select('*').eq('user_id', userId),
         supabase
           .from('caregiver_access')
           .select('dependent_id, dependents:dependent_id(*)')

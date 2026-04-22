@@ -41,6 +41,7 @@ export const DependentSchema = z.object({
   user_id: z.string().uuid(),
   name: z.string().min(1),
   birth_date: z.string().nullable().optional(),
+  diagnosis: z.string().nullable().optional(),
   relationship: z.string().nullable().optional(),
   created_at: z.string().optional(),
 });

@@ -74,6 +74,7 @@ export const EditDependentScreen = ({ navigation, route }: any) => {
         {
           name: `${firstName.trim()} ${lastName.trim()}`.trim(),
           birth_date: isoDate,
+          diagnosis: diagnosis.trim() || null,
         },
       ]);
 

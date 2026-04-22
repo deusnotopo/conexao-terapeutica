@@ -128,7 +128,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const addDependent = async (data: Partial<Dependent>): Promise<Result<Dependent>> => {
-    const depData = { ...data, primary_user_id: user!.id };
+    const depData = { ...data, user_id: user!.id };
     const result = await syncService.perform('dependentService', 'createDependent', [depData]);
     if (result.success) fetchProfileAndDependents(user!.id);
     return result;

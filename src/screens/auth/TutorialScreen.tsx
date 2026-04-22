@@ -211,19 +211,31 @@ export const TutorialScreen = ({ navigation, route }: any) => {
     scrollRef.current?.scrollTo({ x: index * width, animated: true });
   };
 
+  // Check if we're in the post-login onboarding flow (Onboarding screen exists in navigator)
+  const canGoToOnboarding = () => {
+    const state = navigation.getState?.();
+    if (!state) return false;
+    return state.routeNames?.includes('Onboarding') ?? false;
+  };
+
   const handleFinish = () => {
     if (fromProfile) {
       navigation.goBack();
-    } else {
+    } else if (canGoToOnboarding()) {
       navigation.replace('Onboarding');
+    } else {
+      // Came from LoginScreen (unauthenticated) — go back to Login
+      navigation.goBack();
     }
   };
 
   const handleSkip = () => {
     if (fromProfile) {
       navigation.goBack();
-    } else {
+    } else if (canGoToOnboarding()) {
       navigation.replace('Onboarding');
+    } else {
+      navigation.goBack();
     }
   };
 

@@ -61,6 +61,7 @@ export const OnboardingScreen = ({ navigation }: any) => {
         user_id: user?.id,
         name: `${firstName.trim()} ${lastName.trim()}`.trim(),
         birth_date: isoDate,
+        diagnosis: diagnosis.trim() || null,
       }]);
 
       if (!result.success && !result.metadata?.enqueued) {

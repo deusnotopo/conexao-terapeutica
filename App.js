@@ -3,6 +3,9 @@ import { View, Text, ScrollView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppNavigator } from './src/navigation/AppNavigator';
+import { SyncProvider } from './src/context/SyncContext';
+import { Toast } from './src/components/Toast';
+import { notificationService } from './src/services/notificationService';
 
 // Error Boundary to catch and display runtime errors on screen
 class ErrorBoundary extends React.Component {
@@ -43,11 +46,18 @@ class ErrorBoundary extends React.Component {
 }
 
 export default function App() {
+  React.useEffect(() => {
+    notificationService.requestPermissions();
+  }, []);
+
   return (
     <ErrorBoundary>
       <SafeAreaProvider style={{ flex: 1 }}>
-        <StatusBar style="auto" />
-        <AppNavigator />
+        <SyncProvider>
+          <StatusBar style="auto" />
+          <AppNavigator />
+          <Toast />
+        </SyncProvider>
       </SafeAreaProvider>
     </ErrorBoundary>
   );

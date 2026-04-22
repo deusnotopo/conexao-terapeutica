@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apresentação | Modelos de Negócio com o puro suco da programação</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --text: #e8ecf8;
+      --muted: #a8b0c7;
+      --line: rgba(255,255,255,.08);
+      --primary: #6d7cff;
+      --secondary: #11c5bf;
+      --accent: #ffd166;
+      --danger: #ff6b6b;
+      --success: #3ddc97;
+      --shadow: 0 20px 50px rgba(0,0,0,.28);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, Segoe UI, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(109,124,255,.18), transparent 28%),
+        radial-gradient(circle at top right, rgba(17,197,191,.12), transparent 22%),
+        linear-gradient(180deg, #09101d, var(--bg));
+    }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(14px);
+      background: rgba(11,16,32,.72);
+      border-bottom: 1px solid var(--line);
+    }
+    .topbar-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .brand { font-weight: 800; color: white; }
+    .brand span { color: var(--secondary); }
+    .nav { display: flex; flex-wrap: wrap; gap: 10px; }
+    .nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+    }
+    .nav a:hover { color: white; border-color: var(--line); background: rgba(255,255,255,.04); }
+    .hero {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 56px 20px 32px;
+      display: grid;
+      grid-template-columns: 1.3fr .9fr;
+      gap: 24px;
+    }
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+    .hero-main { padding: 34px; }
+    .hero-side { padding: 24px; }
+    .eyebrow {
+      display: inline-block;
+      font-size: 12px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--secondary);
+      margin-bottom: 14px;
+      font-weight: 700;
+    }
+    h1 {
+      margin: 0 0 16px;
+      font-size: clamp(2.2rem, 5vw, 4.4rem);
+      line-height: 1.05;
+    }
+    .gradient {
+      background: linear-gradient(135deg, #fff, #9ed8ff 45%, #95ffe1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .lead {
+      color: var(--muted);
+      font-size: 1.12rem;
+      line-height: 1.75;
+      max-width: 820px;
+    }
+    .thesis {
+      margin-top: 22px;
+      padding: 18px 20px;
+      border-left: 4px solid var(--secondary);
+      background: rgba(17,197,191,.08);
+      border-radius: 14px;
+      font-size: 1.05rem;
+      color: #dffdfa;
+    }
+    .metric {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,.03);
+      margin-bottom: 12px;
+    }
+    .metric strong { display: block; font-size: 1.5rem; color: white; margin-bottom: 6px; }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px 56px;
+    }
+    section { margin-top: 24px; scroll-margin-top: 92px; }
+    .section-card { padding: 28px; }
+    h2 { margin: 0 0 18px; font-size: clamp(1.5rem, 3vw, 2.4rem); }
+    h3 { margin: 0 0 12px; font-size: 1.2rem; color: white; }
+    p, li { color: var(--muted); line-height: 1.7; font-size: 1rem; }
+    .grid-2, .grid-3 { display: grid; gap: 18px; }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .mini {
+      padding: 22px;
+      border-radius: 20px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+    }
+    .mini.bad { border-color: rgba(255,107,107,.25); }
+    .mini.good { border-color: rgba(61,220,151,.25); }
+    .mini.gold { border-color: rgba(255,209,102,.25); }
+    ul { margin: 0; padding-left: 18px; }
+    li + li { margin-top: 8px; }
+    .rank-table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+    }
+    .rank-table th,
+    .rank-table td {
+      padding: 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+    .rank-table th { background: rgba(255,255,255,.05); color: white; font-size: .94rem; }
+    .rank-table tr:last-child td { border-bottom: 0; }
+    .badge {
+      display: inline-block;
+      font-size: .78rem;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-weight: 700;
+      color: #07111e;
+      background: var(--accent);
+    }
+    .source-list a { color: #9ed8ff; text-decoration: none; word-break: break-word; }
+    .source-list a:hover { text-decoration: underline; }
+    .footer-note { margin-top: 16px; color: #90a0be; font-size: .95rem; }
+    @media (max-width: 960px) {
+      .hero, .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .hero { padding-top: 28px; }
+      .topbar-inner { align-items: flex-start; flex-direction: column; }
+      .nav { gap: 6px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">Programação <span>como motor de riqueza</span></div>
+      <nav class="nav">
+        <a href="#tese">Tese</a>
+        <a href="#mercado">Mercado</a>
+        <a href="#modelos">Modelos</a>
+        <a href="#modelo2026">Plano 2026</a>
+        <a href="#brasil">Brasil</a>
+        <a href="#ranking">Ranking</a>
+        <a href="#roadmap">Roadmap</a>
+        <a href="#fontes">Fontes</a>
+      </nav>
+    </div>
+  </div>
+
+  <header class="hero">
+    <div class="card hero-main">
+      <div class="eyebrow">Apresentação executiva</div>
+      <h1 class="gradient">Onde ganhar muito dinheiro com o puro suco da programação</h1>
+      <p class="lead">
+        O foco aqui não é construir SaaS genérico nem depender de tokens caros.
+        O foco é usar <strong>programação avançada</strong>, automação, scraping,
+        parsing, scoring, OCR, busca, regras e engenharia de software para criar
+        modelos de negócio altamente lucrativos, deixando IA apenas para
+        <strong>raríssimas exceções</strong>.
+      </p>
+      <div class="thesis">
+        <strong>Tese central:</strong> o maior dinheiro está em capturar margem com
+        <strong>engenharia, automação e dados</strong>. IA entra só quando a lógica
+        tradicional já extraiu quase tudo.
+      </div>
+    </div>
+    <aside class="card hero-side">
+      <div class="metric">
+        <strong>Baixo CAPEX</strong>
+        <div>Os modelos priorizados podem começar com notebook, Python, banco local e automação.</div>
+      </div>
+      <div class="metric">
+        <strong>Baixa dependência de IA</strong>
+        <div>Quase todo o valor vem de código, pipeline, dados, regras e distribuição.</div>
+      </div>
+      <div class="metric">
+        <strong>Melhor captura</strong>
+        <div>Quem controla coleta, filtragem, priorização e entrega de oportunidade controla a margem.</div>
+      </div>
+    </aside>
+  </header>
+
+  <main class="container">
+    <section id="tese" class="card section-card">
+      <h2>Tese: o mercado olha demais para IA e de menos para engenharia de execução</h2>
+      <div class="grid-2">
+        <div class="mini bad">
+          <h3>Tese popular</h3>
+          <ul>
+            <li>Mais um SaaS com chat, agente ou automação genérica.</li>
+            <li>Dependência de tokens, APIs e modelos externos.</li>
+            <li>Margem frágil e produto fácil de copiar.</li>
+          </ul>
+        </div>
+        <div class="mini good">
+          <h3>Tese superior</h3>
+          <ul>
+            <li>Programação como máquina de coleta, leitura, filtro, score e priorização.</li>
+            <li>Monetização por <strong>lead</strong>, <strong>resultado</strong>, <strong>contrato</strong> ou <strong>% recuperado</strong>.</li>
+            <li>Posicionamento direto no fluxo econômico do cliente.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="mercado" class="card section-card">
+      <h2>O que o mercado mostra: valor está migrando para execução e resultado</h2>
+      <div class="grid-3">
+        <div class="mini">
+          <h3>Adoção cresce</h3>
+          <p>O mercado de LLM cresce, mas isso só prova infraestrutura e orçamento entrando. Não prova que o melhor negócio é vender software de IA.</p>
+        </div>
+        <div class="mini">
+          <h3>Pricing muda</h3>
+          <p>EY, BCG, a16z e TCS reforçam uma direção: cobrar por valor entregue, não por assento nem por acesso.</p>
+        </div>
+        <div class="mini gold">
+          <h3>Implicação estratégica</h3>
+          <p>Se IA vira commodity, o diferencial real passa a ser pipeline, engenharia, dados proprietários, operação e distribuição.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="modelos" class="card section-card">
+      <h2>Modelos de negócio mais promissores com IA só em exceções raras</h2>
+      <div class="grid-2">
+        <div class="mini">
+          <h3>1. Arbitragem de informação / originação B2B</h3>
+          <p>Usar programação avançada para encontrar oportunidades comerciais antes dos outros.</p>
+          <ul>
+            <li>Distribuidores ideais</li>
+            <li>Compradores B2B específicos</li>
+            <li>Fornecedores alternativos</li>
+            <li>Parceiros de exportação</li>
+          </ul>
+          <p><strong>Monetização:</strong> fee por lead, reunião, oportunidade ou contrato.</p>
+        </div>
+        <div class="mini">
+          <h3>2. Editais e licitações</h3>
+          <p>Máquina de coleta, leitura e filtro de editais para empresas sem estrutura.</p>
+          <ul>
+            <li>Coleta automática</li>
+            <li>Parsing de PDF</li>
+            <li>Extração de datas e exigências</li>
+            <li>Alertas automáticos</li>
+          </ul>
+          <p><strong>Monetização:</strong> assinatura + fee de sucesso.</p>
+        </div>
+        <div class="mini">
+          <h3>3. Sourcing / exportação / fornecedores</h3>
+          <p>Automação para mapear compradores, distribuidores e fornecedores em mercados específicos.</p>
+          <ul>
+            <li>Indústrias pequenas e médias</li>
+            <li>Distribuidores regionais</li>
+            <li>Exportadores iniciantes</li>
+            <li>Troca de fornecedores</li>
+          </ul>
+          <p><strong>Monetização:</strong> comissão, fee por lista ou negociação.</p>
+        </div>
+        <div class="mini">
+          <h3>4. Cobrança inteligente</h3>
+          <p>Classificação de carteiras, score, automação de mensagens e regras de negociação.</p>
+          <p><strong>Monetização:</strong> % recuperado, fee mensal ou bônus por performance.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="brasil" class="card section-card">
+      <h2>Onde o Brasil parece especialmente fértil</h2>
+      <div class="grid-3">
+        <div class="mini"><h3>Tributário</h3><p>Complexidade alta, muito documento e enorme espaço para recuperação e revisão.</p></div>
+        <div class="mini"><h3>Saúde</h3><p>Glosa, faturamento, auditoria e regras extensas com material semiestruturado.</p></div>
+        <div class="mini"><h3>Jurídico massificado</h3><p>Grande volume processual, repetição de teses e muito trabalho padronizável.</p></div>
+        <div class="mini"><h3>Compras públicas</h3><p>Editais extensos e alta fricção para PMEs geram espaço para arbitragem informacional.</p></div>
+        <div class="mini"><h3>Cobrança e renegociação</h3><p>Operação massiva, manual e fácil de medir por recuperação, acordo ou ROI.</p></div>
+        <div class="mini"><h3>Indústria / exportação</h3><p>Sourcing, especificação técnica e inteligência comercial para mercados externos.</p></div>
+      </div>
+    </section>
+
+    <section id="ranking" class="card section-card">
+      <h2>Ranking prático das melhores apostas puramente programáticas</h2>
+      <div style="overflow:auto;">
+        <table class="rank-table">
+          <thead>
+            <tr><th>#</th><th>Modelo</th><th>Lucro</th><th>Validação</th><th>Complexidade</th><th>Vantagem estrutural</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>Originação B2B / arbitragem de informação</td><td><span class="badge">Muito alto</span></td><td>Alta</td><td>Média</td><td>Baixo custo, rápida prova de valor e ótima cobrança por resultado.</td></tr>
+            <tr><td>2</td><td>Editais / licitações</td><td>Alto</td><td>Média/alta</td><td>Média</td><td>Excesso de informação + pouca leitura boa = barreira forte.</td></tr>
+            <tr><td>3</td><td>Sourcing / exportação / fornecedores</td><td>Alto</td><td>Média</td><td>Média</td><td>Dados dispersos e alta demanda real em indústria.</td></tr>
+            <tr><td>4</td><td>Cobrança inteligente</td><td>Alto</td><td>Média</td><td>Média</td><td>Scoring, regras e automação já resolvem muito sem IA.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="roadmap" class="card section-card">
+      <h2>Roadmap de implementação em 90 dias</h2>
+      <div class="grid-3">
+        <div class="mini"><h3>Dias 1–15</h3><ul><li>Escolher um nicho.</li><li>Mapear 20 dores econômicas reais.</li><li>Falar com 10 potenciais clientes.</li><li>Definir KPI de cobrança variável.</li></ul></div>
+        <div class="mini"><h3>Dias 16–30</h3><ul><li>Rodar 3 pilotos manuais.</li><li>Usar LLM para leitura, classificação e recomendação.</li><li>Medir dinheiro recuperado ou receita originada.</li></ul></div>
+        <div class="mini"><h3>Dias 31–90</h3><ul><li>Fechar primeiro contrato com success fee.</li><li>Documentar SOPs e funil comercial.</li><li>Repetir em 3–5 clientes e só então productizar.</li></ul></div>
+      </div>
+    </section>
+
+    <section class="card section-card">
+      <h2>Como isso realmente faz dinheiro</h2>
+      <div class="grid-3">
+        <div class="mini good">
+          <h3>Modelo pé no chão</h3>
+          <p>No começo isso parece uma operação de software e dados, não uma startup glamourosa de IA.</p>
+          <p>O dinheiro vem de entrar num fluxo econômico real e capturar uma fatia mensurável dele com melhor execução.</p>
+        </div>
+        <div class="mini">
+          <h3>Exemplo 1</h3>
+          <p><strong>Originação B2B:</strong> 5 clientes, 10 oportunidades úteis por mês, 1 contrato relevante convertido por cliente ao trimestre.</p>
+          <p><strong>Receita:</strong> fee por oportunidade ou comissão por contrato fechado.</p>
+        </div>
+        <div class="mini">
+          <h3>Exemplo 2</h3>
+          <p><strong>Editais:</strong> filtrar 500 documentos, entregar 20 editais úteis e 3 propostas fortes.</p>
+          <p><strong>Receita:</strong> mensalidade + taxa por sucesso.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section-card">
+      <h2>É realista?</h2>
+      <div class="grid-2">
+        <div class="mini good">
+          <h3>Sim, quando</h3>
+          <ul>
+            <li>O problema já custa dinheiro hoje.</li>
+            <li>O cliente já paga alguém para resolver isso.</li>
+            <li>O resultado é mensurável em 30–90 dias.</li>
+            <li>Existe humano no loop.</li>
+          </ul>
+        </div>
+        <div class="mini bad">
+          <h3>Não, quando</h3>
+          <ul>
+            <li>Depende de adoção viral.</li>
+            <li>Exige confiança cega no LLM.</li>
+            <li>Precisa de integração enorme antes de vender.</li>
+            <li>Resolve problema sem impacto financeiro direto.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section-card">
+      <h2>Como criar de forma realista</h2>
+      <div class="grid-3">
+        <div class="mini">
+          <h3>1. Vender antes</h3>
+          <p>Comece com uma oferta simples: “eu recupero X”, “eu reduzo Y”, “eu encontro Z”.</p>
+        </div>
+        <div class="mini">
+          <h3>2. Operar manualmente</h3>
+          <p>Use código para coletar, normalizar, classificar e priorizar. IA entra só em ambiguidades muito específicas.</p>
+        </div>
+        <div class="mini">
+          <h3>3. Productizar depois</h3>
+          <p>Só automatize pesado depois de 3 a 10 clientes pagantes e um playbook repetível.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section-card">
+      <h2>O problema dos tokens: aqui quase não dependemos deles</h2>
+      <div class="grid-2">
+        <div class="mini bad">
+          <h3>Como a conta explode</h3>
+          <ul>
+            <li>Mandar documentos inteiros para o modelo sem filtro.</li>
+            <li>Reprocessar o mesmo conteúdo várias vezes.</li>
+            <li>Usar modelo caro em todas as etapas.</li>
+            <li>Manter contexto gigante sem necessidade.</li>
+          </ul>
+        </div>
+        <div class="mini good">
+          <h3>Regra de ouro</h3>
+          <p><strong>O default é não usar IA.</strong></p>
+          <p>Quase tudo deve ser resolvido com parser, busca, scoring, heurística, ETL e automação clássica.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section-card">
+      <h2>Arquitetura pé no chão para reduzir custo</h2>
+      <div class="grid-3">
+        <div class="mini">
+          <h3>1. ETL e parsing</h3>
+          <p>OCR, parsing, regex, deduplicação, normalização e classificação simples antes de qualquer IA.</p>
+        </div>
+        <div class="mini">
+          <h3>2. Busca e recuperação</h3>
+          <p>Indexar dados e recuperar só o trecho certo. A maioria dos casos nem precisa passar por modelo.</p>
+        </div>
+        <div class="mini">
+          <h3>3. IA só na exceção</h3>
+          <p>Se entrar IA, é apenas em ambiguidades raras, síntese complexa ou rascunhos especiais.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section-card">
+      <h2>Como preservar margem</h2>
+      <div class="grid-3">
+        <div class="mini good">
+          <h3>Unit economics saudável</h3>
+          <p>O valor capturado precisa ser muito maior que o custo de tokens.</p>
+        </div>
+        <div class="mini">
+          <h3>Exemplo ruim</h3>
+          <p>Projeto gera R$ 20 mil e consome R$ 8 mil em IA. A estrutura está errada.</p>
+        </div>
+        <div class="mini">
+          <h3>Exemplo melhor</h3>
+          <p>Projeto gera R$ 20 mil e consome R$ 500 a R$ 2 mil em IA. A margem começa a fazer sentido.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section-card">
+      <h2>Estratégia para empresas grandes</h2>
+      <div class="grid-2">
+        <div class="mini">
+          <h3>Arquitetura</h3>
+          <ul>
+            <li>Modelos menores para volume alto.</li>
+            <li>Modelos premium só para exceções críticas.</li>
+            <li>Processamento assíncrono em lote.</li>
+            <li>SLA por prioridade, não tudo em tempo real.</li>
+          </ul>
+        </div>
+        <div class="mini">
+          <h3>Precificação segura</h3>
+          <ul>
+            <li>Setup inicial.</li>
+            <li>Mensalidade mínima operacional.</li>
+            <li>Variável por resultado.</li>
+            <li>Limites por volume/processo.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section-card">
+      <h2>Qual modelo pode virar “rei” começando do zero com engenharia pura?</h2>
+      <div class="grid-3">
+        <div class="mini good">
+          <h3>#1 Arbitragem de informação B2B</h3>
+          <p>Melhor combinação de baixo custo inicial, dependência quase nula de IA e potencial de receita alta por cliente.</p>
+        </div>
+        <div class="mini">
+          <h3>#2 Editais e licitações</h3>
+          <p>Excesso de informação, pouca leitura boa e muito dinheiro em jogo.</p>
+        </div>
+        <div class="mini">
+          <h3>#3 Sourcing / exportação</h3>
+          <p>Ótimo para indústrias e distribuidores que precisam de novos mercados e fornecedores.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section-card">
+      <h2>Por que esses modelos são tão fortes para bootstrap</h2>
+      <div class="grid-2">
+        <div class="mini">
+          <ul>
+            <li>Quase não exigem capital inicial.</li>
+            <li>Rodam com Python, automação e banco local.</li>
+            <li>Quase não dependem de IA nem de tokens.</li>
+            <li>Permitem cobrar fee ou comissão.</li>
+          </ul>
+        </div>
+        <div class="mini good">
+          <p>Você não precisa de “agente mágico”. Precisa de pipeline melhor, software melhor, dados melhores e execução melhor.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section-card">
+      <h2>O puro suco da programação: onde extrair a última gota</h2>
+      <div class="grid-3">
+        <div class="mini">
+          <h3>Coleta</h3>
+          <p>Scraping, APIs, crawling, OCR, watchers, ETL, captura incremental e deduplicação.</p>
+        </div>
+        <div class="mini">
+          <h3>Processamento</h3>
+          <p>Parsing semântico, normalização, scoring, matching, ranking, regras e workflows assíncronos.</p>
+        </div>
+        <div class="mini good">
+          <h3>Entrega</h3>
+          <p>Alertas, relatórios, listas priorizadas, CRM pipeline, dashboards operacionais e evidência de ROI.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section-card">
+      <h2>Modelo #1 — Originação B2B / arbitragem de informação</h2>
+      <div class="grid-3">
+        <div class="mini">
+          <h3>O que roda com Python</h3>
+          <p>Scraping, coleta pública, enriquecimento, deduplicação, scoring e listas priorizadas.</p>
+        </div>
+        <div class="mini">
+          <h3>Onde a IA entra</h3>
+          <p>Somente para resumir casos muito complexos, explicar oportunidade ambígua e gerar rascunhos raros.</p>
+        </div>
+        <div class="mini good">
+          <h3>Como faz dinheiro</h3>
+          <p>Fee por lead qualificado, reunião marcada, oportunidade entregue ou contrato fechado.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section-card">
+      <h2>Ranking dos melhores modelos para começar sem capital</h2>
+      <div style="overflow:auto;">
+        <table class="rank-table">
+          <thead>
+            <tr><th>#</th><th>Modelo</th><th>Capital inicial</th><th>Dependência de tokens</th><th>Velocidade</th><th>Cobrança</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>Originação B2B / arbitragem</td><td>Muito baixo</td><td>Quase zero</td><td>Alta</td><td>Lead / reunião / contrato</td></tr>
+            <tr><td>2</td><td>Editais e licitações</td><td>Muito baixo</td><td>Quase zero</td><td>Média/alta</td><td>Assinatura + fee</td></tr>
+            <tr><td>3</td><td>Sourcing / exportação</td><td>Muito baixo</td><td>Quase zero</td><td>Média</td><td>Comissão / lista</td></tr>
+            <tr><td>4</td><td>Cobrança inteligente</td><td>Baixo</td><td>Muito baixa</td><td>Média</td><td>% recuperado</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card section-card">
+      <h2>Se fosse para começar hoje</h2>
+      <div class="grid-2">
+        <div class="mini good">
+          <h3>Escolha mais racional</h3>
+          <p><strong>Originação B2B com arbitragem de informação.</strong></p>
+          <p>Baixo custo, quase nenhuma dependência de IA, entrega rápida e cobrança simples.</p>
+        </div>
+        <div class="mini">
+          <h3>Primeira oferta comercial</h3>
+          <p>“Eu entrego uma lista priorizada de oportunidades comerciais reais, já filtradas e explicadas, e você paga por oportunidade ou por contrato fechado.”</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="modelo2026" class="card section-card">
+      <h2>Mapa mental pragmático: o modelo mais palpável para nós em 2026</h2>
+      <div class="grid-2">
+        <div class="mini good">
+          <h3>Modelo escolhido: editais e licitações</h3>
+          <p><strong>Por quê?</strong> Porque depende muito mais de software, parsing, monitoramento e priorização do que de ligação fria, persuasão complexa ou operação humana difícil de escalar.</p>
+          <ul>
+            <li>Entrada barata</li>
+            <li>Muito dado público</li>
+            <li>Dor real e contínua</li>
+            <li>Valor claro para pequenas e médias empresas</li>
+            <li>Software resolve grande parte do trabalho pesado</li>
+          </ul>
+        </div>
+        <div class="mini bad">
+          <h3>O que evitamos</h3>
+          <ul>
+            <li>Modelos que dependem de cold call pesado</li>
+            <li>Vendas enterprise longas demais</li>
+            <li>Serviços que exigem forte componente jurídico/consultivo</li>
+            <li>Operações onde o valor depende de muita interpretação humana</li>
+            <li>Negócios cujo motor econômico é token caro</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section-card">
+      <h2>Mapa mental do negócio</h2>
+      <div class="grid-3">
+        <div class="mini">
+          <h3>1. Matéria-prima</h3>
+          <p>Editais, anexos, portais públicos, diários oficiais, sites de prefeituras, estados, União e marketplaces ligados a compras públicas.</p>
+        </div>
+        <div class="mini">
+          <h3>2. Máquina</h3>
+          <p>Crawlers, OCR, parsing, extração de campos, normalização, scoring, matching com perfil da empresa e alertas automatizados.</p>
+        </div>
+        <div class="mini good">
+          <h3>3. Produto final</h3>
+          <p>Oportunidades priorizadas, checklist inicial, calendário de prazo, alertas e resumo objetivo para a empresa agir rápido.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section-card">
+      <h2>Passo a passo do modelo de execução</h2>
+      <div class="grid-3">
+        <div class="mini">
+          <h3>Etapa 1 — Captura</h3>
+          <p>Construir coletores para fontes públicas e baixar PDFs, HTMLs e anexos automaticamente.</p>
+        </div>
+        <div class="mini">
+          <h3>Etapa 2 — Estruturação</h3>
+          <p>Extrair órgão, objeto, região, prazo, valor, exigências e documentos obrigatórios.</p>
+        </div>
+        <div class="mini">
+          <h3>Etapa 3 — Scoring</h3>
+          <p>Aplicar regras para dizer se o edital é aderente ao nicho do cliente ou não.</p>
+        </div>
+        <div class="mini">
+          <h3>Etapa 4 — Entrega</h3>
+          <p>Mandar alertas por e-mail, painel web e relatório curto com prioridade alta, média ou baixa.</p>
+        </div>
+        <div class="mini">
+          <h3>Etapa 5 — Prova de valor</h3>
+          <p>Mostrar quantos editais úteis o cliente deixaria passar sem o sistema.</p>
+        </div>
+        <div class="mini good">
+          <h3>Etapa 6 — Monetização</h3>
+          <p>Cobrar assinatura, setup, taxa por edital aderente ou fee por proposta entregue.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section-card">
+      <h2>Stack 2026: puro suco da programação</h2>
+      <div class="grid-3">
+        <div class="mini">
+          <h3>Backend</h3>
+          <p>Python, FastAPI, Playwright, BeautifulSoup, Pandas, Pydantic, Celery ou RQ.</p>
+        </div>
+        <div class="mini">
+          <h3>Dados</h3>
+          <p>PostgreSQL, SQLite para protótipo, Redis para fila/cache, MinIO ou storage simples para PDFs.</p>
+        </div>
+        <div class="mini good">
+          <h3>Parsing/OCR</h3>
+          <p>pdfplumber, PyMuPDF, Tesseract, regex, heurísticas, dicionários de campos e parsers por portal.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section-card">
+      <h2>Onde a programação vence</h2>
+      <div class="grid-2">
+        <div class="mini">
+          <h3>O que conseguimos automatizar</h3>
+          <ul>
+            <li>Coleta e monitoramento 24/7</li>
+            <li>Deduplicação de editais</li>
+            <li>Extração de campos-chave</li>
+            <li>Classificação por setor e região</li>
+            <li>Alertas e agenda de prazo</li>
+          </ul>
+        </div>
+        <div class="mini bad">
+          <h3>O que não tentamos resolver no início</h3>
+          <ul>
+            <li>Escrever proposta completa automaticamente</li>
+            <li>Substituir consultoria jurídica</li>
+            <li>Interpretar 100% dos casos ambíguos</li>
+            <li>Vender para megaempresas no primeiro ciclo</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section-card">
+      <h2>Plano de execução 2026</h2>
+      <div class="grid-3">
+        <div class="mini">
+          <h3>Fase 1 — Janeiro/Fevereiro</h3>
+          <p>Escolher 1 nicho. Ex.: material hospitalar, engenharia, TI pública ou serviços administrativos.</p>
+        </div>
+        <div class="mini">
+          <h3>Fase 2 — Março/Abril</h3>
+          <p>Construir crawler + parser + banco + score. Sem dashboard bonito; foco total em utilidade.</p>
+        </div>
+        <div class="mini">
+          <h3>Fase 3 — Maio/Junho</h3>
+          <p>Operar manualmente com 3 a 10 clientes piloto e ajustar regra de aderência.</p>
+        </div>
+        <div class="mini">
+          <h3>Fase 4 — Julho/Agosto</h3>
+          <p>Criar painel simples, automação de alertas e relatório padrão. Fechar rotina semanal.</p>
+        </div>
+        <div class="mini">
+          <h3>Fase 5 — Setembro/Outubro</h3>
+          <p>Escalar número de fontes, melhorar OCR e aumentar precisão do matching por nicho.</p>
+        </div>
+        <div class="mini good">
+          <h3>Fase 6 — Novembro/Dezembro</h3>
+          <p>Empacotar como máquina de geração de oportunidade e fechar contratos recorrentes.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section-card">
+      <h2>Como vender sem depender de telefone o dia inteiro</h2>
+      <div class="grid-3">
+        <div class="mini">
+          <h3>Canal 1</h3>
+          <p>Outbound por e-mail com amostra real de editais aderentes ao nicho.</p>
+        </div>
+        <div class="mini">
+          <h3>Canal 2</h3>
+          <p>Landing page com cadastro por segmento e recebimento de amostra gratuita.</p>
+        </div>
+        <div class="mini good">
+          <h3>Canal 3</h3>
+          <p>Parceria com consultores/liciteiros/escritórios que já atendem PMEs.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section-card">
+      <h2>MVP icônico: simples, brutal, vendável</h2>
+      <div class="grid-2">
+        <div class="mini good">
+          <h3>O que o MVP precisa ter</h3>
+          <ul>
+            <li>Coleta automática</li>
+            <li>Leitura de PDF</li>
+            <li>Score de aderência</li>
+            <li>Resumo curto do edital</li>
+            <li>Alerta com prazo</li>
+          </ul>
+        </div>
+        <div class="mini">
+          <h3>O que o MVP não precisa ter</h3>
+          <ul>
+            <li>IA em tempo real</li>
+            <li>UX sofisticada</li>
+            <li>Multi-tenant complexo</li>
+            <li>App mobile</li>
+            <li>Promessas grandiosas</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section-card">
+      <h2>Riscos e cuidados</h2>
+      <div class="grid-3">
+        <div class="mini bad"><h3>Risco regulatório</h3><p>Mais forte em saúde, jurídico, crédito e dados pessoais.</p></div>
+        <div class="mini bad"><h3>Alucinação</h3><p>LLM não deve ser decisão final em temas financeiros ou regulatórios.</p></div>
+        <div class="mini good"><h3>Mitigação</h3><p>Humano no loop, trilha de auditoria, bases confiáveis, escopo contratual claro e governança de dados.</p></div>
+      </div>
+    </section>
+
+    <section id="fontes" class="card section-card">
+      <h2>Fontes e lastro</h2>
+      <div class="grid-2 source-list">
+        <div class="mini">
+          <h3>Mercado LLM / adoção enterprise</h3>
+          <ul>
+            <li>Grand View Research — <a href="https://www.grandviewresearch.com/industry-analysis/large-language-model-llm-market-report" target="_blank">Large Language Models Market Size Report</a></li>
+            <li>Global Market Insights — <a href="https://www.gminsights.com/industry-analysis/enterprise-llm-market" target="_blank">Enterprise LLM Market</a></li>
+            <li>Future Market Insights — <a href="https://www.futuremarketinsights.com/reports/enterprise-llm-market" target="_blank">Enterprise LLM Market</a></li>
+            <li>Menlo Ventures — <a href="https://menlovc.com/wp-content/uploads/2025/11/menlo_ventures_mid-year_llm_report-2025.pdf" target="_blank">2025 Mid-Year LLM Market Update</a></li>
+            <li>StartUs Insights — <a href="https://www.startus-insights.com/innovators-guide/large-language-model-market-report/" target="_blank">Large Language Model Market Report 2025</a></li>
+          </ul>
+        </div>
+        <div class="mini">
+          <h3>Pricing / outcome-based</h3>
+          <ul>
+            <li>EY — <a href="https://www.ey.com/en_us/insights/tech-sector/saas-transformation-with-genai-outcome-based-pricing" target="_blank">SaaS transformation with GenAI</a></li>
+            <li>BCG — <a href="https://www.bcg.com/publications/2025/rethinking-b2b-software-pricing-in-the-era-of-ai" target="_blank">Rethinking B2B Software Pricing in the Era of AI</a></li>
+            <li>a16z — <a href="https://a16z.com/newsletter/december-2024-enterprise-newsletter-ai-is-driving-a-shift-towards-outcome-based-pricing/" target="_blank">AI Is Driving A Shift Towards Outcome-Based Pricing</a></li>
+            <li>Business Standard / TCS CFO — <a href="https://www.business-standard.com/companies/news/ai-deal-pricing-to-move-towards-outcome-based-structures-tcs-cfo-126041200671_1.html" target="_blank">AI deal pricing to move towards outcome-based structures</a></li>
+          </ul>
+        </div>
+      </div>
+      <p class="footer-note">Metodologia: esta apresentação combina <strong>fontes de mercado</strong> para sustentar adoção e mudança de monetização, com <strong>inferência estratégica</strong> para aplicar esses sinais aos setores mais promissores no Brasil.</p>
+    </section>
+  </main>
+</body>
+</html>

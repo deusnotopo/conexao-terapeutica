@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Douglas Riedlinger | Sistemas, Automações e IA aplicada a Negócios</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+    :root {
+      --bg: #07111f;
+      --bg-soft: #0e1b2d;
+      --card: rgba(255,255,255,0.06);
+      --line: rgba(255,255,255,0.12);
+      --text: #f8fbff;
+      --muted: #b7c5d9;
+      --accent: #ffd34d;
+      --accent-2: #38bdf8;
+      --danger: #ff6b57;
+      --success: #39d98a;
+      --shadow: 0 20px 50px rgba(0,0,0,.35);
+      --radius: 24px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Inter, Arial, sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(56,189,248,.20), transparent 28%),
+        radial-gradient(circle at top left, rgba(255,211,77,.16), transparent 24%),
+        linear-gradient(180deg, #06101c 0%, #0a1627 50%, #08111d 100%);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    .container {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .hero {
+      padding: 72px 0 40px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(14px);
+      background: rgba(5, 12, 22, .72);
+      border-bottom: 1px solid rgba(255,255,255,.07);
+    }
+
+    .topbar-inner {
+      min-height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      font-weight: 900;
+      letter-spacing: .03em;
+    }
+
+    .brand small {
+      display: block;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: 0;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 10px 16px;
+      border: 1px solid rgba(255,211,77,.35);
+      background: rgba(255,211,77,.10);
+      color: var(--accent);
+      border-radius: 999px;
+      font-size: 13px;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      font-size: clamp(2.3rem, 6vw, 4.5rem);
+      line-height: 1.05;
+      max-width: 980px;
+      margin-bottom: 18px;
+    }
+
+    .accent { color: var(--accent); }
+
+    .subheadline {
+      font-size: clamp(1.05rem, 2vw, 1.35rem);
+      color: var(--muted);
+      max-width: 900px;
+      margin-bottom: 28px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.3fr .9fr;
+      gap: 28px;
+      align-items: stretch;
+      margin-top: 26px;
+    }
+
+    .panel, .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .panel {
+      padding: 28px;
+    }
+
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin: 26px 0 18px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 16px 24px;
+      border-radius: 14px;
+      font-weight: 800;
+      text-decoration: none;
+      transition: .25s ease;
+      border: 1px solid transparent;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent) 0%, #ffb800 100%);
+      color: #09101b;
+    }
+
+    .btn-secondary {
+      color: var(--text);
+      border-color: rgba(255,255,255,.2);
+      background: rgba(255,255,255,.04);
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+
+    .btn:focus-visible,
+    .arrow-link:focus-visible {
+      outline: 2px solid var(--accent-2);
+      outline-offset: 3px;
+    }
+
+    .trust-list, .bullet-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .trust-item, .bullet-item {
+      display: flex;
+      gap: 12px;
+      color: var(--muted);
+      align-items: flex-start;
+    }
+
+    .check {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(57,217,138,.16);
+      color: var(--success);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      flex: 0 0 auto;
+    }
+
+    .side-card {
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 100%;
+    }
+
+    .side-card h3, .section h2 {
+      font-size: clamp(1.6rem, 3vw, 2.5rem);
+      margin-bottom: 12px;
+    }
+
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .kpi {
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    .kpi strong {
+      display: block;
+      font-size: 1.7rem;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+
+    .section {
+      padding: 68px 0 10px;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      margin-bottom: 12px;
+      color: var(--accent-2);
+      font-size: .88rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .section-intro {
+      max-width: 800px;
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
+
+    .lead {
+      font-size: 1.08rem;
+      color: var(--text);
+    }
+
+    .cards-3, .cards-2 {
+      display: grid;
+      gap: 18px;
+    }
+
+    .cards-3 { grid-template-columns: repeat(3, 1fr); }
+    .cards-2 { grid-template-columns: repeat(2, 1fr); }
+
+    .card {
+      padding: 26px;
+    }
+
+    .card h3 {
+      font-size: 1.25rem;
+      margin-bottom: 12px;
+    }
+
+    .card p, .card li, .section p {
+      color: var(--muted);
+    }
+
+    .offer {
+      border: 1px solid rgba(255,211,77,.28);
+      background: linear-gradient(180deg, rgba(255,211,77,.08), rgba(255,255,255,.04));
+    }
+
+    .offer .tag {
+      display: inline-block;
+      margin-bottom: 14px;
+      color: var(--accent);
+      font-weight: 800;
+      font-size: .86rem;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+
+    .profile-box {
+      display: grid;
+      grid-template-columns: .9fr 1.1fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .bio-highlight {
+      font-size: 1.1rem;
+      color: var(--text);
+    }
+
+    .faq-item {
+      padding: 22px 0;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+
+    .proof-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .portfolio-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .portfolio-card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .portfolio-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,.12) 100%);
+      pointer-events: none;
+    }
+
+    .portfolio-label {
+      display: inline-block;
+      margin-bottom: 10px;
+      color: var(--accent);
+      font-size: .82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .portfolio-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    .curriculum {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .curriculum-stage {
+      padding: 22px;
+      border-radius: 20px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    .curriculum-stage strong {
+      display: inline-block;
+      margin-bottom: 10px;
+      color: var(--accent);
+      font-size: .9rem;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .warning-box {
+      padding: 22px;
+      border-radius: 18px;
+      background: rgba(255,107,87,.08);
+      border: 1px solid rgba(255,107,87,.22);
+      color: var(--text);
+    }
+
+    .proof {
+      padding: 22px;
+      border-radius: 20px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    .proof strong {
+      display: block;
+      color: var(--accent);
+      font-size: 1.9rem;
+      margin-bottom: 8px;
+    }
+
+    .sources {
+      margin-top: 18px;
+      padding: 20px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    .sources ul {
+      padding-left: 18px;
+      color: var(--muted);
+    }
+
+    .sources li + li { margin-top: 8px; }
+
+    .highlight-line {
+      display: inline;
+      background: linear-gradient(transparent 60%, rgba(255,211,77,.22) 60%);
+    }
+
+    .quote-box {
+      padding: 26px;
+      border-left: 4px solid var(--accent);
+      background: rgba(255,211,77,.06);
+      border-radius: 0 20px 20px 0;
+      color: var(--text);
+      font-size: 1.06rem;
+    }
+
+    .method-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .method-step {
+      padding: 22px;
+      border-radius: 20px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    .method-step .n {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(56,189,248,.16);
+      color: var(--accent-2);
+      font-weight: 900;
+      margin-bottom: 12px;
+    }
+
+    .faq-item h3 {
+      font-size: 1.15rem;
+      margin-bottom: 8px;
+    }
+
+    .footer-cta {
+      padding: 60px 0 90px;
+    }
+
+    .footer-box {
+      text-align: center;
+      padding: 34px;
+    }
+
+    .mini {
+      font-size: .95rem;
+      color: #8fa3bc;
+    }
+
+    .mobile-cta {
+      position: fixed;
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      z-index: 20;
+      display: none;
+      padding: 12px;
+      border-radius: 18px;
+      background: rgba(5, 12, 22, .9);
+      border: 1px solid rgba(255,255,255,.12);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 14px 30px rgba(0,0,0,.35);
+    }
+
+    .mobile-cta .btn {
+      width: 100%;
+      padding: 15px 18px;
+    }
+
+    @media (max-width: 1200px) {
+      .container {
+        width: min(1120px, calc(100% - 24px));
+      }
+    }
+
+    @media (max-width: 920px) {
+      .hero-grid,
+      .cards-3,
+      .cards-2,
+      .profile-box,
+      .proof-grid,
+      .method-grid,
+      .portfolio-grid,
+      .curriculum {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding-top: 44px;
+      }
+
+      .topbar-inner {
+        min-height: 60px;
+      }
+
+      .kpis {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      :root {
+        --radius: 20px;
+      }
+
+      .container {
+        width: calc(100% - 18px);
+      }
+
+      .hero {
+        padding: 28px 0 24px;
+      }
+
+      h1 {
+        font-size: clamp(2rem, 9vw, 2.8rem);
+        line-height: 1.08;
+      }
+
+      .side-card h3, .section h2 {
+        font-size: clamp(1.45rem, 7vw, 2rem);
+      }
+
+      .panel,
+      .card,
+      .proof,
+      .method-step {
+        padding: 18px;
+      }
+
+      .cta-row {
+        flex-direction: column;
+      }
+
+      .cta-row .btn {
+        width: 100%;
+      }
+
+      .kpis {
+        grid-template-columns: 1fr;
+      }
+
+      .proof strong,
+      .kpi strong {
+        font-size: 1.55rem;
+      }
+
+      .badge {
+        font-size: 11px;
+        padding: 8px 12px;
+      }
+
+      .topbar .btn {
+        display: none;
+      }
+
+      .mobile-cta {
+        display: block;
+      }
+
+      body {
+        padding-bottom: 86px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="container topbar-inner">
+      <div class="brand">Douglas Riedlinger<small>Sistemas, automações e IA aplicada a negócios</small></div>
+      <a class="btn btn-primary" href="#contato">Falar sobre projeto</a>
+    </div>
+  </div>
+
+  <header class="hero">
+    <div class="container">
+      <span class="badge">Douglas Riedlinger • São Paulo Capital</span>
+      <h1>Se hoje o seu negócio depende de improviso, planilha, retrabalho ou equipe fazendo tudo na mão, <span class="accent">eu transformo isso em sistema, automação e ativo digital que organiza, vende e escala.</span></h1>
+      <p class="subheadline">
+        Meu trabalho junta princípios de venda direta, produto digital, engenharia de software, automação comercial, UX para apps e IA aplicada. Em vez de vender tecnologia vazia, eu construo estrutura com lógica de negócio, clareza de oferta, experiência profissional e lastro técnico real.
+      </p>
+
+      <div class="hero-grid">
+        <div class="panel">
+          <h2>Você não precisa de mais uma promessa bonita. Você precisa de alguém que pense como negócio, desenhe como produto e entregue como operação.</h2>
+          <div class="cta-row">
+            <a class="btn btn-primary" href="#contato">Quero falar com Douglas</a>
+            <a class="btn btn-secondary" href="#lastro">Ver provas e lastro</a>
+          </div>
+
+          <div class="trust-list">
+            <div class="trust-item"><span class="check">✓</span><span>Construção de apps, plataformas, painéis, páginas e interfaces com experiência profissional.</span></div>
+            <div class="trust-item"><span class="check">✓</span><span>Automações em Python para prospecção, coleta, enriquecimento e priorização de oportunidades.</span></div>
+            <div class="trust-item"><span class="check">✓</span><span>IA aplicada a análise, triagem, RAG, scoring, leitura documental e apoio à decisão.</span></div>
+            <div class="trust-item"><span class="check">✓</span><span>Visão de negócio: produto, venda, operação, eficiência e posicionamento.</span></div>
+          </div>
+        </div>
+
+        <aside class="card side-card">
+          <div>
+            <h3>O que já está provado nos projetos analisados</h3>
+            <p>
+              Os projetos observados mostram domínio real em frontend web/mobile, backend, UX, produto, integrações, observabilidade, automação comercial, parsing documental, RAG, scoring e inteligência operacional.
+            </p>
+          </div>
+          <div class="kpis">
+            <div class="kpi"><strong>Full Stack</strong><span>frontend, backend, dados e experiência</span></div>
+            <div class="kpi"><strong>IA útil</strong><span>aplicada ao fluxo econômico e operacional</span></div>
+            <div class="kpi"><strong>Python</strong><span>scraping, lead collection e automação</span></div>
+            <div class="kpi"><strong>Produto</strong><span>páginas, painéis, engines e sistemas</span></div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="section" id="lastro">
+      <div class="container">
+        <span class="eyebrow">Lastro real</span>
+        <h2>Esta página não foi escrita no vazio. Ela foi ancorada no que já existe.</h2>
+        <p class="section-intro">
+          A análise dos projetos presentes no ambiente mostra capacidade concreta de construir software, operações digitais e automações com profundidade acima da média. Abaixo, alguns sinais objetivos extraídos dos seus próprios artefatos.
+        </p>
+
+        <div class="proof-grid">
+          <div class="proof"><strong>100%</strong><span>Type safety declarado no README do projeto Meu Contador.</span></div>
+          <div class="proof"><strong>7.5/10</strong><span>Quality score reportado no README, com CI/CD, error handling e documentação fortes.</span></div>
+          <div class="proof"><strong>3 frentes</strong><span>claras já encontradas: produto financeiro, engine de editais e coletor de leads.</span></div>
+          <div class="proof"><strong>222 linhas</strong><span>num coletor Python funcional com Playwright, scraping, extração de email e exportação CSV.</span></div>
+        </div>
+
+        <div class="sources">
+          <ul>
+            <li>Base estratégica: produto financeiro full stack, engine de inteligência documental, automação de coleta de leads e tese de captura de valor com IA.</li>
+            <li>Próximo movimento profissional: substituir referências locais por <strong>cases publicados com links Vercel</strong> para prova pública de execução.</li>
+            <li>Estratégia comercial correta: vender o que o cliente consegue ver, clicar e experimentar — não o que está escondido localmente na máquina.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="portfolio">
+      <div class="container">
+        <span class="eyebrow">Portfólio ao vivo</span>
+        <h2>O jeito certo de apresentar seus projetos é com links públicos, não com descrição técnica local.</h2>
+        <p class="section-intro">
+          A partir de agora, sua página de vendas deve evoluir de “eu tenho projetos aqui no computador” para “aqui estão projetos reais que você pode abrir agora”. Abaixo deixei a estrutura pronta para seus links Vercel.
+        </p>
+
+        <div class="portfolio-grid">
+          <div class="card portfolio-card">
+            <span class="portfolio-label">Case 01 • Plataforma Financeira</span>
+            <h3>Meu Contador</h3>
+            <p>Plataforma full stack para gestão financeira pessoal e empresarial, com dashboard, autenticação, inteligência, trilha educacional e evolução contínua de produto.</p>
+            <div class="portfolio-actions">
+              <a class="btn btn-primary btn-sm" href="https://SEU-LINK-VERCEL-1.vercel.app" target="_blank" rel="noreferrer">Abrir projeto</a>
+              <a class="btn btn-secondary btn-sm" href="#contato">Quero algo assim</a>
+            </div>
+          </div>
+
+          <div class="card portfolio-card">
+            <span class="portfolio-label">Case 02 • Inteligência Operacional</span>
+            <h3>Engine de Editais</h3>
+            <p>Sistema com ranking, análise híbrida, leitura contextual, apoio à decisão e inteligência aplicada a oportunidades complexas.</p>
+            <div class="portfolio-actions">
+              <a class="btn btn-primary btn-sm" href="https://SEU-LINK-VERCEL-2.vercel.app" target="_blank" rel="noreferrer">Abrir projeto</a>
+              <a class="btn btn-secondary btn-sm" href="#contato">Quero inteligência assim</a>
+            </div>
+          </div>
+
+          <div class="card portfolio-card">
+            <span class="portfolio-label">Case 03 • Prospecção & Automação</span>
+            <h3>Coletor de Leads / Máquina de Prospecção</h3>
+            <p>Automação para encontrar empresas, captar contatos, enriquecer dados e transformar busca manual em pipeline comercial utilizável.</p>
+            <div class="portfolio-actions">
+              <a class="btn btn-primary btn-sm" href="https://SEU-LINK-VERCEL-3.vercel.app" target="_blank" rel="noreferrer">Abrir projeto</a>
+              <a class="btn btn-secondary btn-sm" href="#contato">Quero gerar leads</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="ofertas">
+      <div class="container">
+        <span class="eyebrow">Posicionamento</span>
+        <h2>Você não precisa contratar “mais um programador”.</h2>
+        <p class="section-intro">
+          Você precisa de alguém que entenda o que faz o negócio andar, desenhe a solução certa e entregue algo que realmente seja usado. Meu papel é ligar oportunidade, produto, automação, implementação e narrativa de venda.
+        </p>
+
+        <div class="quote-box">
+          <strong>Tradução comercial do que eu faço:</strong><br />
+          <span class="highlight-line">eu pego uma dor, um processo manual, uma oportunidade comercial ou uma ideia de produto e transformo isso em site, sistema, automação, dashboard ou motor de inteligência que ajude o negócio a operar melhor, vender melhor e parecer maior do que ele é hoje.</span>
+        </div>
+
+        <div style="height:20px"></div>
+
+        <h2>O que eu posso construir para você</h2>
+        <p class="section-intro">
+          Essas ofertas foram desenhadas a partir dos ativos reais já identificados no seu ambiente, não de promessas genéricas.
+        </p>
+
+        <div class="cards-3">
+          <div class="card offer">
+            <span class="tag">Oferta 1</span>
+            <h3>Máquina de Prospecção Inteligente</h3>
+            <p>Coleta contatos, encontra empresas com fit, organiza base, pontua prioridade e entrega oportunidades mais quentes para venda de serviços ou operação comercial.</p>
+          </div>
+          <div class="card offer">
+            <span class="tag">Oferta 2</span>
+            <h3>App ou Sistema Sob Medida</h3>
+            <p>Da ideia ao produto funcional: login, dashboard, cadastros, relatórios, integrações, área administrativa e experiência compatível com software profissional.</p>
+          </div>
+          <div class="card offer">
+            <span class="tag">Oferta 3</span>
+            <h3>Operação com IA no Bastidor</h3>
+            <p>Leitura de documentos, triagem de dados, inteligência sobre oportunidades, scoring, RAG e apoio à decisão com automação.</p>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:18px;">
+          <h3 style="margin-bottom:12px;">Faixas iniciais de preço</h3>
+          <div class="bullet-list">
+            <div class="bullet-item"><span class="check">✓</span><span><strong>Página de vendas / site profissional:</strong> R$ 3.500 a R$ 6.500</span></div>
+            <div class="bullet-item"><span class="check">✓</span><span><strong>Automação / máquina de leads:</strong> R$ 5.000 a R$ 12.000</span></div>
+            <div class="bullet-item"><span class="check">✓</span><span><strong>Painel ou sistema sob medida:</strong> R$ 8.000 a R$ 18.000</span></div>
+            <div class="bullet-item"><span class="check">✓</span><span><strong>Sistema com IA aplicada:</strong> R$ 15.000 a R$ 35.000</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <span class="eyebrow">Educação no app</span>
+        <h2>Não é um app que “marca tudo como concluído”. A proposta certa é ensinar do básico ao avançado.</h2>
+        <p class="section-intro">
+          Se o aplicativo tiver trilha de ensino, ele precisa comunicar progressão real. O usuário não pode sentir que já terminou tudo. Ele precisa enxergar uma jornada: começo simples, avanço prático, aprofundamento e domínio.
+        </p>
+
+        <div class="warning-box">
+          <strong>Ponto crítico de produto:</strong> quando um app educacional parece “todo concluído”, ele mata retenção, reduz percepção de valor e enfraquece a venda. O correto é estruturar uma esteira clara de evolução, com sensação de progresso contínuo.
+        </div>
+
+        <div style="height:18px"></div>
+
+        <div class="curriculum">
+          <div class="curriculum-stage">
+            <strong>Nível 1</strong>
+            <h3>Fundamentos</h3>
+            <p>Explicações simples, vocabulário básico, primeiros conceitos, orientação para quem está começando do zero.</p>
+          </div>
+          <div class="curriculum-stage">
+            <strong>Nível 2</strong>
+            <h3>Aplicação prática</h3>
+            <p>Exercícios, exemplos do dia a dia, decisões guiadas e construção de segurança operacional.</p>
+          </div>
+          <div class="curriculum-stage">
+            <strong>Nível 3</strong>
+            <h3>Intermediário</h3>
+            <p>Comparações, estratégia, leitura de cenário, entendimento de métricas e uso mais consciente do sistema.</p>
+          </div>
+          <div class="curriculum-stage">
+            <strong>Nível 4</strong>
+            <h3>Avançado</h3>
+            <p>Domínio, análise mais sofisticada, personalização, cenários complexos e inteligência aplicada a decisões melhores.</p>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:18px;">
+          <h3 style="margin-bottom:12px;">Como isso deve aparecer na página de vendas</h3>
+          <div class="bullet-list">
+            <div class="bullet-item"><span class="check">✓</span><span>Mostrar que o app acompanha a evolução do usuário, em vez de entregar tudo de uma vez.</span></div>
+            <div class="bullet-item"><span class="check">✓</span><span>Comunicar trilha de aprendizado progressiva: do básico ao avançado.</span></div>
+            <div class="bullet-item"><span class="check">✓</span><span>Vender profundidade, continuidade e sensação de crescimento real dentro do produto.</span></div>
+            <div class="bullet-item"><span class="check">✓</span><span>Deixar claro que o sistema evolui com o usuário e não “termina” cedo demais.</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <span class="eyebrow">Método</span>
+        <h2>Por que isso é diferente</h2>
+        <div class="cards-2">
+          <div class="card">
+            <h3>Eu penso em negócio primeiro</h3>
+            <p>Não parto da tecnologia para depois inventar uso. Eu olho para o problema, para a oportunidade e para o fluxo de dinheiro. Depois escolho a solução técnica.</p>
+          </div>
+          <div class="card">
+            <h3>Eu já construí em várias frentes</h3>
+            <p>Projetos no disco mostram experiências em financeiro, inteligência de dados, editais, prospecção, frontends ricos, UX e automações. Isso acelera a solução e reduz improviso.</p>
+          </div>
+        </div>
+
+        <div style="height:18px"></div>
+
+        <div class="method-grid">
+          <div class="method-step"><div class="n">1</div><h3>Diagnóstico</h3><p>Entendo onde está a dor, o dinheiro, a lentidão ou a oportunidade.</p></div>
+          <div class="method-step"><div class="n">2</div><h3>Desenho</h3><p>Defino a melhor forma de resolver: página, sistema, automação, engine ou operação assistida.</p></div>
+          <div class="method-step"><div class="n">3</div><h3>Construção</h3><p>Implemento com base técnica real, fluxo claro e foco em uso prático.</p></div>
+          <div class="method-step"><div class="n">4</div><h3>Validação</h3><p>O objetivo não é “código bonito”. É resultado, clareza, uso e capacidade de evolução.</p></div>
+        </div>
+
+        <div class="panel" style="margin-top:18px;">
+          <h3 style="margin-bottom:12px;">Em português claro:</h3>
+          <div class="bullet-list">
+            <div class="bullet-item"><span class="check">✓</span><span>Se você quer vender mais, eu posso estruturar a página, o funil e a coleta.</span></div>
+            <div class="bullet-item"><span class="check">✓</span><span>Se você quer operar melhor, eu posso criar o painel, o sistema e a automação.</span></div>
+            <div class="bullet-item"><span class="check">✓</span><span>Se você quer usar IA, eu posso aplicar de forma útil, sem firula e com lógica de negócio.</span></div>
+            <div class="bullet-item"><span class="check">✓</span><span>Se você quer passar mais autoridade, eu posso transformar sua proposta em algo com cara, estrutura e percepção de empresa séria.</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <span class="eyebrow">Design e experiência</span>
+        <h2>Como esta página foi aprimorada</h2>
+        <div class="cards-3">
+          <div class="card">
+            <h3>Copy de conversão</h3>
+            <p>Estruturada com princípios de marketing direto: promessa forte, dor explícita, prova, diferenciação, oferta, objeções e CTA.</p>
+          </div>
+          <div class="card">
+            <h3>Design orientado a produto</h3>
+            <p>Layout limpo, contraste forte, hierarquia clara, blocos modulares, leitura escaneável e experiência consistente em mobile, tablet e desktop.</p>
+          </div>
+          <div class="card">
+            <h3>Credibilidade documentada</h3>
+            <p>Em vez de adjetivos vazios, a página aponta fontes reais, projetos reais e capacidades observáveis dentro do seu ambiente.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <span class="eyebrow">Como vamos fazer com a Vercel</span>
+        <h2>Publicar seus projetos e transformar tudo em prova pública de autoridade</h2>
+        <div class="method-grid">
+          <div class="method-step"><div class="n">1</div><h3>Escolher os cases</h3><p>Separar os 3 a 5 projetos com melhor impacto comercial: financeiro, automação, dashboards, landing pages ou IA aplicada.</p></div>
+          <div class="method-step"><div class="n">2</div><h3>Preparar para deploy</h3><p>Garantir build web funcionando, variáveis de ambiente organizadas e páginas de demonstração sem dados sensíveis.</p></div>
+          <div class="method-step"><div class="n">3</div><h3>Publicar na Vercel</h3><p>Subir cada projeto em um repositório Git e conectar na Vercel para gerar um link público com domínio <code>.vercel.app</code>.</p></div>
+          <div class="method-step"><div class="n">4</div><h3>Trocar na página</h3><p>Substituir os placeholders pelos links finais e usar esses cases como prova real na sua página de vendas.</p></div>
+        </div>
+
+        <div class="panel" style="margin-top:18px;">
+          <h3 style="margin-bottom:12px;">Fluxo prático</h3>
+          <div class="bullet-list">
+            <div class="bullet-item"><span class="check">✓</span><span>Criar ou usar um repositório Git por projeto.</span></div>
+            <div class="bullet-item"><span class="check">✓</span><span>Testar localmente o build web do projeto.</span></div>
+            <div class="bullet-item"><span class="check">✓</span><span>Importar o repositório na Vercel.</span></div>
+            <div class="bullet-item"><span class="check">✓</span><span>Configurar comando de build e output correto.</span></div>
+            <div class="bullet-item"><span class="check">✓</span><span>Receber o link público e colocar esse link na seção de portfólio.</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <span class="eyebrow">Autoridade</span>
+        <h2>Quem sou eu</h2>
+        <div class="profile-box">
+          <div class="card">
+            <h3>Douglas Riedlinger</h3>
+            <p class="bio-highlight">Nascido em 25 de novembro de 2001. Solteiro. Morador de São Paulo Capital.</p>
+            <p style="margin-top:12px;">Meu diferencial não é parecer técnico no discurso. É conseguir pegar ideia, dor, processo ou oportunidade e transformar em algo real, funcional, utilizável e vendável.</p>
+          </div>
+          <div class="card">
+            <h3>Minha proposta</h3>
+            <p>Eu uno visão comercial, execução prática e tecnologia aplicada. Em vez de prometer “IA milagrosa”, eu construo solução que economiza tempo, organiza operação, gera lead, melhora processo e coloca produto para rodar.</p>
+            <p style="margin-top:12px;">Se a sua empresa precisa sair do improviso e entrar numa estrutura digital mais séria, essa conversa faz sentido.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <span class="eyebrow">Inspiração estratégica</span>
+        <h2>As referências por trás desta construção</h2>
+        <div class="cards-3">
+          <div class="card">
+            <h3>Venda direta e clareza de oferta</h3>
+            <p>Inspirado em princípios de copy e oferta forte: promessa clara, problema explícito, diferenciação e chamada para ação sem fumaça.</p>
+          </div>
+          <div class="card">
+            <h3>Engenharia profissional</h3>
+            <p>Inspirado em arquitetura limpa, produto robusto, observabilidade, type safety, organização de fluxo e escalabilidade prática.</p>
+          </div>
+          <div class="card">
+            <h3>IA orientada a resultado</h3>
+            <p>Inspirado na tese central de que IA vale mais quando melhora operação, encontra oportunidade e captura valor econômico real.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <span class="eyebrow">Objeções</span>
+        <h2>Perguntas que o cliente faz antes de fechar</h2>
+        <div class="panel">
+          <div class="faq-item">
+            <h3>“Você faz só design bonito ou entrega o sistema?”</h3>
+            <p>Entrego estrutura, interface e lógica. Ou seja: visual, fluxo e funcionamento.</p>
+          </div>
+          <div class="faq-item">
+            <h3>“Você consegue criar algo do zero?”</h3>
+            <p>Sim. Landing pages, painéis, apps, automações em Python e sistemas orientados a operação.</p>
+          </div>
+          <div class="faq-item">
+            <h3>“Você sabe aplicar IA de verdade?”</h3>
+            <p>Sim, mas com foco útil: classificação, análise, priorização, busca, suporte operacional e inteligência de negócio.</p>
+          </div>
+          <div class="faq-item">
+            <h3>“Isso vai funcionar no celular também?”</h3>
+            <p>Sim. A página foi refinada para leitura e navegação responsiva em desktop, tablet e smartphone, com CTA móvel e adaptação de grids, tipografia e espaçamento.</p>
+          </div>
+          <div class="faq-item" style="border-bottom:none;">
+            <h3>“Para que tipo de cliente isso serve?”</h3>
+            <p>Empresas, profissionais, operações comerciais, negócios locais, infoprodutores, consultorias e qualquer projeto que precise vender, organizar ou automatizar.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="footer-cta" id="contato">
+      <div class="container">
+        <div class="card footer-box">
+          <h2>Se você quer alguém que realmente pense, desenhe e construa o projeto com seriedade, fale comigo.</h2>
+          <p class="section-intro" style="margin: 12px auto 24px; max-width: 720px;">
+            Eu posso criar sua página, seu sistema, sua automação comercial ou sua estrutura com IA aplicada. Com visão profissional, base real, narrativa forte e execução prática.
+          </p>
+          <div class="cta-row" style="justify-content:center;">
+            <a class="btn btn-primary" href="mailto:douglas@example.com?subject=Quero%20um%20projeto%20com%20o%20Douglas">Quero pedir um projeto</a>
+            <a class="btn btn-secondary" href="https://wa.me/5511999999999" target="_blank" rel="noreferrer">Chamar no WhatsApp</a>
+          </div>
+          <p class="mini">Substitua o e-mail e o WhatsApp pelos seus contatos reais antes de publicar.</p>
+          <div class="sources" style="margin-top:22px; text-align:left;">
+            <strong style="display:block; margin-bottom:10px;">O que falta para esta página virar uma máquina de prova social</strong>
+            <ul>
+              <li>Publicar os melhores projetos na Vercel.</li>
+              <li>Trocar os placeholders da seção “Portfólio ao vivo” pelos links reais.</li>
+              <li>Adicionar prints, vídeo curto ou GIF de cada projeto.</li>
+              <li>Usar CTA levando o cliente do case direto para conversa comercial.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="mobile-cta">
+    <a class="btn btn-primary" href="#contato">Falar com Douglas agora</a>
+  </div>
+</body>
+</html>

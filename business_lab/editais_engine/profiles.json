@@ -1,0 +1,14 @@
+{
+  "profiles": [
+    {
+      "name": "educacao_servicos",
+      "target_regions": ["SP", "MG", "RJ"],
+      "positive_tags": ["escola", "universidade", "reforma", "engenharia"],
+      "negative_tags": ["medicamento", "combustível"],
+      "required_capabilities": ["atestados_tecnicos", "certidoes_fiscais"],
+      "minimum_value": 75000,
+      "maximum_value": 9000000,
+      "minimum_deadline_days": 8
+    }
+  ]
+}

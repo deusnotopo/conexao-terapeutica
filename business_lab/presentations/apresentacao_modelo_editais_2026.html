@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modelo 2026 | Máquina de Editais</title>
+  <style>
+    :root {
+      --bg:#0a0f1c; --panel:#121a2b; --panel2:#0f1726; --text:#eaf0ff; --muted:#9aa7c7;
+      --line:rgba(255,255,255,.08); --blue:#6ea8fe; --cyan:#62e6ff; --green:#53e3a6; --gold:#ffd166;
+      --red:#ff7b7b; --shadow:0 20px 60px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box} html{scroll-behavior:smooth}
+    body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;color:var(--text);background:
+      radial-gradient(circle at top left, rgba(110,168,254,.17), transparent 25%),
+      radial-gradient(circle at top right, rgba(98,230,255,.12), transparent 20%),
+      linear-gradient(180deg,#080d18,var(--bg));}
+    .topbar{position:sticky;top:0;z-index:10;background:rgba(10,15,28,.75);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+    .topbar-inner{max-width:1240px;margin:0 auto;padding:14px 20px;display:flex;justify-content:space-between;gap:16px;align-items:center}
+    .brand{font-weight:800}.brand span{color:var(--cyan)} .nav{display:flex;flex-wrap:wrap;gap:8px}
+    .nav a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:999px;font-size:14px}.nav a:hover{background:rgba(255,255,255,.05);color:#fff}
+    .hero,.container{max-width:1240px;margin:0 auto;padding:0 20px}
+    .hero{padding-top:42px;padding-bottom:16px;display:grid;grid-template-columns:1.25fr .85fr;gap:22px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow)}
+    .hero-main,.hero-side,.section{padding:30px}
+    .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan);font-weight:700;margin-bottom:14px}
+    h1{font-size:clamp(2.4rem,5vw,4.6rem);line-height:1.02;margin:0 0 14px}
+    h2{font-size:clamp(1.5rem,3vw,2.4rem);margin:0 0 16px} h3{font-size:1.1rem;margin:0 0 10px;color:#fff}
+    .gradient{background:linear-gradient(135deg,#fff,#a9c7ff 40%,#9bfff4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .lead{font-size:1.1rem;line-height:1.8;color:var(--muted)} p,li{line-height:1.75;color:var(--muted)}
+    .thesis{margin-top:18px;padding:18px;border-left:4px solid var(--cyan);background:rgba(98,230,255,.08);border-radius:14px;color:#ddfbff}
+    .metric{padding:18px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.03);margin-bottom:12px}
+    .metric strong{display:block;font-size:1.45rem;color:#fff;margin-bottom:6px}
+    .section-wrap{padding-bottom:50px}.section-card{margin-top:22px}.grid-2,.grid-3,.grid-4{display:grid;gap:16px}.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}.grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .mini{padding:22px;border-radius:20px;border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02))}
+    .good{border-color:rgba(83,227,166,.28)} .bad{border-color:rgba(255,123,123,.28)} .gold{border-color:rgba(255,209,102,.28)}
+    ul{margin:0;padding-left:18px} li+li{margin-top:6px}
+    .flow{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}.flow .step{padding:16px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.03)}
+    .step b{display:block;color:#fff;margin-bottom:6px}
+    table{width:100%;border-collapse:collapse;border:1px solid var(--line);border-radius:18px;overflow:hidden} th,td{padding:14px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top} th{background:rgba(255,255,255,.05)} tr:last-child td{border-bottom:0}
+    .quote{font-size:1.08rem;color:#dfe7ff;background:rgba(110,168,254,.08);padding:18px;border-radius:16px;border-left:4px solid var(--blue)}
+    .mono{font-family:Consolas,monospace;font-size:.95rem;color:#c6f8ff}
+    .footer{padding:30px 20px 50px;max-width:1240px;margin:0 auto;color:#7f8fb4}
+    @media (max-width:980px){.hero,.grid-2,.grid-3,.grid-4,.flow{grid-template-columns:1fr}.topbar-inner{flex-direction:column;align-items:flex-start}}
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">Máquina de Editais <span>2026</span></div>
+      <nav class="nav">
+        <a href="#tese">Tese</a>
+        <a href="#produto">Produto</a>
+        <a href="#arquitetura">Arquitetura</a>
+        <a href="#pipeline">Pipeline</a>
+        <a href="#proposta">Proposta</a>
+        <a href="#roadmap">Roadmap</a>
+      </nav>
+    </div>
+  </div>
+
+  <header class="hero">
+    <div class="card hero-main">
+      <div class="eyebrow">Apresentação completa do modelo escolhido</div>
+      <h1 class="gradient">A máquina de editais: um negócio de software, dados e execução</h1>
+      <p class="lead">
+        Não é empresa de IA. Não é SaaS genérico. Não é chatbot. É uma máquina de software
+        que coleta, lê, estrutura, prioriza e entrega editais com aderência real para empresas.
+        A base técnica é a mesma em qualquer nicho. Só muda a roupa: saúde, engenharia, TI,
+        limpeza, obra, alimentação, segurança, manutenção, transporte.
+      </p>
+      <div class="thesis">
+        <strong>Tese:</strong> licitação não é um problema de IA. É um problema de <strong>coleta</strong>,
+        <strong>parsing</strong>, <strong>normalização</strong>, <strong>matching</strong>, <strong>score</strong>,
+        <strong>alerta</strong> e <strong>prova de valor</strong>. A engenharia faz quase tudo.
+      </div>
+    </div>
+    <aside class="card hero-side">
+      <div class="metric"><strong>Mesmo core técnico</strong><div>Troca o nicho, mantém crawler, parser, score, painel e entrega.</div></div>
+      <div class="metric"><strong>Baixo CAPEX</strong><div>Pode começar com Python, PostgreSQL, OCR, fila e e-mail.</div></div>
+      <div class="metric"><strong>Baixa dependência de IA</strong><div>LLM só em raras ambiguidades ou resumo excepcional.</div></div>
+    </aside>
+  </header>
+
+  <main class="container section-wrap">
+    <section id="tese" class="card section section-card">
+      <h2>1. O argumento no estilo “Fabio Akita”</h2>
+      <div class="grid-2">
+        <div class="mini good">
+          <h3>O erro da maioria</h3>
+          <p>Todo mundo quer começar da superfície: UI, app, prompt, agente, branding. Isso é a parte mais barata e menos defensável.</p>
+        </div>
+        <div class="mini gold">
+          <h3>O ponto certo</h3>
+          <p>O valor está no subterrâneo: fontes, pipelines, parsing, consistência, deduplicação, scheduling, scoring, logs, retry, qualidade e distribuição.</p>
+        </div>
+      </div>
+      <div class="quote" style="margin-top:16px">
+        Quem domina a infraestrutura da oportunidade domina a receita antes mesmo da proposta existir.
+      </div>
+    </section>
+
+    <section id="produto" class="card section section-card">
+      <h2>2. O produto real</h2>
+      <div class="grid-3">
+        <div class="mini">
+          <h3>Input</h3>
+          <p>Portais públicos, diários oficiais, páginas municipais, estaduais, federais, anexos PDF, HTML e documentos escaneados.</p>
+        </div>
+        <div class="mini">
+          <h3>Processo</h3>
+          <p>Coletar → extrair campos → classificar → deduplicar → calcular aderência → alertar → comprovar valor.</p>
+        </div>
+        <div class="mini good">
+          <h3>Output</h3>
+          <p>Editais priorizados, com prazo, objeto, documentos, risco, aderência e ação recomendada.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section section-card">
+      <h2>2.1 Reality check: sim, já existe um monte disso</h2>
+      <div class="grid-2">
+        <div class="mini bad">
+          <h3>O que já existe</h3>
+          <ul>
+            <li>Monitor de edital genérico</li>
+            <li>Clipping por palavra-chave</li>
+            <li>Painel bonito com busca fraca</li>
+            <li>Base ampla, mas pouco aderente</li>
+          </ul>
+        </div>
+        <div class="mini good">
+          <h3>Onde quase todos falham</h3>
+          <ul>
+            <li>Muito ruído e pouca priorização real</li>
+            <li>Pouca personalização por nicho</li>
+            <li>Baixa profundidade operacional</li>
+            <li>Não chegam perto do ato da proposta</li>
+          </ul>
+        </div>
+      </div>
+      <div class="quote" style="margin-top:16px">
+        O mercado de “alerta de edital” está cheio. O mercado de <strong>máquina de aderência e decisão</strong> ainda é ruim.
+      </div>
+    </section>
+
+    <section class="card section section-card">
+      <h2>3. O que sempre será igual, independentemente do nicho</h2>
+      <div class="grid-4">
+        <div class="mini"><h3>Coleta</h3><p>Robôs, crawlers, scrapers, listeners, agendadores.</p></div>
+        <div class="mini"><h3>Leitura</h3><p>PDF text, OCR, HTML parsing, anexos, tabelas.</p></div>
+        <div class="mini"><h3>Estruturação</h3><p>Campos, prazos, órgão, objeto, região, valor, exigências.</p></div>
+        <div class="mini good"><h3>Matching</h3><p>Regras por nicho, score, aderência e ranking.</p></div>
+      </div>
+    </section>
+
+    <section class="card section section-card">
+      <h2>3.1 Então onde está a brecha?</h2>
+      <div class="grid-3">
+        <div class="mini good">
+          <h3>1. Verticalização brutal</h3>
+          <p>Não vender “todos os editais”. Vender “os editais certos para um nicho específico com regras específicas”.</p>
+        </div>
+        <div class="mini">
+          <h3>2. Da oportunidade ao checklist</h3>
+          <p>A maioria para no alerta. A brecha está em transformar edital em ação concreta.</p>
+        </div>
+        <div class="mini gold">
+          <h3>3. Long tail mal atendido</h3>
+          <p>PMEs regionais, nichos técnicos e mercados locais continuam mal servidos por soluções genéricas.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="arquitetura" class="card section section-card">
+      <h2>4. Arquitetura-base do código</h2>
+      <div class="grid-2">
+        <div class="mini">
+          <h3>Camadas</h3>
+          <ul>
+            <li>Collectors</li>
+            <li>Document ingestion</li>
+            <li>OCR/parsers</li>
+            <li>Normalizer</li>
+            <li>Rules engine</li>
+            <li>Scoring engine</li>
+            <li>Alerting/reporting</li>
+          </ul>
+        </div>
+        <div class="mini">
+          <h3>Princípio</h3>
+          <p>Não codar um produto por nicho. Codar uma <strong>plataforma interna de operação</strong>. O nicho vira só configuração, parser específico e regras.</p>
+          <p class="mono">source adapters + parsing adapters + scoring profiles + output templates</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section section-card">
+      <h2>5. Componentes do código</h2>
+      <div class="grid-3">
+        <div class="mini"><h3>Collectors</h3><p>Playwright, requests, BeautifulSoup, scraping resiliente, retries, fingerprint de fonte.</p></div>
+        <div class="mini"><h3>Parsers</h3><p>PyMuPDF, pdfplumber, Tesseract, regex, heurísticas, validação por schema.</p></div>
+        <div class="mini"><h3>Rules Engine</h3><p>Regras por CNAE, ticket, região, documentação mínima, palavras-chave, blacklist.</p></div>
+        <div class="mini"><h3>Scoring</h3><p>Peso por aderência, urgência, valor, risco, esforço documental, perfil do cliente.</p></div>
+        <div class="mini"><h3>Storage</h3><p>PostgreSQL, Redis, storage de PDFs, versionamento de documentos e snapshots.</p></div>
+        <div class="mini good"><h3>Delivery</h3><p>E-mail, painel, webhook, agenda de prazos, PDFs de resumo, CRM pipeline.</p></div>
+      </div>
+    </section>
+
+    <section id="pipeline" class="card section section-card">
+      <h2>6. Pipeline completo, do código até a proposta</h2>
+      <div class="flow">
+        <div class="step"><b>1. Capturar</b>Baixar edital e anexos.</div>
+        <div class="step"><b>2. Extrair</b>Objeto, datas, valor, docs.</div>
+        <div class="step"><b>3. Normalizar</b>Limpar e estruturar em schema.</div>
+        <div class="step"><b>4. Pontuar</b>Calcular aderência por regra.</div>
+        <div class="step"><b>5. Entregar</b>Alertar e resumir para ação.</div>
+        <div class="step"><b>6. Propor</b>Gerar kit de proposta inicial.</div>
+      </div>
+      <div class="grid-2" style="margin-top:16px">
+        <div class="mini good">
+          <h3>Até o ato da proposta</h3>
+          <p>Nosso software leva o cliente até a decisão: “vale ou não vale entrar?”. A proposta nasce em cima de informação organizada, não no caos.</p>
+        </div>
+        <div class="mini">
+          <h3>O que muda por nicho</h3>
+          <p>Vocabulário, exigências mínimas, pesos do score e templates de entrega. O motor continua igual.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section section-card">
+      <h2>7. O que automatizamos até a proposta</h2>
+      <div class="grid-3">
+        <div class="mini"><h3>Aderência</h3><p>Score, documentação exigida, risco, prazo, valor estimado, geografia, complexidade.</p></div>
+        <div class="mini"><h3>Checklist</h3><p>Lista de documentos, pendências, prazos, responsáveis e ordem de execução.</p></div>
+        <div class="mini good"><h3>Dossiê inicial</h3><p>Resumo do edital, racional de entrada, riscos e próximos passos para a equipe comercial/operacional.</p></div>
+      </div>
+    </section>
+
+    <section class="card section section-card">
+      <h2>8. Onde a IA poderia entrar — e por que evitamos</h2>
+      <div class="grid-2">
+        <div class="mini bad">
+          <h3>Uso tentador</h3>
+          <ul>
+            <li>Resumir tudo com LLM</li>
+            <li>Interpretar todos os anexos</li>
+            <li>Escrever toda proposta</li>
+            <li>Responder cada exceção com prompt</li>
+          </ul>
+        </div>
+        <div class="mini good">
+          <h3>Uso racional</h3>
+          <ul>
+            <li>Resumo raro de edital absurdamente confuso</li>
+            <li>Explicação curta de ambiguidade</li>
+            <li>Rascunho opcional de texto auxiliar</li>
+          </ul>
+          <p>Ou seja: a IA é acessório. O negócio é software.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="proposta" class="card section section-card">
+      <h2>9. Como chegamos ao ato da proposta</h2>
+      <div class="grid-3">
+        <div class="mini">
+          <h3>Saída 1</h3>
+          <p>Edital classificado como “não entrar”. Economizamos tempo.</p>
+        </div>
+        <div class="mini">
+          <h3>Saída 2</h3>
+          <p>Edital classificado como “entrar com ressalvas”. Abrimos checklist e pendências.</p>
+        </div>
+        <div class="mini good">
+          <h3>Saída 3</h3>
+          <p>Edital classificado como “entrar”. Geramos resumo executivo, kit documental e cronograma.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section section-card">
+      <h2>10. Como vender isso</h2>
+      <div class="grid-3">
+        <div class="mini"><h3>Oferta</h3><p>“Nós monitoramos, lemos, filtramos e priorizamos editais aderentes para você agir antes.”</p></div>
+        <div class="mini"><h3>Prova</h3><p>Entregar uma amostra gratuita com editais reais que a empresa provavelmente perdeu.</p></div>
+        <div class="mini good"><h3>Modelo</h3><p>Setup + mensalidade + fee por edital aderente + opcional por kit de proposta.</p></div>
+      </div>
+    </section>
+
+    <section class="card section section-card">
+      <h2>10.1 Como não virar só mais um no mercado</h2>
+      <div class="grid-2">
+        <div class="mini">
+          <h3>Não competir assim</h3>
+          <ul>
+            <li>“Temos milhares de editais”</li>
+            <li>“Temos IA”</li>
+            <li>“Temos dashboard”</li>
+            <li>“Atendemos qualquer empresa”</li>
+          </ul>
+        </div>
+        <div class="mini good">
+          <h3>Competir assim</h3>
+          <ul>
+            <li>“Filtramos editais só para o seu nicho”</li>
+            <li>“Reduzimos ruído e tempo desperdiçado”</li>
+            <li>“Entregamos aderência + checklist”</li>
+            <li>“Chegamos mais perto da proposta”</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section section-card">
+      <h2>10.2 Se esse mercado estiver commodity demais, pivô natural</h2>
+      <div class="grid-3">
+        <div class="mini">
+          <h3>Pivô A</h3>
+          <p>Motor white-label para consultores/liciteiros e escritórios que já têm cliente.</p>
+        </div>
+        <div class="mini">
+          <h3>Pivô B</h3>
+          <p>Infra de parsing e aderência para nichos específicos, sem vender painel genérico.</p>
+        </div>
+        <div class="mini good">
+          <h3>Pivô C</h3>
+          <p>Camada pós-alerta: checklist, cronograma, kit documental e preparação operacional.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section section-card">
+      <h2>10.3 O que vimos no mercado ao vasculhar soluções semelhantes</h2>
+      <div class="grid-2">
+        <div class="mini bad">
+          <h3>Padrão dominante</h3>
+          <ul>
+            <li>Monitor genérico de oportunidade</li>
+            <li>Busca por palavra-chave</li>
+            <li>Base ampla, mas mal filtrada</li>
+            <li>Pouca profundidade depois do alerta</li>
+            <li>Valor concentrado em painel e não em decisão</li>
+          </ul>
+        </div>
+        <div class="mini good">
+          <h3>Lacuna evidente</h3>
+          <ul>
+            <li>Quase ninguém trata edital como pipeline de produção de decisão</li>
+            <li>Quase ninguém resolve confiabilidade de parsing no nível de engenharia sério</li>
+            <li>Quase ninguém chega forte em readiness, bid/no-bid e proposta operacional</li>
+            <li>Quase ninguém faz verticalização profunda por nicho</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section section-card">
+      <h2>10.4 O que existe de avançado em software e quase não é usado nessa área</h2>
+      <div class="grid-3">
+        <div class="mini gold">
+          <h3>Diff engine de edital</h3>
+          <p>Detectar automaticamente o que mudou entre versões, retificações e anexos, destacando só impacto real em prazo, exigência e documentação.</p>
+        </div>
+        <div class="mini gold">
+          <h3>Knowledge graph de aderência</h3>
+          <p>Mapear empresa, certidões, capacidades, CNAEs, portfólio, experiências e restrições como grafo de compatibilidade com cada edital.</p>
+        </div>
+        <div class="mini gold">
+          <h3>Bid / no-bid simulator</h3>
+          <p>Simular se vale entrar com base em margem, esforço documental, chance histórica, prazo, risco e capacidade operacional.</p>
+        </div>
+        <div class="mini gold">
+          <h3>Clause anomaly detection</h3>
+          <p>Detectar cláusulas estranhas, exigências restritivas, padrões suspeitos ou combinações que destoam do normal do nicho.</p>
+        </div>
+        <div class="mini gold">
+          <h3>Entity resolution</h3>
+          <p>Unificar órgãos, fornecedores, grupos econômicos, CNPJs e documentos espalhados em múltiplas fontes com identidades consistentes.</p>
+        </div>
+        <div class="mini gold">
+          <h3>Critical path automático</h3>
+          <p>Transformar o edital em cronograma operacional real, com dependências, gargalos documentais e janela mínima para proposta.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section section-card">
+      <h2>10.5 Nossa tese de diferenciação real</h2>
+      <div class="grid-3">
+        <div class="mini good">
+          <h3>1. Não vender alerta</h3>
+          <p>Vendemos decisão operacional: entrar, não entrar, o que falta, quanto custa e qual risco existe.</p>
+        </div>
+        <div class="mini good">
+          <h3>2. Não vender volume</h3>
+          <p>Vendemos precisão: menos oportunidades, mas com aderência real e utilidade prática.</p>
+        </div>
+        <div class="mini good">
+          <h3>3. Não vender IA</h3>
+          <p>Vendemos confiabilidade de software: parsing, versionamento, reconciliação e readiness engine.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section section-card">
+      <h2>10.6 Vantagens competitivas que ainda são difíceis de copiar</h2>
+      <div class="grid-2">
+        <div class="mini">
+          <h3>Difícil de copiar rápido</h3>
+          <ul>
+            <li>Parsers estáveis por fonte</li>
+            <li>Histórico versionado de retificações</li>
+            <li>Base de regras por nicho</li>
+            <li>Engine de aderência explicável</li>
+            <li>Graph de capacidades do cliente</li>
+          </ul>
+        </div>
+        <div class="mini good">
+          <h3>Quanto mais roda, melhor fica</h3>
+          <ul>
+            <li>Melhora score</li>
+            <li>Melhora extração</li>
+            <li>Melhora priorização</li>
+            <li>Melhora prova de valor</li>
+            <li>Melhora retenção do cliente</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="roadmap" class="card section section-card">
+      <h2>11. Plano de execução 2026</h2>
+      <div class="grid-4">
+        <div class="mini"><h3>Q1</h3><p>Core engine: collectors, parsers, schema, score básico, snapshots e versionamento.</p></div>
+        <div class="mini"><h3>Q2</h3><p>Pilotos reais, feedback, cobertura de fontes, diffs de retificação e checklist automático.</p></div>
+        <div class="mini"><h3>Q3</h3><p>Readiness engine, critical path, multi-perfil, templates por nicho e confiabilidade operacional.</p></div>
+        <div class="mini good"><h3>Q4</h3><p>Knowledge graph de aderência, distribuição, parceiros e empacotamento comercial forte.</p></div>
+      </div>
+    </section>
+
+    <section class="card section section-card">
+      <h2>12. Stack sugerida</h2>
+      <div class="grid-3">
+        <div class="mini"><h3>App</h3><p>Python, FastAPI, Playwright, bs4, Pandas, Pydantic.</p></div>
+        <div class="mini"><h3>Infra</h3><p>PostgreSQL, Redis, object storage, workers assíncronos, cron.</p></div>
+        <div class="mini good"><h3>Observabilidade</h3><p>Logs, retries, dead-letter, auditoria, snapshot de fonte, versionamento de parser.</p></div>
+      </div>
+    </section>
+
+    <section class="card section section-card">
+      <h2>13. O MVP icônico</h2>
+      <div class="grid-2">
+        <div class="mini good">
+          <h3>Tem</h3>
+          <ul>
+            <li>Monitoramento automático</li>
+            <li>Parser confiável</li>
+            <li>Score de aderência</li>
+            <li>Resumo objetivo</li>
+            <li>Alerta e prazo</li>
+          </ul>
+        </div>
+        <div class="mini bad">
+          <h3>Não tem</h3>
+          <ul>
+            <li>UX perfumaria</li>
+            <li>IA em tempo real</li>
+            <li>Proposta mágica automática</li>
+            <li>Escopo gigante demais</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section section-card">
+      <h2>14. Conclusão</h2>
+      <div class="quote">
+        O produto não é “um monitor de edital com IA”. O produto é uma <strong>máquina de execução</strong>
+        que reduz ruído, aumenta aderência e aproxima o cliente da proposta. Se a camada genérica estiver comoditizada,
+        a vantagem vem da verticalização, da profundidade operacional e da distribuição certa.
+      </div>
+    </section>
+  </main>
+
+  <div class="footer">Apresentação dedicada ao modelo escolhido: licitações como negócio de software, dados e execução.</div>
+</body>
+</html>

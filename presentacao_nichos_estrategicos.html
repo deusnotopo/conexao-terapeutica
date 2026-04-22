@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM para Nichos: A Estratégia dos Especialistas</title>
+    <style>
+        :root {
+            --primary: #1a365d;
+            --secondary: #2b6cb0;
+            --accent: #ed8936;
+            --light: #f7fafc;
+            --dark: #1a202c;
+            --text: #2d3748;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .presentation {
+            width: 100%;
+            max-width: 1200px;
+            aspect-ratio: 16/9;
+            position: relative;
+            overflow: hidden;
+            border-radius: 20px;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.5);
+            background: white;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 60px 80px;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            transform: translateX(100px);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+            background: white;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: auto;
+        }
+
+        .slide.prev {
+            transform: translateX(-100px);
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--accent);
+            display: inline-block;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            color: var(--secondary);
+            margin-bottom: 20px;
+        }
+
+        p, li {
+            font-size: 1.1rem;
+            color: var(--text);
+            line-height: 1.7;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: var(--secondary);
+            font-weight: 300;
+            margin-top: 10px;
+        }
+
+        .title-slide {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+        }
+
+        .title-slide h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+        }
+
+        .title-slide .subtitle {
+            font-size: 1.8rem;
+            color: var(--accent);
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            flex: 1;
+        }
+
+        .content-single {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            padding: 12px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-size: 1.2rem;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+        .highlight-box h3 {
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .highlight-box p {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .stat-card {
+            background: var(--light);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            border-left: 4px solid var(--accent);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            display: block;
+        }
+
+        .stat-label {
+            color: var(--text);
+            margin-top: 5px;
+        }
+
+        .nicho-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .nicho-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .nicho-title {
+            font-size: 1.3rem;
+            color: var(--primary);
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nicho-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--accent);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .sectors-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .sector-item {
+            background: var(--light);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid var(--secondary);
+        }
+
+        .sector-item strong {
+            color: var(--primary);
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 1rem;
+        }
+
+        .comparison-table th {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .comparison-table th:first-child {
+            text-align: left;
+            border-radius: 10px 0 0 0;
+        }
+
+        .comparison-table th:last-child {
+            border-radius: 0 10px 0 0;
+        }
+
+        .comparison-table td {
+            padding: 18px 20px;
+            text-align: center;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .comparison-table td:first-child {
+            text-align: left;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: var(--light);
+        }
+
+        .comparison-table tr:last-child td:first-child {
+            border-radius: 0 0 0 10px;
+        }
+
+        .comparison-table tr:last-child td:last-child {
+            border-radius: 0 0 10px 0;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .pricing-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .pricing-card.highlight {
+            border-color: var(--accent);
+            background: linear-gradient(135deg, #fffaf0 0%, #fefcbf 100%);
+        }
+
+        .price {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .price span {
+            font-size: 1rem;
+            color: var(--text);
+        }
+
+        .steps-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: var(--light);
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 5px solid var(--accent);
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .step-content h4 {
+            color: var(--primary);
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+
+        .sources-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .source-card {
+            background: var(--light);
+            padding: 25px;
+            border-radius: 12px;
+            border-top: 4px solid var(--secondary);
+        }
+
+        .source-card h4 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .navigation {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            width: 50px;
+            height: 50px;
+            border: none;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-btn:hover {
+            background: var(--accent);
+            transform: scale(1.1);
+        }
+
+        .nav-btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            background: var(--primary);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            z-index: 100;
+        }
+
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 5px;
+            background: var(--accent);
+            transition: width 0.3s ease;
+            z-index: 100;
+        }
+
+        @media (max-width: 768px) {
+            .presentation {
+                aspect-ratio: auto;
+                min-height: 100vh;
+                border-radius: 0;
+            }
+
+            .slide {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            h2 {
+                font-size: 1.4rem;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid, .pricing-grid, .sectors-grid, .sources-list {
+                grid-template-columns: 1fr;
+            }
+
+            .comparison-table {
+                font-size: 0.8rem;
+            }
+
+            .comparison-table th, .comparison-table td {
+                padding: 10px 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <!-- Slide 1: Título -->
+        <div class="slide title-slide active" data-slide="1">
+            <h1>LLM para Nichos: A Estratégia dos Especialistas</h1>
+            <p class="subtitle">Onde os Grandes Players Não Chegam</p>
+        </div>
+
+        <!-- Slide 2: O Problema -->
+        <div class="slide" data-slide="2">
+            <h2>O Problema</h2>
+            <div class="content-grid">
+                <div>
+                    <ul>
+                        <li>Grandes players como TaxApp, OSET, Credfis focam em empresas médias/grandes</li>
+                        <li>Nichos inteiros ficam abandonados</li>
+                        <li>Milhões de profissionais sem acesso a tecnologia</li>
+                        <li>Mercado huge com zero atenção</li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="highlight-box">
+                        <h3>Oportunidade</h3>
+                        <p>Atender o que ninguém quer: pequenos profissionais, autônomos, interior do Brasil, setores específicos</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Nicho 1 -->
+        <div class="slide" data-slide="3">
+            <h2>Nicho 1 — MEI e Profissionais Autônomos</h2>
+            <div class="content-grid">
+                <div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span class="stat-number">15M+</span>
+                            <span class="stat-label">MEIs no Brasil</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number">0%</span>
+                            <span class="stat-label">Atenção dos grandes</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number">R$49-99</span>
+                            <span class="stat-label">Mensalidade</span>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <ul>
+                        <li>Problema: complexidade tributária = não conseguem acompanhar</li>
+                        <li>Solução: Recovery-as-a-Service para MEI</li>
+                        <li>Modelo: mensalidade baixa + % recuperação</li>
+                        <li>Exemplos: médicos autônomos, dentistas, advogados, fisioterapeutas</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Nicho 2 -->
+        <div class="slide" data-slide="4">
+            <h2>Nicho 2 — Interior do Brasil</h2>
+            <div class="content-grid">
+                <div>
+                    <ul>
+                        <li>Grandes players só atendem capitais</li>
+                        <li>60% do PIB vem do interior</li>
+                        <li>Problema: contadores do interior não têm acesso a tecnologia</li>
+                        <li>Solução: IA como copiloto do contador do interior</li>
+                        <li>Geografia: cidades de 50k-500k habitantes</li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="highlight-box">
+                        <h3>Escala</h3>
+                        <p>5.570 municípios brasileiros = 5.570 oportunidades de atendimento local</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Nicho 3 -->
+        <div class="slide" data-slide="5">
+            <h2>Nicho 3 — Setores Específicos</h2>
+            <p>Setores ignorados pelos players generalistas:</p>
+            <div class="sectors-grid">
+                <div class="sector-item">
+                    <strong>Igrejas e ONGs</strong>
+                    Isenção de impostos específica, complexidade única
+                </div>
+                <div class="sector-item">
+                    <strong>Cooperativas</strong>
+                    Complexidade regulatória própria
+                </div>
+                <div class="sector-item">
+                    <strong>Agronegócio</strong>
+                    Crédito de INSUMOS, benefícios fiscais
+                </div>
+                <div class="sector-item">
+                    <strong>Clínicas de psicologia/nutrição</strong>
+                    Pequeno porte, gestão complexa
+                </div>
+            </div>
+            <p style="margin-top: 20px;"><strong>Solução:</strong> LLM treinado especificamente para cada setor</p>
+        </div>
+
+        <!-- Slide 6: Nicho 4 -->
+        <div class="slide" data-slide="6">
+            <h2>Nicho 4 — Jurídico Ultra-específico</h2>
+            <p>Grande players focam em jurídicos corporativos ou volume massificado. Nichos ignorados:</p>
+            <div class="sectors-grid">
+                <div class="sector-item">
+                    <strong>Pensão alimentícia</strong>
+                    Apenas isso — nicho puro
+                </div>
+                <div class="sector-item">
+                    <strong>Trabalhista PJ</strong>
+                    Apenas isso — nicho puro
+                </div>
+                <div class="sector-item">
+                    <strong>Consumidor em juizados especiais</strong>
+                    Volume alto, baixa complexidade
+                </div>
+                <div class="sector-item">
+                    <strong>Família (só divórcio)</strong>
+                    Alta demanda, automação viável
+                </div>
+            </div>
+            <p style="margin-top: 20px;"><strong>Solução:</strong> Petições geradas por IA para nicho específico</p>
+        </div>
+
+        <!-- Slide 7: Nicho 5 -->
+        <div class="slide" data-slide="7">
+            <h2>Nicho 5 — Saúde Administrativa Completa</h2>
+            <div class="content-grid">
+                <div>
+                    <ul>
+                        <li>Glas só para hospitais grandes</li>
+                        <li>Nicho: clínicas de 1-5 médicos</li>
+                        <li>Problema: não conseguem reverter glosas</li>
+                        <li>Custo: perdido = lucro cessante</li>
+                        <li>Volume: milhões de clínicas no Brasil</li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="highlight-box">
+                        <h3>Solução</h3>
+                        <p>IA que analiza glosas + recurso automatizado = recuperação de receita perdida</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Comparativo -->
+        <div class="slide" data-slide="8">
+            <h2>Comparativo — Geral vs Nicho</h2>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Grandes Players</th>
+                        <th>Nicho Estratégico</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Público</td>
+                        <td>Médias/grandes</td>
+                        <td>Pequenos/autônomos</td>
+                    </tr>
+                    <tr>
+                        <td>Preço</td>
+                        <td>Alto</td>
+                        <td>Baixo (R$49-199/mês)</td>
+                    </tr>
+                    <tr>
+                        <td>Atenção</td>
+                        <td>Mínima</td>
+                        <td>Total</td>
+                    </tr>
+                    <tr>
+                        <td>Tecnologia</td>
+                        <td>Genérica</td>
+                        <td>Específica</td>
+                    </tr>
+                    <tr>
+                        <td>Margem</td>
+                        <td>Média</td>
+                        <td>Alta (volume)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Slide 9: Modelo de Negócio -->
+        <div class="slide" data-slide="9">
+            <h2>Modelo de Negócio</h2>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h4>Assinatura</h4>
+                    <div class="price">R$49-199<span>/mês</span></div>
+                    <p>Baixo ticket, alto volume</p>
+                </div>
+                <div class="pricing-card highlight">
+                    <h4>Setup</h4>
+                    <div class="price">R$0</div>
+                    <p>100% digital</p>
+                </div>
+                <div class="pricing-card">
+                    <h4>Upsell</h4>
+                    <div class="price">%</div>
+                    <p>Recuperação de créditos</p>
+                </div>
+                <div class="pricing-card">
+                    <h4>Churn</h4>
+                    <div class="price">Baixo</div>
+                    <p>Necessidade recorrente</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Como Executar -->
+        <div class="slide" data-slide="10">
+            <h2>Como Executar</h2>
+            <div class="steps-container">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>Escolher 1 nicho</h4>
+                        <p>Não varios — foco total em um segmento específico</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>Treinar LLM específico</h4>
+                        <p>Com dados, documentos e linguagem do nicho escolhido</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>Encontrar early adopters</h4>
+                        <p>Contadores, associações, câmara de comércio local</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h4>Escalar com marketing específico</h4>
+                        <p>Canais mirados no nicho escolhido</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Fontes -->
+        <div class="slide" data-slide="11">
+            <h2>Fontes</h2>
+            <div class="sources-list">
+                <div class="source-card">
+                    <h4>Dados MEI</h4>
+                    <p>IBGE 2024 — Portal do Empreendedor</p>
+                </div>
+                <div class="source-card">
+                    <h4>Complexidade Tributária</h4>
+                    <p>Forbes Brasil — Estudos setoriais</p>
+                </div>
+                <div class="source-card">
+                    <h4>Pesquisa Recovery</h4>
+                    <p>Websearch — Resultados de mercado</p>
+                </div>
+            </div>
+            <div class="highlight-box" style="margin-top: 30px;">
+                <h3>Conclusão</h3>
+                <p>O mercado de LLM para nichos é massive e inexplorado. A estratégia vencedora:ser o especialista onde os generalistas não olham.</p>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">◀</button>
+            <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">▶</button>
+        </div>
+
+        <div class="slide-counter">
+            <span id="currentSlide">1</span> / 11
+        </div>
+
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 11;
+
+        function updateSlide() {
+            const slides = document.querySelectorAll('.slide');
+            slides.forEach((slide, index) => {
+                slide.classList.remove('active', 'prev');
+                if (index + 1 === currentSlide) {
+                    slide.classList.add('active');
+                } else if (index + 1 < currentSlide) {
+                    slide.classList.add('prev');
+                }
+            });
+
+            document.getElementById('currentSlide').textContent = currentSlide;
+            document.getElementById('prevBtn').disabled = currentSlide === 1;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides;
+
+            const progress = (currentSlide / totalSlides) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function changeSlide(direction) {
+            currentSlide += direction;
+            if (currentSlide < 1) currentSlide = 1;
+            if (currentSlide > totalSlides) currentSlide = totalSlides;
+            updateSlide();
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                changeSlide(1);
+            } else if (e.key === 'ArrowLeft') {
+                changeSlide(-1);
+            }
+        });
+
+        updateSlide();
+    </script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -403,7 +403,7 @@ export const ProfileScreen = ({ navigation }: any) => {
           <View style={styles.sectionToggle}>
             <Text style={styles.sectionTitle}>👶 Dependentes</Text>
             <TouchableOpacity
-              onPress={() => navigation.navigate('Onboarding')}
+              onPress={() => navigation.navigate('AddDependent')}
               style={styles.addDepBtn}
             >
               <Plus color={colors.primary} size={18} />

@@ -18,7 +18,8 @@ import { Baby, Calendar, Stethoscope, Heart } from 'lucide-react-native';
 
 import { webAlert } from '../../lib/webAlert';
 
-export const OnboardingScreen = ({ navigation }: any) => {
+export const OnboardingScreen = ({ navigation, route }: any) => {
+  const isModal = route?.name === 'AddDependent';
   const { user, refreshContext } = useUser();
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -71,12 +72,15 @@ export const OnboardingScreen = ({ navigation }: any) => {
 
       // refreshContext updates dependents state → Navigator re-renders automatically
       await refreshContext();
-      // Fallback explicit navigation for web environments
-      setTimeout(() => {
-        try {
-          navigation.reset({ index: 0, routes: [{ name: 'MainTabs' }] });
-        } catch (_: any) {}
-      }, 300);
+      if (isModal) {
+        navigation.goBack();
+      } else {
+        setTimeout(() => {
+          try {
+            navigation.reset({ index: 0, routes: [{ name: 'MainTabs' }] });
+          } catch (_: any) {}
+        }, 300);
+      }
     } catch (error: any) {
       const msg = (error as Error)?.message || 'Não foi possível salvar os dados. Verifique a conexão.';
       setErrorMsg(msg);

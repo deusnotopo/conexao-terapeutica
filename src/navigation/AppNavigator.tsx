@@ -174,6 +174,11 @@ const NavigationContent = () => {
               name="EditDependent"
               component={EditDependentScreen}
             />
+            <Stack.Screen
+              name="AddDependent"
+              component={OnboardingScreen}
+              options={{ presentation: 'modal' }}
+            />
           </>
         )}
       </Stack.Navigator>

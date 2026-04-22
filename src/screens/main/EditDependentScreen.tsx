@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -36,8 +36,10 @@ export const EditDependentScreen = ({ navigation, route }: any) => {
       ? `${initialDateParts[2]}/${initialDateParts[1]}/${initialDateParts[0]}`
       : dependent.birth_date;
 
-  const [firstName, setFirstName] = useState(dependent.name);
-  const [lastName, setLastName] = useState("");
+  // Parse name into first/last for UI display
+  const nameParts = (dependent.name || '').split(' ');
+  const [firstName, setFirstName] = useState(nameParts[0] || '');
+  const [lastName, setLastName] = useState(nameParts.slice(1).join(' ') || '');
   const [birthDate, setBirthDate] = useState(initialFormattedDate);
   const [diagnosis, setDiagnosis] = useState(dependent.diagnosis || '');
 
@@ -70,10 +72,8 @@ export const EditDependentScreen = ({ navigation, route }: any) => {
       const result = await syncService.perform('dependentService', 'updateDependent', [
         dependent.id,
         {
-          first_name: firstName.trim(),
-          last_name: lastName.trim(),
+          name: `${firstName.trim()} ${lastName.trim()}`.trim(),
           birth_date: isoDate,
-          diagnosis: diagnosis.trim(),
         },
       ]);
 

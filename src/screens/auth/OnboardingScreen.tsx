@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -58,11 +58,9 @@ export const OnboardingScreen = ({ navigation }: any) => {
     setLoading(true);
     try {
       const result = await syncService.perform('dependentService', 'createDependent', [{
-        primary_user_id: user?.id,
-        first_name: firstName.trim(),
-        last_name: lastName.trim(),
+        user_id: user?.id,
+        name: `${firstName.trim()} ${lastName.trim()}`.trim(),
         birth_date: isoDate,
-        diagnosis: diagnosis.trim(),
       }]);
 
       if (!result.success && !result.metadata?.enqueued) {

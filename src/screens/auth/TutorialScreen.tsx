@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,8 +8,9 @@ import {
   ScrollView,
   Dimensions,
   Animated,
+  useWindowDimensions,
 } from 'react-native';
-import { colors, spacing, typography } from '../../theme';
+import { colors, spacing, typography, radii, shadows } from '../../theme';
 import {
   Home,
   Calendar,
@@ -27,15 +28,13 @@ import {
   Moon,
   Zap,
   Heart,
-  FileText,
-  BarChart2,
   UserPlus,
   Smile,
   ChevronRight,
+  ChevronLeft,
   CheckCircle,
+  BarChart2,
 } from 'lucide-react-native';
-
-const { width } = Dimensions.get('window');
 
 const SLIDES = [
   {
@@ -56,7 +55,7 @@ const SLIDES = [
     subtitle:
       'Veja o próximo compromisso, atividades de hoje, metas em aberto e medicamentos, tudo de uma vez.',
     color: colors.primary,
-    bg: `${colors.primary}10`,
+    bg: `${colors.primary}12`,
   },
   {
     key: 'agenda',
@@ -104,7 +103,7 @@ const SLIDES = [
     iconColor: colors.emerald,
     title: 'Cofre de Documentos',
     subtitle:
-      'Armazene laudos, receitas, exames e relatórios com segurança. Busque e filtre por categoria a qualquer hora.',
+      'Armazene laudos, receitas, exames e relatórios com segurança. Busque e filtre por categoria.',
     color: colors.emerald,
     bg: colors.emeraldBg,
   },
@@ -114,7 +113,7 @@ const SLIDES = [
     iconColor: colors.success,
     title: 'Controle de Gastos',
     subtitle:
-      'Registre despesas com saúde (terapia, remédios, exames). Veja o total por mês e o breakdown por categoria.',
+      'Registre despesas com saúde (terapia, remédios, exames). Veja o total por mês e breakdown por categoria.',
     color: colors.success,
     bg: colors.emeraldBg,
   },
@@ -154,7 +153,7 @@ const SLIDES = [
     iconColor: colors.purple,
     title: 'Diário de Sono',
     subtitle:
-      'Acompanhe a qualidade e duração do sono. Informações valiosas para terapeutas e neuropediatras.',
+      'Acompanhe a qualidade e duração do sono — informações valiosas para terapeutas e neuropediatras.',
     color: colors.purple,
     bg: colors.purpleBg,
   },
@@ -164,7 +163,7 @@ const SLIDES = [
     iconColor: colors.amber,
     title: 'Diário dos Pais',
     subtitle:
-      'Registre como foi o dia com seu filho. Acompanhe seu humor e anote momentos importantes para lembrar depois.',
+      'Registre como foi o dia com seu filho. Acompanhe o humor e anote momentos importantes.',
     color: colors.amber,
     bg: colors.amberBg,
   },
@@ -194,24 +193,32 @@ const SLIDES = [
     iconType: 'emoji',
     title: 'Tudo pronto!',
     subtitle:
-      'Você está preparado para organizar a jornada do seu filho. Qualquer dúvida, este tutorial está no menu Perfil.',
-    color: colors.primary,
+      'Você está preparado para organizar a jornada do seu filho. Este tutorial fica no menu Perfil, sempre disponível.',
+    color: colors.primaryDark,
     bg: `${colors.primary}15`,
   },
-];
+] as const;
 
 export const TutorialScreen = ({ navigation, route }: any) => {
+  const { width } = useWindowDimensions(); // responsive: recalculates on resize
   const [current, setCurrent] = useState(0);
-  const scrollRef = useRef<any>(null);
+  const scrollRef = useRef<ScrollView>(null);
   const fromProfile = route?.params?.fromProfile || false;
 
-  const goTo = (index: any) => {
+  // Animate content on slide change
+  const contentAnim = useRef(new Animated.Value(1)).current;
+
+  const goTo = (index: number) => {
     if (index < 0 || index >= SLIDES.length) return;
-    setCurrent(index);
-    scrollRef.current?.scrollTo({ x: index * width, animated: true });
+
+    // Brief fade-out → update state → fade-in
+    Animated.timing(contentAnim, { toValue: 0, duration: 100, useNativeDriver: true }).start(() => {
+      setCurrent(index);
+      scrollRef.current?.scrollTo({ x: index * width, animated: false });
+      Animated.timing(contentAnim, { toValue: 1, duration: 220, useNativeDriver: true }).start();
+    });
   };
 
-  // Check if we're in the post-login onboarding flow (Onboarding screen exists in navigator)
   const canGoToOnboarding = () => {
     const state = navigation.getState?.();
     if (!state) return false;
@@ -224,7 +231,6 @@ export const TutorialScreen = ({ navigation, route }: any) => {
     } else if (canGoToOnboarding()) {
       navigation.replace('Onboarding');
     } else {
-      // Came from LoginScreen (unauthenticated) — go back to Login
       navigation.goBack();
     }
   };
@@ -239,92 +245,135 @@ export const TutorialScreen = ({ navigation, route }: any) => {
     }
   };
 
-  const isLast = current === SLIDES.length - 1;
+  const isLast  = current === SLIDES.length - 1;
+  const isFirst = current === 0;
+  const slide   = SLIDES[current];
+  const SlideIcon = (slide as any).Icon as React.ComponentType<{ color?: string; size?: number }> | undefined;
+
+  // Progress bar width
+  const progressPct = ((current + 1) / SLIDES.length) * 100;
 
   return (
     <SafeAreaView style={styles.safe}>
-      {/* Header */}
+
+      {/* ── Top Bar ── */}
       <View style={styles.topBar}>
         <Text style={styles.slideCount}>
-          {current + 1} / {SLIDES.length}
+          {current + 1} <Text style={styles.slideTotal}>/ {SLIDES.length}</Text>
         </Text>
-        <TouchableOpacity onPress={handleSkip} style={styles.skipBtn}>
+        <TouchableOpacity onPress={handleSkip} style={styles.skipBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
           <Text style={styles.skipText}>Pular</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Slides */}
+      {/* ── Progress Bar ── */}
+      <View style={styles.progressTrack}>
+        <Animated.View
+          style={[
+            styles.progressFill,
+            { width: `${progressPct}%`, backgroundColor: slide.color },
+          ]}
+        />
+      </View>
+
+      {/* ── Slide Content — single view, animated in/out ── */}
       <ScrollView
         ref={scrollRef}
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
-        scrollEnabled={false}
-        style={styles.scrollView}
+        scrollEnabled={false}           // swipe disabled: we control navigation
+        style={{ flex: 1 }}
       >
-        {SLIDES.map((slide, idx) => {
-          const SlideIcon = (slide as any).Icon as React.ComponentType<{ color?: string; size?: number }> | undefined;
+        {SLIDES.map((s, idx) => {
+          const SIcon = (s as any).Icon as React.ComponentType<{ color?: string; size?: number }> | undefined;
           return (
-            <View key={slide.key} style={[styles.slide, { width }]}>
-              <View style={[styles.iconWrapper, { backgroundColor: slide.bg }]}>
-                {slide.iconType === 'emoji' ? (
-                  <Text style={styles.emoji}>{slide.emoji}</Text>
-                ) : SlideIcon ? (
-                  <SlideIcon color={(slide as any).iconColor} size={52} />
+            <Animated.View
+              key={s.key}
+              style={[
+                styles.slide,
+                { width },
+                idx === current ? { opacity: contentAnim } : { opacity: 0 },
+              ]}
+            >
+              {/* Icon Card */}
+              <View style={[styles.iconCard, { backgroundColor: s.bg }]}>
+                {(s as any).iconType === 'emoji' ? (
+                  <Text style={styles.emoji}>{(s as any).emoji}</Text>
+                ) : SIcon ? (
+                  <SIcon color={(s as any).iconColor} size={56} />
                 ) : null}
               </View>
-              <Text style={[styles.slideTitle, { color: slide.color }]}>
-                {slide.title}
-              </Text>
-              <Text style={styles.slideSubtitle}>{slide.subtitle}</Text>
-            </View>
+
+              {/* Slide number badge */}
+              <View style={[styles.slideBadge, { backgroundColor: `${s.color}18` }]}>
+                <Text style={[styles.slideBadgeText, { color: s.color }]}>
+                  {idx + 1} de {SLIDES.length}
+                </Text>
+              </View>
+
+              <Text style={[styles.slideTitle, { color: s.color }]}>{s.title}</Text>
+              <Text style={styles.slideSubtitle}>{s.subtitle}</Text>
+            </Animated.View>
           );
         })}
-
       </ScrollView>
 
-      {/* Dots */}
-      <View style={styles.dots}>
+      {/* ── Dots — scrollable if too many ── */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.dots}
+        style={styles.dotsScroll}
+      >
         {SLIDES.map((_, idx) => (
-          <TouchableOpacity key={idx} onPress={() => goTo(idx)}>
-            <View
+          <TouchableOpacity
+            key={idx}
+            onPress={() => goTo(idx)}
+            hitSlop={{ top: 10, bottom: 10, left: 4, right: 4 }}
+            accessibilityRole="button"
+            accessibilityLabel={`Ir para slide ${idx + 1}`}
+          >
+            <Animated.View
               style={[
                 styles.dot,
-                idx === current ? styles.dotActive : styles.dotInactive,
+                idx === current
+                  ? [styles.dotActive, { backgroundColor: slide.color }]
+                  : styles.dotInactive,
               ]}
             />
           </TouchableOpacity>
         ))}
-      </View>
+      </ScrollView>
 
-      {/* Navigation Buttons */}
+      {/* ── Navigation Buttons ── */}
       <View style={styles.navRow}>
         <TouchableOpacity
-          style={[styles.backBtn, current === 0 && styles.btnDisabled]}
+          style={[styles.backBtn, isFirst && styles.btnHidden]}
           onPress={() => goTo(current - 1)}
-          disabled={current === 0}
+          disabled={isFirst}
+          accessibilityLabel="Slide anterior"
         >
-          <Text
-            style={[
-              styles.backBtnText,
-              current === 0 && styles.btnDisabledText,
-            ]}
-          >
-            ← Anterior
-          </Text>
+          <ChevronLeft color={colors.textSecondary} size={20} />
+          <Text style={styles.backBtnText}>Anterior</Text>
         </TouchableOpacity>
 
         {isLast ? (
-          <TouchableOpacity style={styles.finishBtn} onPress={handleFinish}>
+          <TouchableOpacity
+            style={[styles.nextBtn, { backgroundColor: colors.primaryDark }]}
+            onPress={handleFinish}
+            accessibilityLabel={fromProfile ? 'Fechar tutorial' : 'Começar a usar o app'}
+          >
             <CheckCircle color={colors.surface} size={20} />
-            <Text style={styles.finishBtnText}>
+            <Text style={styles.nextBtnText}>
               {fromProfile ? 'Fechar' : 'Começar!'}
             </Text>
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
-            style={styles.nextBtn}
+            style={[styles.nextBtn, { backgroundColor: slide.color }]}
             onPress={() => goTo(current + 1)}
+            accessibilityLabel="Próximo slide"
           >
             <Text style={styles.nextBtnText}>Próximo</Text>
             <ChevronRight color={colors.surface} size={20} />
@@ -337,120 +386,148 @@ export const TutorialScreen = ({ navigation, route }: any) => {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
+
+  // ── Header ──────────────────────────────────────────────────────────────────
   topBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: spacing.l,
-    paddingVertical: spacing.m,
+    paddingTop: spacing.m,
+    paddingBottom: spacing.s,
   },
   slideCount: {
-    ...(typography.caption as object),
+    fontSize: 16,
     fontWeight: '700' as const,
-    color: colors.textSecondary,
+    color: colors.text,
   },
-  skipBtn: { padding: spacing.s },
+  slideTotal: {
+    fontWeight: '400' as const,
+    color: colors.textSecondary,
+    fontSize: 14,
+  },
+  skipBtn: {
+    paddingHorizontal: spacing.m,
+    paddingVertical: spacing.s,
+    borderRadius: radii.chip,
+    backgroundColor: `${colors.textSecondary}12`,
+  },
   skipText: {
     ...(typography.body2 as object),
     color: colors.textSecondary,
     fontWeight: '600' as const,
   },
 
-  scrollView: { flex: 1 },
+  // ── Progress ─────────────────────────────────────────────────────────────────
+  progressTrack: {
+    height: 3,
+    backgroundColor: colors.border,
+    marginHorizontal: spacing.l,
+    borderRadius: 2,
+    marginBottom: spacing.s,
+  },
+  progressFill: {
+    height: 3,
+    borderRadius: 2,
+  },
+
+  // ── Slide ────────────────────────────────────────────────────────────────────
   slide: {
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: spacing.xl,
     paddingVertical: spacing.l,
+    maxWidth: 640,
+    alignSelf: 'center',
   },
-  iconWrapper: {
-    width: 120,
-    height: 120,
+  iconCard: {
+    width: 130,
+    height: 130,
     borderRadius: 36,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: spacing.xl,
+    marginBottom: spacing.l,
+    ...shadows.card,
   },
-  emoji: { fontSize: 56 },
+  emoji: { fontSize: 60 },
+  slideBadge: {
+    paddingHorizontal: spacing.m,
+    paddingVertical: spacing.xs,
+    borderRadius: radii.chip,
+    marginBottom: spacing.m,
+  },
+  slideBadgeText: {
+    fontSize: 12,
+    fontWeight: '700' as const,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
   slideTitle: {
     ...(typography.h2 as object),
     textAlign: 'center',
     marginBottom: spacing.m,
-    lineHeight: 32,
+    lineHeight: 34,
   },
   slideSubtitle: {
     ...(typography.body1 as object),
     color: colors.textSecondary,
     textAlign: 'center',
     lineHeight: 26,
+    maxWidth: 360,
   },
 
+  // ── Dots ─────────────────────────────────────────────────────────────────────
+  dotsScroll: { flexGrow: 0, maxHeight: 32 },
   dots: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     gap: 6,
-    paddingVertical: spacing.m,
+    paddingHorizontal: spacing.l,
+    paddingVertical: spacing.s,
   },
   dot: { borderRadius: 4, height: 8 },
-  dotActive: { width: 24, backgroundColor: colors.primary },
+  dotActive: { width: 24 },
   dotInactive: { width: 8, backgroundColor: colors.border },
 
+  // ── Nav buttons ──────────────────────────────────────────────────────────────
   navRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: spacing.l,
     paddingBottom: spacing.xl,
+    paddingTop: spacing.s,
     gap: spacing.m,
   },
   backBtn: {
     flex: 1,
-    paddingVertical: spacing.m,
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: colors.border,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: spacing.m,
+    borderRadius: radii.m,
+    borderWidth: 1.5,
+    borderColor: colors.border,
+    gap: spacing.xs,
   },
   backBtnText: {
     ...(typography.body2 as object),
     fontWeight: '700' as const,
     color: colors.textSecondary,
   },
-  btnDisabled: {
-    borderColor: colors.background,
-    backgroundColor: colors.background,
-  },
-  btnDisabledText: { color: colors.border },
+  btnHidden: { opacity: 0, pointerEvents: 'none' } as any,
 
   nextBtn: {
     flex: 2,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.primary,
-    borderRadius: 14,
-    paddingVertical: spacing.m,
+    paddingVertical: spacing.m + 2,
+    borderRadius: radii.m,
     gap: spacing.s,
+    ...shadows.button,
   },
   nextBtnText: {
-    ...(typography.body1 as object),
-    color: colors.surface,
-    fontWeight: '700' as const,
-  },
-
-  finishBtn: {
-    flex: 2,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.primaryDark,
-    borderRadius: 14,
-    paddingVertical: spacing.m,
-    gap: spacing.s,
-  },
-  finishBtnText: {
     ...(typography.body1 as object),
     color: colors.surface,
     fontWeight: '700' as const,

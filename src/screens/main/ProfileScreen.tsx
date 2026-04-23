@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -40,6 +40,7 @@ import {
   UserPlus,
   BarChart2,
 } from 'lucide-react-native';
+import { logScreen, logEvent } from '../../lib/firebase';
 
 const SECTIONS = [
   {
@@ -267,6 +268,10 @@ export const ProfileScreen = ({ navigation }: any) => {
   const [avatarUri, setAvatarUri] = useState(profile?.avatar_url || null);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
+  useEffect(() => {
+    logScreen('Profile');
+  }, []);
+
   const pickAvatar = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
@@ -297,6 +302,9 @@ export const ProfileScreen = ({ navigation }: any) => {
       const res = await updateAvatar(fileBody as any, ext);
       
       if (res.success) {
+        logEvent('avatar_update_success', { 
+          from_cache: !!res.metadata?.enqueued 
+        });
         if (res.data?.avatar_url) {
           setAvatarUri(res.data.avatar_url);
         } else if (res.metadata?.enqueued) {
@@ -319,6 +327,7 @@ export const ProfileScreen = ({ navigation }: any) => {
         text: 'Sair',
         style: 'destructive',
         onPress: async () => {
+          logEvent('logout');
           await logout();
         },
       },

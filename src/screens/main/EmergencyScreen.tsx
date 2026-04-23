@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -19,13 +19,19 @@ import {
   Shield,
   User,
 } from 'lucide-react-native';
+import { logScreen, logEvent } from '../../lib/firebase';
 
 export const EmergencyScreen = ({ navigation }: any) => {
   const { activeDependent } = useUser();
   const { record, loading } = useMedicalRecord(activeDependent?.id ?? "");
 
-  const call = (phone: any) => {
+  useEffect(() => {
+    logScreen('Emergency');
+  }, []);
+
+  const call = (phone: any, contactType: string) => {
     if (!phone) return;
+    logEvent('emergency_call_attempt', { type: contactType });
     Linking.openURL(`tel:${phone.replace(/\D/g, '')}`);
   };
 
@@ -138,7 +144,7 @@ export const EmergencyScreen = ({ navigation }: any) => {
                   {record.emergency_contact_phone && (
                     <TouchableOpacity
                       style={styles.callBtn}
-                      onPress={() => call(record.emergency_contact_phone)}
+                      onPress={() => call(record.emergency_contact_phone, 'contact')}
                     >
                       <Phone color={colors.surface} size={22} />
                       <Text style={styles.callBtnText}>LIGAR</Text>
@@ -170,7 +176,7 @@ export const EmergencyScreen = ({ navigation }: any) => {
                         styles.callBtn,
                         { backgroundColor: colors.primary },
                       ]}
-                      onPress={() => call(record.primary_physician_phone)}
+                      onPress={() => call(record.primary_physician_phone, 'physician')}
                     >
                       <Phone color={colors.surface} size={22} />
                       <Text style={styles.callBtnText}>LIGAR</Text>
@@ -216,7 +222,10 @@ export const EmergencyScreen = ({ navigation }: any) => {
       <View style={styles.stickyFooter}>
         <TouchableOpacity
           style={styles.samuBtn}
-          onPress={() => Linking.openURL('tel:192')}
+          onPress={() => {
+            logEvent('emergency_call_attempt', { type: 'samu' });
+            Linking.openURL('tel:192');
+          }}
         >
           <Phone color={colors.surface} size={24} />
           <Text style={styles.samuText}>Ligar para o SAMU — 192</Text>

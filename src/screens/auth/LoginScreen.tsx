@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -16,6 +16,7 @@ import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
 import { colors, spacing, typography } from '../../theme';
 import { Eye, EyeOff } from 'lucide-react-native';
+import { logScreen, logEvent } from '../../lib/firebase';
 
 export const LoginScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState('');
@@ -27,6 +28,10 @@ export const LoginScreen = ({ navigation }: any) => {
   const [successMsg, setSuccessMsg] = useState('');
   const [waitingEmailConfirm, setWaitingEmailConfirm] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    logScreen('Login');
+  }, []);
 
   async function signInWithEmail() {
     setErrorMsg('');
@@ -42,6 +47,8 @@ export const LoginScreen = ({ navigation }: any) => {
     const result = await authService.signIn(email, password);
     if (!result.success) {
       setErrorMsg(result.error ?? 'Erro ao fazer login.');
+    } else {
+      logEvent('login', { method: 'email' });
     }
     setLoading(false);
   }

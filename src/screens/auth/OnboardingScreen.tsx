@@ -17,12 +17,18 @@ import { Input } from '../../components/Input';
 import { Baby, Calendar, Stethoscope, Heart } from 'lucide-react-native';
 
 import { webAlert } from '../../lib/webAlert';
+import { logScreen, logEvent } from '../../lib/firebase';
+import { useEffect } from 'react';
 
 export const OnboardingScreen = ({ navigation, route }: any) => {
   const isModal = route?.name === 'AddDependent';
   const { user, refreshContext } = useUser();
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+
+  useEffect(() => {
+    logScreen(isModal ? 'AddDependent' : 'Onboarding');
+  }, [isModal]);
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -69,6 +75,8 @@ export const OnboardingScreen = ({ navigation, route }: any) => {
         setErrorMsg(result.error || 'Não foi possível salvar os dados.');
         return;
       }
+
+      logEvent('onboarding_completed', { type: isModal ? 'extra' : 'initial' });
 
       // refreshContext updates dependents state → Navigator re-renders automatically
       await refreshContext();

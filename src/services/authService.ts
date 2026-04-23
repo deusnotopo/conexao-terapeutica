@@ -1,5 +1,11 @@
 import { supabase } from '../lib/supabase';
 import { Result } from '../lib/result';
+import { Platform } from 'react-native';
+
+// URL base do app — web usa Firebase Hosting, nativo usa deep link
+const APP_URL = Platform.OS === 'web'
+  ? 'https://conexao-unicornio.web.app'
+  : 'conexaoterapeutica://';
 
 // Use a loose type to accommodate Supabase's complex auth union types
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -38,6 +44,9 @@ export const authService = {
         password,
         options: {
           data: { full_name: fullName },
+          // Supabase envia o link de confirmação apontando para esta URL.
+          // Deve estar na whitelist de Redirect URLs no painel do Supabase.
+          emailRedirectTo: APP_URL,
         },
       });
 
@@ -62,7 +71,9 @@ export const authService = {
     if (!email) return Result.fail('Por favor, informe seu e-mail.');
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-        redirectTo: 'conexaoterapeutica://reset-password',
+        redirectTo: Platform.OS === 'web'
+          ? `${APP_URL}/reset-password`
+          : 'conexaoterapeutica://reset-password',
       });
       if (error) return Result.fail(error.message);
       return Result.ok(true);

@@ -6,7 +6,7 @@ import { AppNavigator } from './src/navigation/AppNavigator';
 import { SyncProvider } from './src/context/SyncContext';
 import { Toast } from './src/components/Toast';
 import { notificationService } from './src/services/notificationService';
-import { initAnalytics } from './src/lib/firebase';
+import { initAnalytics, initPerformance, initAppCheck, initRemoteConfig } from './src/lib/firebase';
 
 // ── Error Boundary ──────────────────────────────────────────────────────────────
 type ErrorBoundaryProps = {
@@ -59,7 +59,13 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
 export default function App() {
   React.useEffect(() => {
     notificationService.requestPermissions();
-    initAnalytics(); // Firebase Analytics — web only, non-critical
+    // Firebase — todos em paralelo, falha silenciosa
+    Promise.all([
+      initAnalytics(),
+      initPerformance(),
+      initAppCheck(),
+      initRemoteConfig(),
+    ]);
   }, []);
 
   return (

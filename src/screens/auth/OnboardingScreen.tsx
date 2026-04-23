@@ -260,7 +260,6 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 520,
     alignSelf: 'center',
-    flex: 1,
   },
   cardWrapper: {
     backgroundColor: colors.surface,

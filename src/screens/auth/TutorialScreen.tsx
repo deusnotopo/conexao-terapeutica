@@ -126,11 +126,8 @@ export const TutorialScreen = ({ navigation, route }: any) => {
 
   const goTo = (index: number) => {
     if (index < 0 || index >= SLIDES.length) return;
-    Animated.timing(contentAnim, { toValue: 0, duration: 80, useNativeDriver: true }).start(() => {
-      setCurrent(index);
-      scrollRef.current?.scrollTo({ x: index * width, animated: false });
-      Animated.timing(contentAnim, { toValue: 1, duration: 200, useNativeDriver: true }).start();
-    });
+    setCurrent(index);
+    scrollRef.current?.scrollTo({ x: index * width, animated: true });
   };
 
   const canGoToOnboarding = () => {
@@ -197,12 +194,11 @@ export const TutorialScreen = ({ navigation, route }: any) => {
         {SLIDES.map((s, idx) => {
           const SIcon = (s as any).Icon as React.ComponentType<{ color?: string; size?: number }> | undefined;
           return (
-            <Animated.View
+            <View
               key={s.key}
               style={[
                 styles.slide,
                 { width, paddingHorizontal: hPad },
-                idx === current ? { opacity: contentAnim } : { opacity: 0 },
               ]}
             >
               {/* Icon */}
@@ -250,7 +246,7 @@ export const TutorialScreen = ({ navigation, route }: any) => {
                   {s.subtitle}
                 </Text>
               </ScrollView>
-            </Animated.View>
+            </View>
           );
         })}
       </ScrollView>

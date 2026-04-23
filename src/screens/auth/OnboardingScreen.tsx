@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -11,29 +11,30 @@ import {
 } from 'react-native';
 import { syncService } from '../../services/syncService';
 import { useUser } from '../../context/UserContext';
-import { colors, spacing, typography } from '../../theme';
+import { colors, spacing, typography, radii, shadows } from '../../theme';
 import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
 import { Baby, Calendar, Stethoscope, Heart } from 'lucide-react-native';
 
-import { webAlert } from '../../lib/webAlert';
 import { logScreen, logEvent } from '../../lib/firebase';
-import { useEffect } from 'react';
+import { useResponsive } from '../../utils/responsive';
 
 export const OnboardingScreen = ({ navigation, route }: any) => {
   const isModal = route?.name === 'AddDependent';
   const { user, refreshContext } = useUser();
+  const { isSmall, isTablet, hPad, cardPad } = useResponsive();
+
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
-
-  useEffect(() => {
-    logScreen(isModal ? 'AddDependent' : 'Onboarding');
-  }, [isModal]);
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [birthDate, setBirthDate] = useState('');
   const [diagnosis, setDiagnosis] = useState('');
+
+  useEffect(() => {
+    logScreen(isModal ? 'AddDependent' : 'Onboarding');
+  }, [isModal]);
 
   const handleDateChange = (text: any) => {
     let raw = text.replace(/\D/g, '');
@@ -48,9 +49,7 @@ export const OnboardingScreen = ({ navigation, route }: any) => {
 
   const handleCompleteOnboarding = async () => {
     if (!firstName.trim() || !lastName.trim() || !birthDate.trim()) {
-      setErrorMsg(
-        'Por favor, preencha o nome e a data de nascimento do seu pequeno.'
-      );
+      setErrorMsg('Por favor, preencha o nome e a data de nascimento do seu pequeno.');
       return;
     }
 
@@ -78,7 +77,6 @@ export const OnboardingScreen = ({ navigation, route }: any) => {
 
       logEvent('onboarding_completed', { type: isModal ? 'extra' : 'initial' });
 
-      // refreshContext updates dependents state → Navigator re-renders automatically
       await refreshContext();
       if (isModal) {
         navigation.goBack();
@@ -97,76 +95,100 @@ export const OnboardingScreen = ({ navigation, route }: any) => {
     }
   };
 
+  const showCard = isTablet;
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={{ flex: 1 }}
+        style={styles.flex}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
       >
+        {/*
+          Removed alignItems: 'center' from contentContainerStyle.
+          It causes layout/scroll breaking on mobile web. We center items below using an inner View constraint.
+        */}
         <ScrollView
-          style={{ flex: 1 }}
-          contentContainerStyle={styles.container}
+          style={styles.flex}
+          contentContainerStyle={[
+            styles.scrollContent,
+            { paddingHorizontal: hPad },
+            isSmall && { paddingVertical: spacing.l }
+          ]}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.header}>
-            <View style={styles.iconCircle}>
-              <Heart color={colors.primary} size={40} fill={colors.primary} />
+          {/* Inner centering wrapper */}
+          <View style={[styles.innerWrapper, showCard && styles.cardWrapper, showCard && { padding: cardPad }]}>
+
+            <View style={[styles.header, isSmall && { marginBottom: spacing.l }]}>
+              <View style={[styles.iconCircle, isSmall && styles.iconCircleSmall]}>
+                <Heart color={colors.primary} size={isSmall ? 32 : 40} fill={colors.primary} />
+              </View>
+              <Text style={[styles.title, isSmall && { fontSize: 24 }]}>
+                Bem-vindo(a)!
+              </Text>
+              <Text style={styles.subtitle}>
+                Para começar, vamos cadastrar o perfil do seu pequeno.
+              </Text>
             </View>
-            <Text style={styles.title}>Bem-vindo(a)!</Text>
-            <Text style={styles.subtitle}>
-              Para começar, vamos cadastrar o perfil do seu pequeno.
+
+            <View style={styles.form}>
+              <Input
+                label="Nome"
+                value={firstName}
+                onChangeText={setFirstName}
+                placeholder="Ex: João"
+                autoCorrect={false}
+                returnKeyType="next"
+                icon={<Baby size={20} color={colors.textSecondary} />}
+              />
+              <Input
+                label="Sobrenome"
+                value={lastName}
+                onChangeText={setLastName}
+                placeholder="Ex: Silva"
+                autoCorrect={false}
+                returnKeyType="next"
+              />
+              <Input
+                label="Data de Nascimento (DD/MM/AAAA)"
+                value={birthDate}
+                onChangeText={handleDateChange}
+                placeholder="Ex: 25/11/2020"
+                keyboardType="numeric"
+                returnKeyType="next"
+                icon={<Calendar size={20} color={colors.textSecondary} />}
+              />
+              <Input
+                label="Diagnóstico (Opcional)"
+                value={diagnosis}
+                onChangeText={setDiagnosis}
+                placeholder="Ex: TEA, TDAH, etc."
+                returnKeyType="done"
+                onSubmitEditing={handleCompleteOnboarding}
+                icon={<Stethoscope size={20} color={colors.textSecondary} />}
+              />
+            </View>
+
+            {errorMsg ? (
+              <View style={styles.errorBox}>
+                <Text style={styles.errorText}>⚠️ {errorMsg}</Text>
+              </View>
+            ) : null}
+
+            <Button
+              title={loading ? 'Salvando...' : 'Começar Minha Jornada'}
+              onPress={handleCompleteOnboarding}
+              loading={loading}
+              style={styles.button}
+            />
+
+            <Text style={styles.footerText}>
+              Você poderá adicionar outros dependentes ou convidar familiares depois.
             </Text>
+
           </View>
-
-          <View style={styles.form}>
-            <Input
-              label="Nome"
-              value={firstName}
-              onChangeText={setFirstName}
-              placeholder="Ex: João"
-              icon={<Baby size={20} color={colors.textSecondary} />}
-            />
-            <Input
-              label="Sobrenome"
-              value={lastName}
-              onChangeText={setLastName}
-              placeholder="Ex: Silva"
-            />
-            <Input
-              label="Data de Nascimento (DD/MM/AAAA)"
-              value={birthDate}
-              onChangeText={handleDateChange}
-              placeholder="Ex: 25/11/2020"
-              keyboardType="numeric"
-              icon={<Calendar size={20} color={colors.textSecondary} />}
-            />
-            <Input
-              label="Diagnóstico (Opcional)"
-              value={diagnosis}
-              onChangeText={setDiagnosis}
-              placeholder="Ex: TEA, TDAH, etc."
-              icon={<Stethoscope size={20} color={colors.textSecondary} />}
-            />
-          </View>
-
-          {errorMsg ? (
-            <View style={styles.errorBox}>
-              <Text style={styles.errorText}>⚠️ {errorMsg}</Text>
-            </View>
-          ) : null}
-
-          <Button
-            title={loading ? 'Salvando...' : 'Começar Minha Jornada'}
-            onPress={handleCompleteOnboarding}
-            loading={loading}
-            style={styles.button}
-          />
-
-          <Text style={styles.footerText}>
-            Você poderá adicionar outros dependentes ou convidar familiares
-            depois.
-          </Text>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -175,30 +197,33 @@ export const OnboardingScreen = ({ navigation, route }: any) => {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: colors.background },
-  container: {
-    maxWidth: 800,
-    alignSelf: 'center',
-    width: '100%',
+  flex: { flex: 1 },
+
+  scrollContent: {
     flexGrow: 1,
-    padding: spacing.xl,
-    alignItems: 'center',
-    paddingBottom: 120,
+    paddingVertical: spacing.xl,
+    paddingBottom: 120, // keep space for keyboard
   },
-  errorBox: {
-    backgroundColor: '#fee2e2',
-    borderRadius: 8,
-    padding: spacing.s,
-    marginTop: spacing.s,
-    marginBottom: spacing.s,
-    borderLeftWidth: 4,
-    borderLeftColor: colors.error,
+
+  // Centralizes content without breaking scroll view bounds
+  innerWrapper: {
     width: '100%',
+    maxWidth: 520,
+    alignSelf: 'center',
+    flex: 1,
   },
-  errorText: { color: colors.error, fontSize: 14, fontWeight: '500' as const },
+  cardWrapper: {
+    backgroundColor: colors.surface,
+    borderRadius: radii.l,
+    borderWidth: 1,
+    borderColor: colors.border,
+    ...shadows.card,
+    flex: 0, // don't stretch card to full height
+  },
+
   header: {
     alignItems: 'center',
     marginBottom: spacing.xxl,
-    marginTop: spacing.xl,
   },
   iconCircle: {
     width: 80,
@@ -209,21 +234,41 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: spacing.m,
   },
-  title: { ...(typography.h1 as object), color: colors.primaryDark, textAlign: 'center' },
+  iconCircleSmall: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+  },
+  title: {
+    ...(typography.h1 as object),
+    color: colors.primaryDark,
+    textAlign: 'center',
+  },
   subtitle: {
     ...(typography.body1 as object),
     color: colors.textSecondary,
     textAlign: 'center',
     marginTop: spacing.s,
-    paddingHorizontal: spacing.m,
   },
+
   form: { width: '100%', marginBottom: spacing.l },
-  button: { width: '100%', marginTop: spacing.m },
+
+  button: { width: '100%', marginTop: spacing.s },
+
+  errorBox: {
+    backgroundColor: '#fff1f2',
+    borderRadius: radii.s,
+    padding: spacing.m,
+    marginBottom: spacing.m,
+    borderLeftWidth: 3,
+    borderLeftColor: colors.error,
+  },
+  errorText: { color: colors.error, fontSize: 14, fontWeight: '500' as const },
+
   footerText: {
     ...(typography.caption as object),
     color: colors.textSecondary,
     textAlign: 'center',
     marginTop: spacing.xl,
-    paddingHorizontal: spacing.l,
   },
 });

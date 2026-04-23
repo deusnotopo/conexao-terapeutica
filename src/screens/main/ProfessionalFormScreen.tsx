@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Switch,
 } from 'react-native';
+import { KeyboardAvoidingView as KAV, Platform } from 'react-native';
 import { showToast } from '../../components/Toast';
 import { useProfessionals } from '../../hooks/useProfessionals';
 import { ProfessionalSchema } from '../../lib/schemas';
@@ -116,7 +117,12 @@ export const ProfessionalFormScreen = ({ navigation, route }: any) => {
         </Text>
         <View style={{ width: 40 }} />
       </View>
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container}>
+      <KAV
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+      >
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled">
         <Input
           label="Nome Completo"
           value={name}
@@ -211,6 +217,7 @@ export const ProfessionalFormScreen = ({ navigation, route }: any) => {
           loading={loading}
         />
       </View>
+      </KAV>
     </SafeAreaView>
   );
 };

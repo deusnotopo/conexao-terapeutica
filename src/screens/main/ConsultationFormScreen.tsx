@@ -7,6 +7,7 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
+import { KeyboardAvoidingView as KAV, Platform } from 'react-native';
 import { showToast } from '../../components/Toast';
 import { ConsultationSchema } from '../../lib/schemas';
 import { useUser } from '../../context/UserContext';
@@ -122,7 +123,12 @@ export const ConsultationFormScreen = ({ navigation, route }: any) => {
         <View style={{ width: 40 }} />
       </View>
 
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container}>
+      <KAV
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+      >
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled">
         <Text style={styles.label}>Especialidade</Text>
         <View style={styles.chips}>
           {SPECIALTIES.map((s: any) => (
@@ -193,6 +199,7 @@ export const ConsultationFormScreen = ({ navigation, route }: any) => {
           loading={loading}
         />
       </View>
+      </KAV>
     </SafeAreaView>
   );
 };

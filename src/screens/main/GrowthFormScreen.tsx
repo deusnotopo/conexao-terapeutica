@@ -7,6 +7,7 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
+import { KeyboardAvoidingView as KAV, Platform } from 'react-native';
 import { showToast } from '../../components/Toast';
 import { useUser } from '../../context/UserContext';
 import { useGrowth } from '../../hooks/useGrowth';
@@ -109,7 +110,12 @@ export const GrowthFormScreen = ({ navigation, route }: any) => {
         </Text>
         <View style={{ width: 40 }} />
       </View>
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container}>
+      <KAV
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+      >
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled">
         <View style={styles.infoBox}>
           <Text style={styles.infoText}>
             💡 Preencha os campos disponíveis. Todos são opcionais exceto a
@@ -166,6 +172,7 @@ export const GrowthFormScreen = ({ navigation, route }: any) => {
           loading={loading}
         />
       </View>
+      </KAV>
     </SafeAreaView>
   );
 };

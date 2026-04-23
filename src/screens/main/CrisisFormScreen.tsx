@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   TextInput,
 } from 'react-native';
+import { KeyboardAvoidingView as KAV, Platform } from 'react-native';
 import { showToast } from '../../components/Toast';
 import { useUser } from '../../context/UserContext';
 import { useCrises } from '../../hooks/useCrises';
@@ -161,7 +162,12 @@ export const CrisisFormScreen = ({ navigation, route }: any) => {
         </Text>
         <View style={{ width: 40 }} />
       </View>
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container}>
+      <KAV
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+      >
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled">
         <Text style={styles.label}>Tipo de Episódio *</Text>
         <View style={styles.chips}>
           {CRISIS_TYPES.map((t: any) => (
@@ -303,6 +309,7 @@ export const CrisisFormScreen = ({ navigation, route }: any) => {
           loading={loading}
         />
       </View>
+      </KAV>
     </SafeAreaView>
   );
 };

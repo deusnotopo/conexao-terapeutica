@@ -8,6 +8,7 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
+import { KeyboardAvoidingView as KAV, Platform } from 'react-native';
 import { showToast } from '../../components/Toast';
 import { useAgenda } from '../../hooks/useAgenda';
 import { useUser } from '../../context/UserContext';
@@ -184,7 +185,12 @@ export const EventFormScreen = ({ navigation, route }: any) => {
         <View style={{ width: 40 }} />
       </View>
 
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container}>
+      <KAV
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+      >
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled">
         <Input
           label="Título"
           value={title}
@@ -283,6 +289,7 @@ export const EventFormScreen = ({ navigation, route }: any) => {
           )}
         </View>
       </ScrollView>
+      </KAV>
     </SafeAreaView>
   );
 };

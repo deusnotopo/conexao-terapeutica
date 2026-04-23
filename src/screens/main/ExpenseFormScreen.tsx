@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Switch,
 } from 'react-native';
+import { KeyboardAvoidingView as KAV, Platform } from 'react-native';
 import { showToast } from '../../components/Toast';
 import { useUser } from '../../context/UserContext';
 import { useExpenses } from '../../hooks/useExpenses';
@@ -173,7 +174,12 @@ export const ExpenseFormScreen = ({ navigation, route }: any) => {
         <View style={{ width: 40 }} />
       </View>
 
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container}>
+      <KAV
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+      >
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled">
         <Text style={styles.label}>Categoria</Text>
         <View style={styles.chips}>
           {CATEGORIES.map((c: any) => (
@@ -279,6 +285,7 @@ export const ExpenseFormScreen = ({ navigation, route }: any) => {
           )}
         </View>
       </ScrollView>
+      </KAV>
     </SafeAreaView>
   );
 };

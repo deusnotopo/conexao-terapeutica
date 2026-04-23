@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Linking,
 } from 'react-native';
+import { KeyboardAvoidingView as KAV, Platform } from 'react-native';
 import { useUser } from '../../context/UserContext';
 import { useMedicalRecord } from '../../hooks/useMedicalRecord';
 import { colors, spacing, typography } from '../../theme';
@@ -115,7 +116,12 @@ export const MedicalRecordScreen = ({ navigation }: any) => {
         )}
       </View>
 
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container}>
+      <KAV
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+      >
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled">
         {activeDependent && (
           <View style={styles.patientCard}>
             <Heart
@@ -298,6 +304,7 @@ export const MedicalRecordScreen = ({ navigation }: any) => {
           />
         )}
       </ScrollView>
+      </KAV>
     </SafeAreaView>
   );
 };

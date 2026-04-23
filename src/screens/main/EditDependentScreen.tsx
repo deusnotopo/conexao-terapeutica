@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
+import { KeyboardAvoidingView as KAV, Platform } from 'react-native';
 import { webAlert } from '../../lib/webAlert';
 import { useUser } from '../../context/UserContext';
 import { syncService } from '../../services/syncService';
@@ -141,7 +142,12 @@ export const EditDependentScreen = ({ navigation, route }: any) => {
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container}>
+      <KAV
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+      >
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled">
         <View style={styles.form}>
           <Input
             label="Nome"
@@ -185,6 +191,7 @@ export const EditDependentScreen = ({ navigation, route }: any) => {
           style={styles.button}
         />
       </ScrollView>
+      </KAV>
     </SafeAreaView>
   );
 };

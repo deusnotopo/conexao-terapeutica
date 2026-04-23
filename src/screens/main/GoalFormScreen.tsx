@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
+import { KeyboardAvoidingView as KAV, Platform } from 'react-native';
 import { showToast } from '../../components/Toast';
 import { useGoals } from '../../hooks/useGoals';
 import { colors, spacing, typography } from '../../theme';
@@ -160,7 +161,12 @@ export const GoalFormScreen = ({ navigation, route }: any) => {
         )}
       </View>
 
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container}>
+      <KAV
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+      >
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled">
         <Input
           label="Título da Meta"
           value={title}
@@ -249,6 +255,7 @@ export const GoalFormScreen = ({ navigation, route }: any) => {
           loading={loading}
         />
       </View>
+      </KAV>
     </SafeAreaView>
   );
 };

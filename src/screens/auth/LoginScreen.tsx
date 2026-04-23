@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -279,7 +279,6 @@ const styles = StyleSheet.create({
 
   scroll: {
     flexGrow: 1,
-    justifyContent: 'center',
     paddingVertical: spacing.xl,
   },
 

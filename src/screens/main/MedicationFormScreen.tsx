@@ -7,6 +7,7 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
+import { KeyboardAvoidingView as KAV, Platform } from 'react-native';
 import { showToast } from '../../components/Toast';
 import { MedicationSchema } from '../../lib/schemas';
 import { useUser } from '../../context/UserContext';
@@ -142,7 +143,12 @@ export const MedicationFormScreen = ({ navigation, route }: any) => {
         <View style={{ width: 28 }} />
       </View>
 
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container}>
+      <KAV
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+      >
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled">
         <Input
           label="Nome do Medicamento"
           value={name}
@@ -218,6 +224,7 @@ export const MedicationFormScreen = ({ navigation, route }: any) => {
           disabled={loading}
         />
       </View>
+      </KAV>
     </SafeAreaView>
   );
 };

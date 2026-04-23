@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -27,10 +27,12 @@ import { useUser } from '../../context/UserContext';
 import { useAgenda } from '../../hooks/useAgenda';
 import { format, isToday, isTomorrow, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { useResponsive } from '../../utils/responsive';
 
 export const AgendaScreen = ({ navigation }: any) => {
   const { activeDependent } = useUser();
   const [activeTab, setActiveTab] = useState('upcoming'); // 'upcoming' ou 'history'
+  const { isSmall, hPad, isTablet } = useResponsive();
 
   const {
     events,
@@ -119,7 +121,7 @@ export const AgendaScreen = ({ navigation }: any) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
+      <View style={[styles.container, { paddingHorizontal: hPad }, isTablet && { alignSelf: 'center', width: '100%', maxWidth: 800 }]}>
         <View style={styles.header}>
           <View>
             <Text style={styles.title}>Agenda</Text>
@@ -295,12 +297,10 @@ export const AgendaScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: colors.background },
   container: {
-    maxWidth: 800,
-    alignSelf: 'center',
-    width: '100%',
-    flexGrow: 1,
-    paddingHorizontal: spacing.l,
-    paddingTop: spacing.m, paddingBottom: 100 },
+    flex: 1,
+    paddingTop: spacing.m, 
+    paddingBottom: 100 
+  },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',

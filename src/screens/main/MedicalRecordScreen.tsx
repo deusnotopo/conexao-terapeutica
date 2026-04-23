@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import {
 import { KeyboardAvoidingView as KAV, Platform } from 'react-native';
 import { useUser } from '../../context/UserContext';
 import { useMedicalRecord } from '../../hooks/useMedicalRecord';
+import { useResponsive } from '../../utils/responsive';
 import { colors, spacing, typography } from '../../theme';
 import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
@@ -40,6 +41,7 @@ const BLOOD_TYPES = [
 
 export const MedicalRecordScreen = ({ navigation }: any) => {
   const { activeDependent } = useUser();
+  const { isSmall, isTablet, hPad } = useResponsive();
   const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -120,8 +122,10 @@ export const MedicalRecordScreen = ({ navigation }: any) => {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
       >
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container}
-          keyboardShouldPersistTaps="handled">
+      <ScrollView 
+        style={[isTablet && { alignSelf: 'center', width: '100%', maxWidth: 800 }]} 
+        contentContainerStyle={[styles.container, { paddingHorizontal: hPad }]}
+        keyboardShouldPersistTaps="handled">
         {activeDependent && (
           <View style={styles.patientCard}>
             <Heart
@@ -354,11 +358,8 @@ const styles = StyleSheet.create({
   },
   headerTitle: { ...(typography.h3 as object), color: colors.primaryDark },
   container: {
-    maxWidth: 800,
-    alignSelf: 'center',
-    width: '100%',
     flexGrow: 1,
-    padding: spacing.l,
+    paddingVertical: spacing.l,
     paddingBottom: 120,
   },
   patientCard: {

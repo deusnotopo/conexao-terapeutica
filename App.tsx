@@ -5,6 +5,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { SyncProvider } from './src/context/SyncContext';
 import { Toast } from './src/components/Toast';
+import { NetworkBanner } from './src/components/NetworkBanner';
 import { notificationService } from './src/services/notificationService';
 import { initAnalytics, initPerformance, initAppCheck, initRemoteConfig } from './src/lib/firebase';
 
@@ -75,6 +76,7 @@ export default function App() {
           <StatusBar style="auto" />
           <AppNavigator />
           <Toast />
+          <NetworkBanner />
         </SyncProvider>
       </SafeAreaProvider>
     </ErrorBoundary>

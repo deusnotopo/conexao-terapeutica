@@ -1,5 +1,6 @@
 import { storage } from '../lib/storage';
 import { Result } from '../lib/result';
+import NetInfo from '@react-native-community/netinfo';
 import { medicationService } from './medicationService';
 import { agendaService } from './agendaService';
 import { crisisService } from './crisisService';
@@ -116,6 +117,12 @@ export const syncService = {
   async processQueue(): Promise<Result<{ successCount: number; failCount: number }>> {
     const queue = await this.getQueue();
     if (queue.length === 0) return Result.ok({ successCount: 0, failCount: 0 });
+
+    const netState = await NetInfo.fetch();
+    if (!netState.isConnected) {
+      // Abort gracefully to save battery and hide false timeouts
+      return Result.ok({ successCount: 0, failCount: queue.length });
+    }
 
     let successCount = 0;
     let failCount = 0;

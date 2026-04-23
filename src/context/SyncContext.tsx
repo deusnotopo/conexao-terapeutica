@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useRef } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
+import NetInfo from '@react-native-community/netinfo';
 import { syncService } from '../services/syncService';
 
 type SyncContextType = {
@@ -43,14 +44,23 @@ export const SyncProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const interval = setInterval(async () => {
       await checkQueue();
       if (pendingCountRef.current > 0) {
+        // We do a smart check inside syncService so we don't need logic here
         await syncService.processQueue();
         await checkQueue();
       }
     }, 5 * 60 * 1000);
 
+    // Akita Mode: Smart network listener
+    const unsubscribeNetInfo = NetInfo.addEventListener(state => {
+      if (state.isConnected && pendingCountRef.current > 0) {
+        syncService.processQueue().finally(checkQueue);
+      }
+    });
+
     return () => {
       subscription.remove();
       clearInterval(interval);
+      unsubscribeNetInfo();
     };
   }, []);
 

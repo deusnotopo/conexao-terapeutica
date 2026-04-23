@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -29,6 +29,7 @@ import {
 import { useUser } from '../../context/UserContext';
 import { useSync } from '../../context/SyncContext';
 import { useDashboardMetrics } from '../../hooks/useDashboardMetrics';
+import { useResponsive } from '../../utils/responsive';
 import { format, isToday } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -43,6 +44,7 @@ const TIPS = [
 export const DashboardScreen = ({ navigation }: any) => {
   const { profile, activeDependent } = useUser();
   const { pendingCount, triggerSync } = useSync();
+  const { isSmall, isTablet, hPad } = useResponsive();
   
   const {
     nextEvent,
@@ -76,8 +78,8 @@ export const DashboardScreen = ({ navigation }: any) => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.contentContainer}
+        style={[styles.container, isTablet && { alignSelf: 'center', width: '100%', maxWidth: 800 }]}
+        contentContainerStyle={[styles.contentContainer, { paddingHorizontal: hPad }]}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -278,9 +280,9 @@ export const DashboardScreen = ({ navigation }: any) => {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: colors.background },
-  container: { maxWidth: 800, alignSelf: 'center', width: '100%', flexGrow: 1 , paddingBottom: 100 },
+  container: { flexGrow: 1, paddingBottom: 100 },
   contentContainer: {
-    padding: spacing.l,
+    paddingVertical: spacing.l,
     paddingBottom: 100,
   },
   header: {

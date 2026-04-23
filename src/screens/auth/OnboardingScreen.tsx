@@ -32,6 +32,10 @@ export const OnboardingScreen = ({ navigation, route }: any) => {
   const [birthDate, setBirthDate] = useState('');
   const [diagnosis, setDiagnosis] = useState('');
 
+  const lastNameRef = React.useRef<any>(null);
+  const birthDateRef = React.useRef<any>(null);
+  const diagnosisRef = React.useRef<any>(null);
+
   useEffect(() => {
     logScreen(isModal ? 'AddDependent' : 'Onboarding');
   }, [isModal]);
@@ -58,6 +62,40 @@ export const OnboardingScreen = ({ navigation, route }: any) => {
       setErrorMsg('A data de nascimento deve estar no formato DD/MM/AAAA.');
       return;
     }
+
+    const day = parseInt(dateParts[0], 10);
+    const month = parseInt(dateParts[1], 10);
+    const year = parseInt(dateParts[2], 10);
+
+    // Basic date bound validation
+    if (month < 1 || month > 12 || day < 1 || day > 31) {
+      setErrorMsg('Data de nascimento inválida.');
+      return;
+    }
+
+    // Advanced: Check days in month
+    const daysInMonth = new Date(year, month, 0).getDate();
+    if (day > daysInMonth) {
+       setErrorMsg('O dia informado não existe para este mês.');
+       return;
+    }
+
+    // Future date validation
+    const inputDate = new Date(year, month - 1, day);
+    const today = new Date();
+    // Reset today's time so we only compare the date portion
+    today.setHours(0, 0, 0, 0);
+
+    if (inputDate > today) {
+       setErrorMsg('Você não pode cadastrar uma data no futuro.');
+       return;
+    }
+
+    if (year < 1920) {
+       setErrorMsg('Ano de nascimento inválido.');
+       return;
+    }
+
     const isoDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
 
     setErrorMsg('');
@@ -141,26 +179,37 @@ export const OnboardingScreen = ({ navigation, route }: any) => {
                 placeholder="Ex: João"
                 autoCorrect={false}
                 returnKeyType="next"
+                onSubmitEditing={() => lastNameRef.current?.focus()}
+                blurOnSubmit={false}
                 icon={<Baby size={20} color={colors.textSecondary} />}
+                maxLength={40}
               />
               <Input
+                ref={lastNameRef}
                 label="Sobrenome"
                 value={lastName}
                 onChangeText={setLastName}
                 placeholder="Ex: Silva"
                 autoCorrect={false}
                 returnKeyType="next"
+                onSubmitEditing={() => birthDateRef.current?.focus()}
+                blurOnSubmit={false}
+                maxLength={60}
               />
               <Input
+                ref={birthDateRef}
                 label="Data de Nascimento (DD/MM/AAAA)"
                 value={birthDate}
                 onChangeText={handleDateChange}
                 placeholder="Ex: 25/11/2020"
                 keyboardType="numeric"
                 returnKeyType="next"
+                onSubmitEditing={() => diagnosisRef.current?.focus()}
+                blurOnSubmit={false}
                 icon={<Calendar size={20} color={colors.textSecondary} />}
               />
               <Input
+                ref={diagnosisRef}
                 label="Diagnóstico (Opcional)"
                 value={diagnosis}
                 onChangeText={setDiagnosis}
@@ -168,6 +217,7 @@ export const OnboardingScreen = ({ navigation, route }: any) => {
                 returnKeyType="done"
                 onSubmitEditing={handleCompleteOnboarding}
                 icon={<Stethoscope size={20} color={colors.textSecondary} />}
+                maxLength={100}
               />
             </View>
 

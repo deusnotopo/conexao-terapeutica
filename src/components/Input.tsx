@@ -20,17 +20,11 @@ type InputProps = TextInputProps & {
   hint?: string;
 };
 
-export const Input: React.FC<InputProps> = ({
-  label,
-  error,
-  icon,
-  rightIcon,
-  style,
-  hint,
-  onFocus,
-  onBlur,
-  ...props
-}) => {
+export const Input = React.forwardRef<TextInput, InputProps>(
+  (
+    { label, error, icon, rightIcon, style, hint, onFocus, onBlur, ...props },
+    ref
+  ) => {
   const [focused, setFocused] = useState(false);
   const borderAnim = useRef(new Animated.Value(0)).current;
 
@@ -82,6 +76,7 @@ export const Input: React.FC<InputProps> = ({
         {icon ? <View style={styles.iconWrap}>{icon}</View> : null}
 
         <TextInput
+          ref={ref}
           style={[
             styles.input,
             icon ? styles.inputWithIcon : null,
@@ -110,7 +105,7 @@ export const Input: React.FC<InputProps> = ({
       ) : null}
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   wrapper: { marginBottom: spacing.m },

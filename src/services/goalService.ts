@@ -39,7 +39,7 @@ export const goalService = {
       const to = from + pageSize - 1;
 
       const { data, count, error } = await supabase
-        .from('therapeutic_goals')
+        .from('goals')
         .select('*', { count: 'exact' })
         .eq('dependent_id', dependentId)
         .order('status', { ascending: true })
@@ -70,7 +70,7 @@ export const goalService = {
   async createGoal(goalData: Partial<Goal>): Promise<Result<Goal>> {
     try {
       const { data, error } = await supabase
-        .from('therapeutic_goals')
+        .from('goals')
         .insert([goalData])
         .select()
         .single();
@@ -95,7 +95,7 @@ export const goalService = {
   async updateGoal(id: string, updates: Partial<Goal>): Promise<Result<Goal>> {
     try {
       const { data, error } = await supabase
-        .from('therapeutic_goals')
+        .from('goals')
         .update(updates)
         .eq('id', id)
         .select()
@@ -121,7 +121,7 @@ export const goalService = {
   async deleteGoal(id: string): Promise<Result<boolean>> {
     try {
       const { error } = await supabase
-        .from('therapeutic_goals')
+        .from('goals')
         .delete()
         .eq('id', id);
 
@@ -139,7 +139,7 @@ export const goalService = {
   async getGoalNotes(goalId: string): Promise<Result<GoalNote[]>> {
     try {
       const { data, error } = await supabase
-        .from('goal_progress_notes')
+        .from('goal_notes')
         .select('*')
         .eq('goal_id', goalId)
         .order('created_at', { ascending: false });
@@ -164,7 +164,7 @@ export const goalService = {
   async addGoalNote(goalId: string, note: string): Promise<Result<GoalNote>> {
     try {
       const { data, error } = await supabase
-        .from('goal_progress_notes')
+        .from('goal_notes')
         .insert([{ goal_id: goalId, note }])
         .select()
         .single();

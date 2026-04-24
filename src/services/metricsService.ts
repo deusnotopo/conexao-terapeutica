@@ -58,7 +58,7 @@ export const metricsService = {
             .eq('dependent_id', dependentId)
             .gte('uploaded_at', sevenDaysAgo),
           supabase
-            .from('therapeutic_goals')
+            .from('goals')
             .select('*', { count: 'exact', head: true })
             .eq('dependent_id', dependentId)
             .in('status', ['pending', 'in_progress']),

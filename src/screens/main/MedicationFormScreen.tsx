@@ -1,4 +1,6 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { RootStackProps } from '../../navigation/types';
+
 import {
   View,
   Text,
@@ -26,7 +28,7 @@ import {
 } from 'lucide-react-native';
 import { requestNotificationPermission } from '../../lib/notifications';
 
-export const MedicationFormScreen = ({ navigation, route }: any) => {
+export const MedicationFormScreen = ({ navigation, route }: RootStackProps<'MedicationForm'>) => {
   const { activeDependent } = useUser();
   const { addMedication, updateMedication } = useMedications(activeDependent?.id ?? "");
   const medication = route.params?.medication || null;
@@ -65,10 +67,10 @@ export const MedicationFormScreen = ({ navigation, route }: any) => {
     setErrorMsg('');
   };
 
-  const removeTime = (t: any) =>
-    setReminderTimes((prev) => prev.filter((x: any) => x !== t));
+  const removeTime = (t: string) =>
+    setReminderTimes((prev) => prev.filter((x: string) => x !== t));
 
-  const maskTime = (text: any) => {
+  const maskTime = (text: string) => {
     let raw = text.replace(/\D/g, '').substring(0, 4);
     if (raw.length > 2) return raw.substring(0, 2) + ':' + raw.substring(2);
     return raw;
@@ -119,7 +121,7 @@ export const MedicationFormScreen = ({ navigation, route }: any) => {
       } else {
         setErrorMsg(result.error ?? "");
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       setErrorMsg('Não foi possível salvar o medicamento.');
     } finally {
       setLoading(false);
@@ -196,7 +198,7 @@ export const MedicationFormScreen = ({ navigation, route }: any) => {
 
           {reminderTimes.length > 0 && (
             <View style={styles.timeChips}>
-              {reminderTimes.map((t: any) => (
+              {reminderTimes.map((t: string) => (
                 <View key={t} style={styles.timeChip}>
                   <Text style={styles.timeChipText}>🔔 {t}</Text>
                   <TouchableOpacity

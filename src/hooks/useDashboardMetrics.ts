@@ -40,7 +40,7 @@ export const useDashboardMetrics = (dependentId: string) => {
     const cached = await metricsService.fetchDashboardMetrics(dependentId);
     if (cached.success) {
       processResult(cached);
-      if (cached.metadata?.fromCache) {
+      if ((cached.metadata as { fromCache?: boolean })?.fromCache) {
         setLoading(false);
       }
     }

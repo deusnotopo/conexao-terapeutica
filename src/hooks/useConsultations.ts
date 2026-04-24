@@ -48,7 +48,7 @@ export function useConsultations(dependentId: string, pageSize: number = 20) {
       const cached = await agendaService.getConsultations(dependentId, 1, pageSize);
       if (cached.success) {
         processResult(cached, true);
-        if (cached.metadata?.fromCache) {
+        if ((cached.metadata as { fromCache?: boolean })?.fromCache) {
           setLoading(false);
         }
       }
@@ -89,7 +89,7 @@ export function useConsultations(dependentId: string, pageSize: number = 20) {
         return updated;
       });
       setTotal(prev => prev - 1);
-      if (result.metadata?.enqueued) showToast('Exclusão agendada offline.', 'info');
+      if ((result.metadata as { enqueued?: boolean })?.enqueued) showToast('Exclusão agendada offline.', 'info');
       return true;
     } else {
       webAlert('Erro', result.error || 'Falha ao excluir consulta');

@@ -19,6 +19,7 @@ export type CrisisEvent = z.infer<typeof CrisisEventSchema>;
 export type MedicalRecord = z.infer<typeof MedicalRecordSchema>;
 export type CaregiverWellbeing = z.infer<typeof CaregiverWellbeingSchema>;
 export type ParentDiary = z.infer<typeof ParentDiarySchema>;
+export type GrowthMeasurement = z.infer<typeof GrowthMeasurementSchema>;
 
 
 /**
@@ -32,6 +33,8 @@ export const ProfileSchema = z.object({
   full_name: z.string().nullable().optional(),
   avatar_url: z.string().nullable().optional(),
   email: z.string().email().optional(),
+  role: z.string().optional(),
+  phone_number: z.string().nullable().optional(),
   created_at: z.string().optional(),
 });
 
@@ -85,6 +88,7 @@ export const CrisisEventSchema = z.object({
   duration_minutes: z.number().nullable().optional(),
   triggers: z.string().nullable().optional(),
   symptoms: z.string().nullable().optional(),
+  post_episode: z.string().nullable().optional(),
   medication_given: z.string().nullable().optional(),
   notes: z.string().nullable().optional(),
   created_at: z.string().optional(),
@@ -253,6 +257,20 @@ export const MedicalRecordSchema = z.object({
   notes: z.string().nullable().optional(),
   updated_at: z.string().optional(),
 });
+
+// Document Schema
+export const DocumentSchema = z.object({
+  id: z.string().uuid().optional(),
+  dependent_id: z.string().uuid(),
+  title: z.string().min(1, 'Título é obrigatório'),
+  category: z.enum(['Laudo', 'Exame', 'Receita', 'Outro']),
+  file_path: z.string().min(1, 'Caminho do arquivo é obrigatório'),
+  file_type: z.string().optional(),
+  uploaded_at: z.string().optional(),
+});
+export type Document = z.infer<typeof DocumentSchema>;
+export const DocumentListSchema = z.array(DocumentSchema);
+
 
 export const GoalListSchema = z.array(GoalSchema);
 export const GoalNoteListSchema = z.array(GoalNoteSchema);

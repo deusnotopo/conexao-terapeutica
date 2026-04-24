@@ -1,4 +1,6 @@
-﻿import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { RootStackProps } from '../../navigation/types';
+
 import {
   View,
   Text,
@@ -13,6 +15,7 @@ import { useUser } from '../../context/UserContext';
 import { webAlert } from '../../lib/webAlert';
 import { colors, spacing, typography } from '../../theme';
 import { useGrowth } from '../../hooks/useGrowth';
+import { GrowthMeasurement } from '../../lib/schemas';
 import {
   ChevronLeft,
   Plus,
@@ -25,12 +28,12 @@ import {
 import { formatLong, formatShort } from '../../utils/formatDate';
 import { LoadingState } from '../../components/LoadingState';
 
-export const GrowthScreen = ({ navigation }: any) => {
+export const GrowthScreen = ({ navigation }: RootStackProps<'Growth'>) => {
   const { activeDependent } = useUser();
   const { measurements, loading, refreshing, refresh, deleteMeasurement } =
     useGrowth(activeDependent?.id ?? "");
 
-  const handleDelete = (m: any) => {
+  const handleDelete = (m: GrowthMeasurement) => {
     webAlert('Excluir Medição', 'Deseja excluir este registro de crescimento?', [
       { text: 'Cancelar', style: 'cancel' },
       {
@@ -44,10 +47,10 @@ export const GrowthScreen = ({ navigation }: any) => {
   const latest = measurements[0];
   const prev = measurements[1];
 
-  const diff = (field: any) => {
+  const diff = (field: keyof GrowthMeasurement) => {
     if (!latest || !prev || latest[field] == null || prev[field] == null)
       return null;
-    return (latest[field] - prev[field]).toFixed(1);
+    return (Number(latest[field]) - Number(prev[field])).toFixed(1);
   };
 
   const weightDiff = diff('weight_kg');

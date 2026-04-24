@@ -1,0 +1,31 @@
+{
+  "cli": {
+    "version": ">= 7.0.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "simulator": true
+      }
+    },
+    "preview": {
+      "distribution": "internal"
+    },
+    "production": {
+      "channel": "production",
+      "android": {
+        "buildType": "app-bundle"
+      },
+      "env": {
+        "EXPO_PUBLIC_SUPABASE_URL": "COLOQUE_URL_AQUI",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "COLOQUE_KEY_AQUI"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

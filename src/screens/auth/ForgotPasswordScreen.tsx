@@ -1,4 +1,6 @@
 ﻿import React, { useState } from 'react';
+import { RootStackProps } from '../../navigation/types';
+
 import {
   View,
   Text,
@@ -13,7 +15,7 @@ import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
 import { Mail, ChevronLeft } from 'lucide-react-native';
 
-export const ForgotPasswordScreen = ({ navigation }: any) => {
+export const ForgotPasswordScreen = ({ navigation }: RootStackProps<'ForgotPassword'>) => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');

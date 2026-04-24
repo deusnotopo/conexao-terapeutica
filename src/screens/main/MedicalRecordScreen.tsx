@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { RootStackProps } from '../../navigation/types';
+
 import {
   View,
   Text,
@@ -39,7 +41,7 @@ const BLOOD_TYPES = [
   'Não sei',
 ];
 
-export const MedicalRecordScreen = ({ navigation }: any) => {
+export const MedicalRecordScreen = ({ navigation }: RootStackProps<'MedicalRecord'>) => {
   const { activeDependent } = useUser();
   const { isSmall, isTablet, hPad } = useResponsive();
   const [saving, setSaving] = useState(false);
@@ -60,7 +62,17 @@ export const MedicalRecordScreen = ({ navigation }: any) => {
 
   useEffect(() => {
     if (fetchedRecord) {
-      setRecord(fetchedRecord as any);
+      setRecord({
+        blood_type: fetchedRecord.blood_type ?? '',
+        health_plan: fetchedRecord.health_plan ?? '',
+        health_plan_number: fetchedRecord.health_plan_number ?? '',
+        allergies: fetchedRecord.allergies ?? '',
+        primary_physician_name: fetchedRecord.primary_physician_name ?? '',
+        primary_physician_phone: fetchedRecord.primary_physician_phone ?? '',
+        emergency_contact_name: fetchedRecord.emergency_contact_name ?? '',
+        emergency_contact_phone: fetchedRecord.emergency_contact_phone ?? '',
+        notes: fetchedRecord.notes ?? '',
+      });
       setEditing(false);
     } else if (!loading) {
       setEditing(true);
@@ -77,14 +89,14 @@ export const MedicalRecordScreen = ({ navigation }: any) => {
     setSaving(false);
   };
 
-  const handleCall = (phone: any) => {
+  const handleCall = (phone: string | null | undefined) => {
     if (!phone) return;
     Linking.openURL(`tel:${phone.replace(/\D/g, '')}`);
   };
 
-  const update = (field: any, val: any) => setRecord((r) => ({ ...r, [field]: val }));
+  const update = (field: keyof typeof record, val: string) => setRecord((r) => ({ ...r, [field]: val }));
 
-  const Section = ({ icon, title, children }: any) => (
+  const Section = ({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) => (
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
         {icon}
@@ -147,7 +159,7 @@ export const MedicalRecordScreen = ({ navigation }: any) => {
             <>
               <Text style={styles.label}>Tipo Sanguíneo</Text>
               <View style={styles.bloodTypeRow}>
-                {BLOOD_TYPES.map((bt: any) => (
+                {BLOOD_TYPES.map((bt: string) => (
                   <TouchableOpacity
                     key={bt}
                     style={[
@@ -313,7 +325,7 @@ export const MedicalRecordScreen = ({ navigation }: any) => {
   );
 };
 
-const InfoRow = ({ label, value }: any) => (
+const InfoRow = ({ label, value }: { label: string; value: string | null | undefined }) => (
   <View style={styles.infoRow}>
     {label ? <Text style={styles.infoLabel}>{label}</Text> : null}
     <Text style={styles.infoValue}>
@@ -322,7 +334,7 @@ const InfoRow = ({ label, value }: any) => (
   </View>
 );
 
-const CallRow = ({ label, value, onCall }: any) => (
+const CallRow = ({ label, value, onCall }: { label: string; value: string | null | undefined; onCall: () => void }) => (
   <View style={styles.infoRow}>
     <Text style={styles.infoLabel}>{label}</Text>
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>

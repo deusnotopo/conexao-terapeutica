@@ -1,4 +1,6 @@
-﻿import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { RootStackProps } from '../../navigation/types';
+
 import {
   View,
   Text,
@@ -19,7 +21,7 @@ import {
 } from 'lucide-react-native';
 import { useMedicationAdherence } from '../../hooks/useMedicationAdherence';
 
-export const MedicationAdherenceScreen = ({ navigation }: any) => {
+export const MedicationAdherenceScreen = ({ navigation }: RootStackProps<'MedicationAdherence'>) => {
   const { activeDependent } = useUser();
   const {
     statsByMed,
@@ -28,7 +30,7 @@ export const MedicationAdherenceScreen = ({ navigation }: any) => {
     refresh
   } = useMedicationAdherence(activeDependent?.id ?? "");
 
-  const getColor = (pct: any) => {
+  const getColor = (pct: number | null) => {
     if (pct === null) return colors.textSecondary;
     if (pct >= 90) return '#16a34a';
     if (pct >= 70) return '#d97706';
@@ -149,7 +151,7 @@ export const MedicationAdherenceScreen = ({ navigation }: any) => {
 
               {/* Monthly bars */}
               <View style={styles.monthlyRow}>
-                {byMonth.map((m: any) => (
+                {byMonth.map((m: { label: string; pct: number | null }) => (
                   <View key={m.label} style={styles.monthCol}>
                     <View style={styles.barBg}>
                       <View

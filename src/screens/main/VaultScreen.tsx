@@ -1,5 +1,7 @@
-﻿declare const window: any;
 import React, { useState, useEffect, useCallback } from 'react';
+import { supabase } from '../../lib/supabase';
+import { MainTabProps } from '../../navigation/types';
+
 import {
   View,
   Text,
@@ -27,6 +29,7 @@ import { LoadingState } from '../../components/LoadingState';
 import { TextInput } from 'react-native';
 import { useUser } from '../../context/UserContext';
 import { useDocuments } from '../../hooks/useDocuments';
+import { Document } from '../../lib/schemas';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -39,7 +42,7 @@ const CATEGORIES = [
 
 const PAGE_SIZE = 20;
 
-export const VaultScreen = ({ navigation }: any) => {
+export const VaultScreen = ({ navigation }: MainTabProps<'VaultTab'>) => {
   const { activeDependent } = useUser();
   const {
     documents,
@@ -65,12 +68,12 @@ export const VaultScreen = ({ navigation }: any) => {
   }, [activeDependent, activeCategory]);
 
   const filtered = searchQuery.trim()
-    ? documents.filter((d: any) =>
+    ? documents.filter((d: Document) =>
         d.title?.toLowerCase().includes(searchQuery.toLowerCase())
       )
     : documents;
 
-  const handleDeleteDocument = async (doc: any) => {
+  const handleDeleteDocument = async (doc: Document) => {
     webAlert('Excluir Documento', `Deseja realmente excluir "${doc.title}"?`, [
       { text: 'Cancelar', style: 'cancel' },
       {
@@ -83,39 +86,46 @@ export const VaultScreen = ({ navigation }: any) => {
     ]);
   };
 
-  const handleShare = async (doc: any) => {
-    const url = doc.file_url || doc.file_path;
-    if (!url) return;
+  const handleShare = async (doc: Document) => {
+    if (!doc.file_path) return;
+    
+    let url = doc.file_path;
+    if (!url.startsWith('http')) {
+      const { data } = supabase.storage.from('vault').getPublicUrl(doc.file_path);
+      url = data.publicUrl;
+    }
+
     if (Platform.OS === 'web') {
-      window.open(url, '_blank');
+      const g = globalThis as unknown as { window?: { open: (url: string, target: string) => void } };
+      g.window?.open(url, '_blank');
     } else {
       try {
         await Share.share({ message: `${doc.title}: ${url}`, url });
-      } catch (e: any) {
+      } catch (e: unknown) {
         // Silent
       }
     }
   };
 
-  const renderIcon = (filePath: any) => {
+  const renderIcon = (filePath?: string | null) => {
     const extension = filePath?.split('.').pop()?.toLowerCase();
-    if (['jpg', 'jpeg', 'png'].includes(extension))
+    if (extension && ['jpg', 'jpeg', 'png'].includes(extension))
       return <ImageIcon color={colors.secondary} size={28} />;
     if (extension === 'pdf')
       return <FileText color={colors.primaryDark} size={28} />;
     return <FileArchive color={colors.textSecondary} size={28} />;
   };
 
-  const renderDocCard = (doc: any) => (
+  const renderDocCard = (doc: Document) => (
     <View key={doc.id} style={styles.docCard}>
-      <View style={styles.docIconContainer}>{renderIcon(doc.file_path)}</View>
+      <View style={styles.docIconContainer}>{renderIcon(doc.file_path as string)}</View>
       <View style={styles.docInfo}>
         <Text style={styles.docTitle} numberOfLines={1}>
           {doc.title}
         </Text>
         <View style={styles.docMeta}>
-          <Text style={styles.metaText}>
-            {format(new Date(doc.uploaded_at), 'dd MMM, yyyy', {
+          <Text style={styles.docDate}>
+            {format(doc.uploaded_at ? new Date(doc.uploaded_at) : new Date(), "dd MMM yyyy", {
               locale: ptBR,
             })}
           </Text>
@@ -184,7 +194,7 @@ export const VaultScreen = ({ navigation }: any) => {
           style={styles.categoriesContainer}
           contentContainerStyle={styles.categoriesContent}
         >
-          {CATEGORIES.map((cat: any) => (
+          {CATEGORIES.map((cat: {id: string, label: string}) => (
             <TouchableOpacity
               key={cat.id}
               style={[
@@ -253,7 +263,7 @@ export const VaultScreen = ({ navigation }: any) => {
               <Text style={styles.emptyTitle}>Nenhum arquivo encontrado</Text>
               <Text style={styles.emptySubtitle}>
                 Não há documentos na categoria "
-                {CATEGORIES.find((c: any) => c.id === activeCategory)?.label}".
+                {CATEGORIES.find((c: {id: string, label: string}) => c.id === activeCategory)?.label}".
               </Text>
             </View>
           ) : (
@@ -375,6 +385,10 @@ const styles = StyleSheet.create({
     fontWeight: '600' as const,
     color: colors.text,
     marginBottom: 4,
+  },
+  docDate: {
+    ...(typography.caption as object),
+    color: colors.textSecondary,
   },
   docMeta: {
     flexDirection: 'row',

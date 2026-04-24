@@ -1,4 +1,6 @@
 import React, { useState, useRef } from 'react';
+import { RootStackProps } from '../../navigation/types';
+
 import {
   View,
   Text,
@@ -7,6 +9,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Animated,
+  ViewStyle,
 } from 'react-native';
 import { colors, spacing, typography, radii, shadows } from '../../theme';
 import {
@@ -117,7 +120,7 @@ const SLIDES = [
   },
 ] as const;
 
-export const TutorialScreen = ({ navigation, route }: any) => {
+export const TutorialScreen = ({ navigation, route }: RootStackProps<'Tutorial'>) => {
   const { width, isSmall, isXSmall, slideIconSize, hPad } = useResponsive();
   const [current, setCurrent] = useState(0);
   const scrollRef = useRef<ScrollView>(null);
@@ -150,7 +153,7 @@ export const TutorialScreen = ({ navigation, route }: any) => {
   const isLast  = current === SLIDES.length - 1;
   const isFirst = current === 0;
   const slide   = SLIDES[current];
-  const SlideIcon = (slide as any).Icon as React.ComponentType<{ color?: string; size?: number }> | undefined;
+  const SlideIcon = (slide as Record<string, unknown>).Icon as React.ComponentType<{ color?: string; size?: number }> | undefined;
 
   // Adaptive icon size: smaller on small phones
   const iconBoxSize = isXSmall ? 88 : isSmall ? 100 : slideIconSize;
@@ -192,7 +195,7 @@ export const TutorialScreen = ({ navigation, route }: any) => {
         style={{ flex: 1 }}
       >
         {SLIDES.map((s, idx) => {
-          const SIcon = (s as any).Icon as React.ComponentType<{ color?: string; size?: number }> | undefined;
+          const SIcon = (s as Record<string, unknown>).Icon as React.ComponentType<{ color?: string; size?: number }> | undefined;
           return (
             <View
               key={s.key}
@@ -212,9 +215,9 @@ export const TutorialScreen = ({ navigation, route }: any) => {
                   marginBottom: isSmall ? spacing.m : spacing.l,
                 },
               ]}>
-                {(s as any).iconType === 'emoji'
-                  ? <Text style={{ fontSize: emojiSize }}>{(s as any).emoji}</Text>
-                  : SIcon ? <SIcon color={(s as any).iconColor} size={iconSize} /> : null
+                {(s as Record<string, unknown>).iconType === 'emoji'
+                  ? <Text style={{ fontSize: emojiSize }}>{(s as Record<string, string>).emoji}</Text>
+                  : SIcon ? <SIcon color={(s as Record<string, string>).iconColor} size={iconSize} /> : null
                 }
               </View>
 
@@ -404,7 +407,7 @@ const styles = StyleSheet.create({
   },
   backTxt: { ...(typography.body2 as object), fontWeight: '700' as const, color: colors.textSecondary },
 
-  invisible: { opacity: 0 } as any,
+  invisible: { opacity: 0 } as ViewStyle,
 
   nextBtn: {
     flex: 2,

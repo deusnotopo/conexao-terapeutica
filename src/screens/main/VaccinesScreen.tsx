@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { RootStackProps } from '../../navigation/types';
+
 import {
   View,
   Text,
@@ -23,6 +25,7 @@ import {
 import { formatShort, formatLong } from '../../utils/formatDate';
 import { LoadingState } from '../../components/LoadingState';
 import { webAlert } from '../../lib/webAlert';
+import { Vaccine } from '../../lib/schemas';
 
 const COMMON_VACCINES = [
   'BCG',
@@ -42,11 +45,11 @@ const COMMON_VACCINES = [
   'Outra',
 ];
 
-export const VaccinesScreen = ({ navigation }: any) => {
+export const VaccinesScreen = ({ navigation }: RootStackProps<'Vaccines'>) => {
   const { activeDependent } = useUser();
   const { vaccines, loading, refreshing, refresh, deleteVaccine } = useVaccines(activeDependent?.id ?? "");
 
-  const handleDelete = (v: any) => {
+  const handleDelete = (v: Vaccine) => {
     webAlert(
       'Excluir Vacina',
       `Deseja excluir o registro de ${v.name}? Esta ação não pode ser desfeita.`,
@@ -66,7 +69,7 @@ export const VaccinesScreen = ({ navigation }: any) => {
       v.next_dose_date &&
       v.next_dose_date >= new Date().toISOString().split('T')[0]
   );
-  const applied = vaccines.filter((v: any) => v.applied_date);
+  const applied = vaccines.filter((v: Vaccine) => v.applied_date);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -106,7 +109,7 @@ export const VaccinesScreen = ({ navigation }: any) => {
             <AlertCircle color="#d97706" size={20} />
             <View style={{ flex: 1 }}>
               <Text style={styles.alertTitle}>Próximas doses agendadas</Text>
-              {upcoming.slice(0, 3).map((v: any) => (
+              {upcoming.slice(0, 3).map((v: Vaccine) => (
                 <Text key={v.id} style={styles.alertText}>
                   {v.name} — {formatShort(v.next_dose_date)}
                 </Text>
@@ -134,7 +137,7 @@ export const VaccinesScreen = ({ navigation }: any) => {
         {applied.length > 0 && (
           <Text style={styles.section}>Vacinas Aplicadas</Text>
         )}
-        {applied.map((v: any) => (
+        {applied.map((v: Vaccine) => (
           <View key={v.id} style={styles.card}>
             <View style={styles.cardIcon}>
               <Syringe color={colors.primary} size={22} />

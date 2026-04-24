@@ -1,4 +1,6 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
+import { RootStackProps } from '../../navigation/types';
+
 import {
   View,
   Text,
@@ -21,13 +23,14 @@ import {
   FileCheck,
 } from 'lucide-react-native';
 import * as DocumentPicker from 'expo-document-picker';
-export const UploadDocScreen = ({ navigation }: any) => {
+import { DocumentPickerAsset } from 'expo-document-picker';
+export const UploadDocScreen = ({ navigation }: RootStackProps<'UploadDoc'>) => {
   const { activeDependent, user } = useUser();
   const { addDocument } = useDocuments(activeDependent?.id ?? "");
   const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('Laudo');
-  const [selectedFile, setSelectedFile] = useState<any>(null);
+  const [selectedFile, setSelectedFile] = useState<DocumentPickerAsset | null>(null);
 
   const pickDocument = async () => {
     try {
@@ -39,7 +42,7 @@ export const UploadDocScreen = ({ navigation }: any) => {
       if (!result.canceled) {
         setSelectedFile(result.assets[0]);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       // Silent error during picker
     }
   };
@@ -62,15 +65,15 @@ export const UploadDocScreen = ({ navigation }: any) => {
 
     setLoading(true);
     try {
-      const sf = selectedFile as any;
+      const sf = selectedFile;
       const fileName = `${Date.now()}-${sf.name}`;
       const filePath = `${user?.id}/${activeDependent.id}/${fileName}`;
       
-      const metadata: any = {
+      const metadata = {
         title,
-        category,
+        category: category as "Laudo" | "Exame" | "Receita" | "Outro",
         file_path: filePath,
-        file_type: sf.mimeType,
+        file_type: sf.mimeType ?? 'application/octet-stream',
       };
 
       const success = await addDocument(metadata, sf.uri);
@@ -78,7 +81,7 @@ export const UploadDocScreen = ({ navigation }: any) => {
       if (success) {
         navigation.goBack();
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       webAlert(
         'Erro',
         'Ocorreu um problema no processamento do upload.'
@@ -115,7 +118,7 @@ export const UploadDocScreen = ({ navigation }: any) => {
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Categoria</Text>
           <View style={styles.typeSelector}>
-            {['Laudo', 'Exame', 'Receita', 'Outro'].map((cat: any) => (
+            {['Laudo', 'Exame', 'Receita', 'Outro'].map((cat: string) => (
               <TouchableOpacity
                 key={cat}
                 style={[
@@ -146,9 +149,9 @@ export const UploadDocScreen = ({ navigation }: any) => {
             {selectedFile ? (
               <>
                 <FileCheck color={colors.success} size={40} />
-                <Text style={styles.fileName}>{(selectedFile as any).name}</Text>
+                <Text style={styles.fileName}>{selectedFile.name}</Text>
                 <Text style={styles.fileSize}>
-                  {((selectedFile as any).size / 1024 / 1024).toFixed(2)} MB
+                  {((selectedFile.size ?? 0) / 1024 / 1024).toFixed(2)} MB
                 </Text>
               </>
             ) : (

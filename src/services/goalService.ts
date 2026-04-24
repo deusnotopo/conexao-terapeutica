@@ -31,7 +31,7 @@ export const goalService = {
     const cacheKey = `goals:${dependentId}:p${page}`;
     try {
       if (!options.forceRefresh && page === 0) {
-        const cached = await storage.getItem<any>(cacheKey);
+        const cached = await storage.getItem<PaginatedGoals>(cacheKey);
         if (cached) return Result.ok(cached, { fromCache: true });
       }
 
@@ -58,8 +58,9 @@ export const goalService = {
       }
 
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao buscar metas');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao buscar metas';
+      return Result.fail(msg);
     }
   },
 
@@ -82,8 +83,9 @@ export const goalService = {
       }
 
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao criar meta');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao criar meta';
+      return Result.fail(msg);
     }
   },
 
@@ -107,8 +109,9 @@ export const goalService = {
       }
 
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao atualizar meta');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao atualizar meta';
+      return Result.fail(msg);
     }
   },
 
@@ -124,8 +127,9 @@ export const goalService = {
 
       if (error) return Result.fail(error.message);
       return Result.ok(true);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao excluir meta');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao excluir meta';
+      return Result.fail(msg);
     }
   },
 
@@ -148,8 +152,9 @@ export const goalService = {
       }
 
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao buscar notas');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao buscar notas';
+      return Result.fail(msg);
     }
   },
 
@@ -172,8 +177,9 @@ export const goalService = {
       }
 
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao adicionar nota');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao adicionar nota';
+      return Result.fail(msg);
     }
   }
 };

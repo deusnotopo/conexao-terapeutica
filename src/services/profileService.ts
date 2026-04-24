@@ -20,17 +20,28 @@ export const profileService = {
     const cacheKey = `profile:${userId}`;
     try {
       if (!options.forceRefresh) {
-        const cached = await storage.getItem<any>(cacheKey);
+        const cached = await storage.getItem<Profile>(cacheKey);
         if (cached) return Result.ok(cached, { fromCache: true });
       }
 
-      const { data, error } = await supabase
+      let res = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .single();
+        
+      let data = res.data;
 
-      if (error) return Result.fail(error.message);
+      if (res.error) {
+        if (res.error.code === 'PGRST116') {
+          console.warn('⚠️ Perfil Ausente (PGRST116). Executando Auto-Heal...');
+          const healRes = await supabase.from('profiles').upsert({ id: userId }).select().single();
+          if (healRes.error) return Result.fail(healRes.error.message);
+          data = healRes.data;
+        } else {
+          return Result.fail(res.error.message);
+        }
+      }
 
       const validated = ProfileSchema.safeParse(data);
       if (!validated.success) {
@@ -39,8 +50,9 @@ export const profileService = {
 
       await storage.setItem(cacheKey, validated.data);
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao buscar perfil');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao buscar perfil';
+      return Result.fail(msg);
     }
   },
 
@@ -74,8 +86,9 @@ export const profileService = {
       await storage.setItem(cacheKey, validated.data);
       
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao atualizar perfil');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao atualizar perfil';
+      return Result.fail(msg);
     }
   },
 
@@ -103,8 +116,9 @@ export const profileService = {
       const publicUrl = publicData?.publicUrl;
 
       return await this.updateProfile(userId, { avatar_url: publicUrl });
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao fazer upload do avatar');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao fazer upload do avatar';
+      return Result.fail(msg);
     }
   },
 };

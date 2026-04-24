@@ -1,4 +1,6 @@
-﻿import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
+import { RootStackProps } from '../../navigation/types';
+
 import {
   View,
   Text,
@@ -143,18 +145,18 @@ const CATEGORIES = [
   { id: 'educacao', label: '🎓 Educação', ids: ['educacao'] },
 ];
 
-export const BenefitsScreen = ({ navigation }: any) => {
-  const [expanded, setExpanded] = useState(null);
+export const BenefitsScreen = ({ navigation }: RootStackProps<'Benefits'>) => {
+  const [expanded, setExpanded] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCat, setActiveCat] = useState('all');
 
-  const toggle = (id: any) => setExpanded((prev) => (prev === id ? null : id));
+  const toggle = (id: string) => setExpanded((prev) => (prev === id ? null : id));
 
   const filtered = useMemo(() => {
     let list = BENEFITS;
     if (activeCat !== 'all') {
-      const cat = CATEGORIES.find((c: any) => c.id === activeCat);
-      list = list.filter((b: any) => cat?.ids?.includes(b.id));
+      const cat = CATEGORIES.find((c: { id: string }) => c.id === activeCat);
+      list = list.filter((b: { id: string }) => cat?.ids?.includes(b.id));
     }
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
@@ -216,7 +218,7 @@ export const BenefitsScreen = ({ navigation }: any) => {
           style={styles.catsRow}
           contentContainerStyle={styles.catsContent}
         >
-          {CATEGORIES.map((cat: any) => (
+          {CATEGORIES.map((cat: { id: string; label: string }) => (
             <TouchableOpacity
               key={cat.id}
               style={[
@@ -237,7 +239,7 @@ export const BenefitsScreen = ({ navigation }: any) => {
           ))}
         </ScrollView>
 
-        {filtered.map((b: any) => {
+        {filtered.map((b: { id: string; emoji: string; color: string; title: string; subtitle: string; body: string; requirements: string[]; link: string; linkText: string; }) => {
           const isOpen = expanded === b.id;
           return (
             <TouchableOpacity
@@ -272,7 +274,7 @@ export const BenefitsScreen = ({ navigation }: any) => {
                 <View style={styles.details}>
                   <Text style={styles.bodyText}>{b.body}</Text>
                   <Text style={styles.reqTitle}>📋 Como ter acesso:</Text>
-                  {b.requirements.map((r: any, i: any) => (
+                  {b.requirements.map((r: string, i: number) => (
                     <Text key={i} style={styles.reqItem}>
                       • {r}
                     </Text>

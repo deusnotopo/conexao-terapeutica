@@ -1,4 +1,6 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
+import { RootStackProps } from '../../navigation/types';
+
 import {
   View,
   Text,
@@ -29,17 +31,17 @@ const SPECIALTIES = [
   'Outro',
 ];
 
-const toDisplay = (iso: any) => {
+const toDisplay = (iso: string) => {
   if (!iso) return '';
   const [y, m, d] = iso.split('-');
   return `${d}/${m}/${y}`;
 };
-const toISO = (masked: any) => {
+const toISO = (masked: string) => {
   const p = masked.split('/');
   return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : null;
 };
 
-export const ConsultationFormScreen = ({ navigation, route }: any) => {
+export const ConsultationFormScreen = ({ navigation, route }: RootStackProps<'ConsultationForm'>) => {
   const { activeDependent } = useUser();
   const { addConsultation, updateConsultation } = useAgenda(activeDependent?.id ?? "");
   const consultation = route.params?.consultation || null;
@@ -49,13 +51,13 @@ export const ConsultationFormScreen = ({ navigation, route }: any) => {
   const [errorMsg, setErrorMsg] = useState('');
   
   const [specialty, setSpecialty] = useState(consultation?.specialty || '');
-  const [date, setDate] = useState(toDisplay(consultation?.date) || '');
+  const [date, setDate] = useState(toDisplay(consultation?.date || '') || '');
   const [physicianName, setPhysicianName] = useState(consultation?.physician_name || '');
   const [cidCode, setCidCode] = useState(consultation?.cid_code || '');
   const [notes, setNotes] = useState(consultation?.notes || '');
-  const [nextAppointment, setNextAppointment] = useState(toDisplay(consultation?.next_appointment) || '');
+  const [nextAppointment, setNextAppointment] = useState(toDisplay(consultation?.next_appointment || '') || '');
 
-  const handleDateChange = (text: any, setter: any) => {
+  const handleDateChange = (text: string, setter: (val: string) => void) => {
     let raw = text.replace(/\D/g, '');
     if (raw.length > 8) raw = raw.substring(0, 8);
     let masked = raw;
@@ -99,7 +101,7 @@ export const ConsultationFormScreen = ({ navigation, route }: any) => {
       } else {
         setErrorMsg(result.error ?? "");
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
       setErrorMsg('Não foi possível salvar.');
     } finally {
       setLoading(false);
@@ -131,7 +133,7 @@ export const ConsultationFormScreen = ({ navigation, route }: any) => {
           keyboardShouldPersistTaps="handled">
         <Text style={styles.label}>Especialidade</Text>
         <View style={styles.chips}>
-          {SPECIALTIES.map((s: any) => (
+          {SPECIALTIES.map((s: string) => (
             <TouchableOpacity
               key={s}
               style={[styles.chip, specialty === s && styles.chipActive]}

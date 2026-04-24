@@ -39,7 +39,7 @@ export const useGoals = (dependentId: string) => {
       // 1. SWR Cycle: Try cache first (only for first page)
       if (reset) {
         const cacheResult = await goalService.getGoals(dependentId, 0, 20, { forceRefresh: false });
-        if (cacheResult.success && cacheResult.data && cacheResult.metadata?.fromCache) {
+        if (cacheResult.success && cacheResult.data && (cacheResult.metadata as { fromCache?: boolean })?.fromCache) {
           setGoals(cacheResult.data.data);
           setTotal(cacheResult.data.count);
           setPage(1);
@@ -91,8 +91,8 @@ export const useGoals = (dependentId: string) => {
   const createGoal = async (goalData: Partial<Goal>) => {
     const result = await syncService.perform('goalService', 'createGoal', [goalData]);
     if (result.success) {
-      if (!result.metadata?.enqueued) {
-        setGoals((prev) => [result.data, ...prev]);
+      if (!(result.metadata as { enqueued?: boolean })?.enqueued) {
+        setGoals((prev) => [result.data as Goal, ...prev]);
         setTotal((prev) => prev + 1);
       } else {
         showToast('Mudança agendada offline.', 'info');
@@ -107,8 +107,8 @@ export const useGoals = (dependentId: string) => {
   const updateGoal = async (id: string, updates: Partial<Goal>) => {
     const result = await syncService.perform('goalService', 'updateGoal', [id, updates]);
     if (result.success) {
-      if (!result.metadata?.enqueued) {
-        setGoals((prev) => prev.map((g) => (g.id === id ? { ...g, ...result.data } : g)));
+      if (!(result.metadata as { enqueued?: boolean })?.enqueued) {
+        setGoals((prev) => prev.map((g) => (g.id === id ? { ...g, ...(result.data as Partial<Goal>) } : g)));
       } else {
         showToast('Mudança agendada offline.', 'info');
       }
@@ -124,7 +124,7 @@ export const useGoals = (dependentId: string) => {
     if (result.success) {
       setGoals((prev) => prev.filter((g) => g.id !== id));
       setTotal((prev) => prev - 1);
-      if (result.metadata?.enqueued) showToast('Exclusão agendada offline.', 'info');
+      if ((result.metadata as { enqueued?: boolean })?.enqueued) showToast('Exclusão agendada offline.', 'info');
       return true;
     } else {
       webAlert('Erro ao excluir meta', result.error || 'Falha ao excluir meta');
@@ -139,8 +139,8 @@ export const useGoals = (dependentId: string) => {
   const addGoalNote = async (goalId: string, note: string): Promise<Result<GoalNote>> => {
     const result = await syncService.perform('goalService', 'addGoalNote', [goalId, note]);
     if (result.success) {
-      if (result.metadata?.enqueued) showToast('Nota agendada offline.', 'info');
-      return Result.ok(result.data);
+      if ((result.metadata as { enqueued?: boolean })?.enqueued) showToast('Nota agendada offline.', 'info');
+      return Result.ok(result.data as GoalNote);
     } else {
       webAlert('Erro ao adicionar nota', result.error || 'Falha ao adicionar nota');
       return Result.fail(result.error || 'Falha ao adicionar nota');

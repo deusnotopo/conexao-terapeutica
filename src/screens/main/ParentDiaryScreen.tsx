@@ -1,4 +1,6 @@
-﻿import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { RootStackProps } from '../../navigation/types';
+
 import {
   View,
   Text,
@@ -18,6 +20,7 @@ import { Button } from '../../components/Button';
 import { ChevronLeft, BookOpen, Send, Trash2 } from 'lucide-react-native';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { ParentDiary } from '../../lib/schemas';
 
 const MOODS = [
   { key: 'great', emoji: '😄', label: 'Ótimo dia' },
@@ -26,7 +29,7 @@ const MOODS = [
   { key: 'very_hard', emoji: '😢', label: 'Muito difícil' },
 ];
 
-export const ParentDiaryScreen = ({ navigation }: any) => {
+export const ParentDiaryScreen = ({ navigation }: RootStackProps<'ParentDiary'>) => {
   const { activeDependent, user } = useUser();
   const { entries: diary, loading, addEntry, deleteEntry, refresh } = useDiary(user?.id ?? "", activeDependent?.id ?? "");
   const [saving, setSaving] = useState(false);
@@ -34,7 +37,7 @@ export const ParentDiaryScreen = ({ navigation }: any) => {
   const [content, setContent] = useState('');
 
   const today = new Date().toISOString().split('T')[0];
-  const todayEntry = diary.find((e: any) => e.date === today);
+  const todayEntry = diary.find((e: ParentDiary) => e.date === today);
 
   const handleSave = async () => {
     if (!content.trim()) return;
@@ -48,9 +51,9 @@ export const ParentDiaryScreen = ({ navigation }: any) => {
     setSaving(false);
   };
 
-  const getMoodConfig = (key: any) => MOODS.find((m: any) => m.key === key) || MOODS[1];
+  const getMoodConfig = (key: string) => MOODS.find((m) => m.key === key) || MOODS[1];
 
-  const handleDelete = (entry: any) => {
+  const handleDelete = (entry: ParentDiary) => {
     webAlert(
       'Excluir Entrada',
       'Deseja excluir esta entrada do diário? Esta ação não pode ser desfeita.',
@@ -107,7 +110,7 @@ export const ParentDiaryScreen = ({ navigation }: any) => {
           </Text>
 
           <View style={styles.moodRow}>
-            {MOODS.map((m: any) => (
+            {MOODS.map((m) => (
               <TouchableOpacity
                 key={m.key}
                 style={[styles.moodBtn, mood === m.key && styles.moodBtnActive]}
@@ -156,7 +159,7 @@ export const ParentDiaryScreen = ({ navigation }: any) => {
         {diary.length > 0 && (
           <Text style={styles.section}>Entradas Anteriores</Text>
         )}
-        {diary.map((entry: any) => {
+        {diary.map((entry: ParentDiary) => {
           const moodCfg = getMoodConfig(entry.mood);
           const isPast = entry.date !== today;
           return (

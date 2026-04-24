@@ -1,4 +1,5 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { RootStackProps } from '../../navigation/types';
 import { useUser } from '../../context/UserContext';
 import {
   View,
@@ -33,7 +34,7 @@ const EXAMPLES = [
   'Completar uma terapia sem choro',
 ];
 
-export const GoalFormScreen = ({ navigation, route }: any) => {
+export const GoalFormScreen = ({ navigation, route }: RootStackProps<'GoalForm'>) => {
   const { activeDependent } = useUser();
   const goal = route.params?.goal;
   const isEdit = !!goal;
@@ -49,13 +50,13 @@ export const GoalFormScreen = ({ navigation, route }: any) => {
   const [targetDate, setTargetDate] = useState('');
 
   // Date handlers
-  const toDisplay = (iso: any) => {
+  const toDisplay = (iso: string | null | undefined): string => {
     if (!iso) return '';
     const [y, m, d] = iso.split('-');
     return `${d}/${m}/${y}`;
   };
 
-  const toISO = (masked: any) => {
+  const toISO = (masked: string): string | null => {
     const p = masked.split('/');
     return p.length === 3 && p[2].length === 4 ? `${p[2]}-${p[1]}-${p[0]}` : null;
   };
@@ -66,7 +67,7 @@ export const GoalFormScreen = ({ navigation, route }: any) => {
     }
   }, [goal]);
 
-  const handleDateChange = (text: any) => {
+  const handleDateChange = (text: string) => {
     let raw = text.replace(/\D/g, '');
     if (raw.length > 8) raw = raw.substring(0, 8);
     let masked = raw;
@@ -114,7 +115,7 @@ export const GoalFormScreen = ({ navigation, route }: any) => {
         showToast(isEdit ? 'Meta atualizada! ✅' : 'Meta criada com sucesso! 🎯');
         navigation.goBack();
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
       setErrorMsg((e as Error)?.message || 'Não foi possível salvar.');
     } finally {
       setLoading(false);
@@ -122,6 +123,7 @@ export const GoalFormScreen = ({ navigation, route }: any) => {
   };
 
   const handleDelete = () => {
+    if (!goal) return;
     webAlert(
       'Excluir Meta',
       'Tem certeza que deseja remover esta meta permanentemente?',
@@ -179,7 +181,7 @@ export const GoalFormScreen = ({ navigation, route }: any) => {
           <>
             <Text style={styles.label}>Sugestões de metas</Text>
             <View style={styles.examples}>
-              {EXAMPLES.map((e: any) => (
+              {EXAMPLES.map((e: string) => (
                 <TouchableOpacity
                   key={e}
                   style={styles.example}
@@ -196,7 +198,7 @@ export const GoalFormScreen = ({ navigation, route }: any) => {
           <>
             <Text style={styles.label}>Status da Meta</Text>
             <View style={styles.statusGrid}>
-              {STATUS_OPTS.map((s: any) => (
+              {STATUS_OPTS.map((s: { value: string; label: string; color: string }) => (
                 <TouchableOpacity
                   key={s.value}
                   style={[
@@ -206,7 +208,7 @@ export const GoalFormScreen = ({ navigation, route }: any) => {
                       backgroundColor: `${s.color}15`,
                     },
                   ]}
-                  onPress={() => setStatus(s.value)}
+                  onPress={() => setStatus(s.value as "pending" | "in_progress" | "achieved" | "abandoned")}
                 >
                   <Text
                     style={[

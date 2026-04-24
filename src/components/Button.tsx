@@ -1,4 +1,5 @@
-﻿import React, { useRef } from 'react';
+import React, { useRef } from 'react';
+import * as Haptics from 'expo-haptics';
 import {
   TouchableOpacity,
   Text,
@@ -35,6 +36,9 @@ export const Button: React.FC<ButtonProps> = ({
   const scale = useRef(new Animated.Value(1)).current;
 
   const onPressIn = () => {
+    if (!disabled && !loading) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
     Animated.spring(scale, { toValue: 0.96, useNativeDriver: true, speed: 50 }).start();
   };
   const onPressOut = () => {

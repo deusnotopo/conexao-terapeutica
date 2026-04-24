@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import { RootStackProps } from '../../navigation/types';
+import { Goal, GoalNote } from '../../lib/schemas';
+
 import {
   View,
   Text,
@@ -28,7 +31,9 @@ import { webAlert } from '../../lib/webAlert';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
-const STATUS_CONFIG = {
+type GoalStatus = 'pending' | 'in_progress' | 'achieved';
+
+const STATUS_CONFIG: Record<GoalStatus, { label: string; color: string; icon: React.ComponentType<{ color: string; size: number }> }> = {
   pending: { label: 'Pendente', color: colors.textSecondary, icon: Circle },
   in_progress: { label: 'Em Progresso', color: colors.secondary, icon: Clock },
   achieved: { label: 'Conquistado! 🎉', color: '#16a34a', icon: CheckCircle },
@@ -36,7 +41,7 @@ const STATUS_CONFIG = {
 
 const PAGE_SIZE = 20;
 
-export const GoalsScreen = ({ navigation }: any) => {
+export const GoalsScreen = ({ navigation }: RootStackProps<'Goals'>) => {
   const { activeDependent } = useUser();
   const {
     goals,
@@ -52,19 +57,19 @@ export const GoalsScreen = ({ navigation }: any) => {
     addGoalNote,
   } = useGoals(activeDependent?.id ?? "");
 
-  const [expanded, setExpanded] = useState(null);
-  const [notes, setNotes] = useState({});
-  const [newNote, setNewNote] = useState({});
-  const [addingNote, setAddingNote] = useState(null);
+  const [expanded, setExpanded] = useState<string | null>(null);
+  const [notes, setNotes] = useState<Record<string, GoalNote[]>>({});
+  const [newNote, setNewNote] = useState<Record<string, string>>({});
+  const [addingNote, setAddingNote] = useState<string | null>(null);
 
-  const fetchNotes = async (goalId: any) => {
+  const fetchNotes = async (goalId: string) => {
     const result = await getGoalNotes(goalId);
     if (result.success) {
-      setNotes((prev: any) => ({ ...prev, [goalId]: result.data }));
+      setNotes((prev: Record<string, GoalNote[]>) => ({ ...prev, [goalId]: result.data || [] }));
     }
   };
 
-  const handleExpand = (goalId: any) => {
+  const handleExpand = (goalId: string) => {
     if (expanded === goalId) {
       setExpanded(null);
       return;
@@ -73,8 +78,8 @@ export const GoalsScreen = ({ navigation }: any) => {
     fetchNotes(goalId);
   };
 
-  const handleAddNote = async (goalId: any) => {
-    const text = ((newNote as any)[goalId] || '').trim();
+  const handleAddNote = async (goalId: string) => {
+    const text = ((newNote as Record<string, string>)[goalId] || '').trim();
     if (!text) return;
     
     const result = await addGoalNote(goalId, text);
@@ -85,26 +90,26 @@ export const GoalsScreen = ({ navigation }: any) => {
     }
   };
 
-  const handleStatusChange = async (goal: any) => {
+  const handleStatusChange = async (goal: Goal) => {
     const nextStatus = {
       pending: 'in_progress',
       in_progress: 'achieved',
       achieved: 'pending',
     };
-    const next = (nextStatus as any)[goal.status];
+    const next = (nextStatus as Record<string, string>)[goal.status];
     const labels = {
       pending: 'Pendente',
       in_progress: 'Em Progresso',
       achieved: 'Conquistado 🎉',
     };
-    webAlert('Atualizar Meta', `Marcar como: "${(labels as any)[next]}"?`, [
+    webAlert('Atualizar Meta', `Marcar como: "${(labels as Record<string, string>)[next]}"?`, [
       { text: 'Cancelar', style: 'cancel' },
       {
         text: 'Confirmar',
         onPress: async () => {
-          const updates = { status: next };
+          const updates: Partial<Goal> = { status: next as "pending" | "in_progress" | "achieved" | "abandoned" };
           if (next === 'achieved')
-            (updates as any).achieved_at = new Date().toISOString().split('T')[0];
+            updates.achieved_at = new Date().toISOString().split('T')[0];
           
           await updateGoal(goal.id, updates);
         },
@@ -112,14 +117,14 @@ export const GoalsScreen = ({ navigation }: any) => {
     ]);
   };
 
-  const achieved = goals.filter((g: any) => g.status === 'achieved');
-  const active = goals.filter((g: any) => g.status !== 'achieved');
+  const achieved = goals.filter((g: Goal) => g.status === 'achieved');
+  const active = goals.filter((g: Goal) => g.status !== 'achieved');
 
-  const renderGoalCard = (goal: any) => {
-    const cfg = (STATUS_CONFIG as any)[goal.status] || STATUS_CONFIG.pending;
+  const renderGoalCard = (goal: Goal) => {
+    const cfg = STATUS_CONFIG[goal.status as GoalStatus] || STATUS_CONFIG.pending;
     const Icon = cfg.icon;
     const isOpen = expanded === goal.id;
-    const goalNotes = (notes as any)[goal.id] || [];
+    const goalNotes = (notes as Record<string, GoalNote[]>)[goal.id] || [];
     return (
       <View
         key={goal.id}
@@ -172,12 +177,12 @@ export const GoalsScreen = ({ navigation }: any) => {
         </View>
         {isOpen && (
           <View style={styles.notesSection}>
-            {goalNotes.map((n: any) => (
+            {goalNotes.map((n: GoalNote) => (
               <View key={n.id} style={styles.noteItem}>
                 <Text style={styles.noteDate}>
-                  {format(new Date(n.created_at), "dd/MM/yy 'às' HH:mm", {
+                  {n.created_at ? format(new Date(n.created_at), "dd/MM/yy 'às' HH:mm", {
                     locale: ptBR,
-                  })}
+                  }) : ''}
                 </Text>
                 <Text style={styles.noteText}>{n.note}</Text>
               </View>
@@ -189,7 +194,7 @@ export const GoalsScreen = ({ navigation }: any) => {
               <View style={styles.noteInputRow}>
                 <TextInput
                   style={styles.noteInput}
-                  value={(newNote as any)[goal.id] || ''}
+                  value={(newNote as Record<string, string>)[goal.id] || ''}
                   onChangeText={(t) =>
                     setNewNote((prev) => ({ ...prev, [goal.id]: t }))
                   }

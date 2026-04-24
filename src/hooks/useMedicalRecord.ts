@@ -26,7 +26,7 @@ export const useMedicalRecord = (activeDependentId: string) => {
     const result = await medicalRecordService.getByDependentId(activeDependentId);
     
     if (result.success) {
-      setRecord(result.data!);
+      setRecord(result.data as MedicalRecord);
     } else {
       setRecord(null);
     }
@@ -50,8 +50,8 @@ export const useMedicalRecord = (activeDependentId: string) => {
     );
 
     if (result.success) {
-      setRecord(result.data!);
-      if (result.metadata?.enqueued) {
+      setRecord(result.data as MedicalRecord);
+      if ((result.metadata as { enqueued?: boolean })?.enqueued) {
         showToast('Ficha salva offline.');
       } else {
         showToast('Ficha médica atualizada.');

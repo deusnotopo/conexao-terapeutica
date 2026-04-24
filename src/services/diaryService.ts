@@ -24,7 +24,7 @@ export const diaryService = {
     const cacheKey = `diary:${dependentId}:p${page}`;
     try {
       if (!options.forceRefresh && page === 0) {
-        const cached = await storage.getItem<any>(cacheKey);
+        const cached = await storage.getItem<PaginatedDiary>(cacheKey);
         if (cached) return Result.ok(cached, { fromCache: true });
       }
 
@@ -50,8 +50,9 @@ export const diaryService = {
       }
 
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao buscar diário');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao buscar diário';
+      return Result.fail(msg);
     }
   },
 
@@ -74,8 +75,9 @@ export const diaryService = {
       }
 
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao criar entrada');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao criar entrada';
+      return Result.fail(msg);
     }
   },
 
@@ -99,8 +101,9 @@ export const diaryService = {
       }
 
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao atualizar entrada');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao atualizar entrada';
+      return Result.fail(msg);
     }
   },
 
@@ -116,8 +119,9 @@ export const diaryService = {
 
       if (error) return Result.fail(error.message);
       return Result.ok(true);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao excluir entrada');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao excluir entrada';
+      return Result.fail(msg);
     }
   }
 };

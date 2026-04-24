@@ -24,7 +24,7 @@ export const useTherapyNotes = (activeDependentId: string) => {
 
     // 1. SWR Cycle: Try cache first
     const cacheResult = await therapyService.getNotes(activeDependentId, { forceRefresh: false });
-    if (cacheResult.success && cacheResult.data && cacheResult.metadata?.fromCache) {
+    if (cacheResult.success && cacheResult.data && (cacheResult.metadata as { fromCache?: boolean })?.fromCache) {
       setNotes(cacheResult.data);
       setLoading(false); // Early interactive state
     }

@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import {
   FolderClosed,
@@ -16,7 +16,9 @@ import { EvolutionScreen } from '../screens/main/EvolutionScreen';
 import { VaultScreen } from '../screens/main/VaultScreen';
 import { ProfileScreen } from '../screens/main/ProfileScreen';
 
-const Tab = createBottomTabNavigator();
+import { MainTabParamList } from './types';
+
+const Tab = createBottomTabNavigator<MainTabParamList>();
 
 export const MainTabs = () => {
   return (

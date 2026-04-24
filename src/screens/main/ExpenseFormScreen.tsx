@@ -1,4 +1,6 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { RootStackProps } from '../../navigation/types';
+
 import {
   View,
   Text,
@@ -34,7 +36,7 @@ const CATEGORIES = [
   'Outro',
 ];
 
-export const ExpenseFormScreen = ({ navigation, route }: any) => {
+export const ExpenseFormScreen = ({ navigation, route }: RootStackProps<'ExpenseForm'>) => {
   const { activeDependent } = useUser();
   const { addExpense, updateExpense, removeExpense } = useExpenses(activeDependent?.id ?? "");
   const expense = route.params?.expense || null;
@@ -56,13 +58,13 @@ export const ExpenseFormScreen = ({ navigation, route }: any) => {
     ).padStart(2, '0')}/${d.getFullYear()}`;
   };
 
-  const toDisplayDate = (iso: any) => {
+  const toDisplayDate = (iso: string) => {
     if (!iso) return '';
     const [y, m, d] = iso.split('-');
     return `${d}/${m}/${y}`;
   };
 
-  const toDisplayAmount = (cents: any) => {
+  const toDisplayAmount = (cents: number | null | undefined) => {
     if (cents === undefined || cents === null) return '';
     return (cents / 100).toFixed(2).replace('.', ',');
   };
@@ -74,7 +76,7 @@ export const ExpenseFormScreen = ({ navigation, route }: any) => {
     isEditing ? toDisplayAmount(expense.amount_cents) : ''
   );
 
-  const handleDateChange = (text: any) => {
+  const handleDateChange = (text: string) => {
     let raw = text.replace(/\D/g, '').substring(0, 8);
     if (raw.length > 4)
       raw =
@@ -85,7 +87,7 @@ export const ExpenseFormScreen = ({ navigation, route }: any) => {
     setErrorMsg('');
   };
 
-  const handleAmountChange = (text: any) => {
+  const handleAmountChange = (text: string) => {
     const clean = text.replace(/[^\d,]/g, '').replace(',', '.');
     setAmountStr(clean);
     setErrorMsg('');
@@ -136,7 +138,7 @@ export const ExpenseFormScreen = ({ navigation, route }: any) => {
       if (success) {
         navigation.goBack();
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
       setErrorMsg((e as Error)?.message || 'Não foi possível salvar o gasto.');
     } finally {
       setLoading(false);
@@ -144,6 +146,7 @@ export const ExpenseFormScreen = ({ navigation, route }: any) => {
   };
 
   const handleDelete = () => {
+    if (!expense) return;
     webAlert('Excluir Gasto', 'Deseja excluir este registro permanentemente?', [
       { text: 'Cancelar', style: 'cancel' },
       {
@@ -182,7 +185,7 @@ export const ExpenseFormScreen = ({ navigation, route }: any) => {
           keyboardShouldPersistTaps="handled">
         <Text style={styles.label}>Categoria</Text>
         <View style={styles.chips}>
-          {CATEGORIES.map((c: any) => (
+          {CATEGORIES.map((c: string) => (
             <TouchableOpacity
               key={c}
               style={[styles.chip, category === c && styles.chipActive]}

@@ -26,7 +26,7 @@ export const medicalRecordService = {
       
       // 1. Verificar Cache (se não for force refresh)
       if (!options.forceRefresh) {
-        const cached = await storage.getItem<any>(cacheKey);
+        const cached = await storage.getItem<MedicalRecord | null>(cacheKey);
         if (cached) return Result.ok(cached, { fromCache: true });
       }
 
@@ -49,8 +49,9 @@ export const medicalRecordService = {
       }
       
       return Result.ok(null);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao buscar ficha médica');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao buscar ficha médica';
+      return Result.fail(msg);
     }
   },
 
@@ -88,8 +89,9 @@ export const medicalRecordService = {
       if (!resultData.success) return Result.fail('Ficha salva mas com erro de contrato.');
 
       return Result.ok(resultData.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao salvar ficha médica');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao salvar ficha médica';
+      return Result.fail(msg);
     }
   }
 };

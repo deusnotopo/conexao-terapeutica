@@ -1,8 +1,5 @@
 import { Medication, Event } from './schemas';
-
-// These APIs are web-only — guarded at runtime with typeof window checks.
-// Declared here to avoid TS errors in a React Native (non-DOM) tsconfig.
-declare const window: Record<string, unknown> | undefined;
+import { isNotificationSupported } from './platform';
 declare class Notification {
   static readonly permission: 'default' | 'granted' | 'denied';
   static requestPermission(): Promise<'default' | 'granted' | 'denied'>;
@@ -12,7 +9,7 @@ declare class Notification {
 // ─── Permission ───────────────────────────────────────────────────────────────
 
 export const requestNotificationPermission = async (): Promise<boolean> => {
-  if (typeof window === 'undefined' || !('Notification' in (window ?? {}))) return false;
+  if (!isNotificationSupported()) return false;
   if (Notification.permission === 'granted') return true;
   if (Notification.permission === 'denied') return false;
   const permission = await Notification.requestPermission();
@@ -22,7 +19,7 @@ export const requestNotificationPermission = async (): Promise<boolean> => {
 // ─── Medication Reminders ─────────────────────────────────────────────────────
 
 export const scheduleNotificationsForToday = async (medications: Medication[]): Promise<void> => {
-  if (typeof window === 'undefined' || !('Notification' in (window ?? {}))) return;
+  if (!isNotificationSupported()) return;
   if (Notification.permission !== 'granted') return;
 
   const now = new Date();
@@ -56,7 +53,7 @@ export const scheduleEventReminder = async (
   event: EventWithTime,
   minutesBefore: number = 30
 ): Promise<void> => {
-  if (typeof window === 'undefined' || !('Notification' in (window ?? {}))) return;
+  if (!isNotificationSupported()) return;
 
   const granted = await requestNotificationPermission();
   if (!granted) return;

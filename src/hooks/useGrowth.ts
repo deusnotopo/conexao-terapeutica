@@ -3,13 +3,14 @@ import { growthService } from '../services/growthService';
 import { syncService } from '../services/syncService';
 import { webAlert } from '../lib/webAlert';
 import { showToast } from '../components/Toast';
+import { GrowthMeasurement } from '../lib/schemas';
 
 /**
  * useGrowth Hook
  * Encapsulates the logic for fetching and managing growth measurements.
  */
 export const useGrowth = (activeDependentId: string) => {
-  const [measurements, setMeasurements] = useState<any[]>([]);
+  const [measurements, setMeasurements] = useState<GrowthMeasurement[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const isMounted = useRef(true);
@@ -26,8 +27,8 @@ export const useGrowth = (activeDependentId: string) => {
 
     // 1. SWR Cycle: Try cache first
     const cacheResult = await growthService.getMeasurements(activeDependentId, { forceRefresh: false });
-    if (cacheResult.success && cacheResult.metadata?.fromCache) {
-      setMeasurements(cacheResult.data!);
+    if (cacheResult.success && (cacheResult.metadata as { fromCache?: boolean })?.fromCache) {
+      setMeasurements(cacheResult.data as GrowthMeasurement[]);
       setLoading(false); // Early interactive state
     }
 
@@ -35,7 +36,7 @@ export const useGrowth = (activeDependentId: string) => {
     const networkResult = await growthService.getMeasurements(activeDependentId, { forceRefresh: true });
 
     if (networkResult.success) {
-      setMeasurements(networkResult.data!);
+      setMeasurements(networkResult.data as GrowthMeasurement[]);
     } else {
       // Only error if we don't have cached data showing
       if (measurements.length === 0) {
@@ -57,14 +58,14 @@ export const useGrowth = (activeDependentId: string) => {
     fetchData();
   };
 
-  const addMeasurement = async (data: any) => {
+  const addMeasurement = async (data: Partial<GrowthMeasurement>) => {
     const result = await syncService.perform('growthService', 'addMeasurement', [data]);
     if (result.success) {
-      if (result.metadata?.enqueued) {
+      if ((result.metadata as { enqueued?: boolean })?.enqueued) {
         showToast('Medida salva offline.', 'info');
       } else {
         showToast('Medida registrada com sucesso!');
-        setMeasurements(prev => [result.data, ...prev].sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+        setMeasurements(prev => [result.data as GrowthMeasurement, ...prev].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
       }
       return true;
     } else {
@@ -73,14 +74,14 @@ export const useGrowth = (activeDependentId: string) => {
     }
   };
 
-  const updateMeasurement = async (id: string, updates: any) => {
+  const updateMeasurement = async (id: string, updates: Partial<GrowthMeasurement>) => {
     const result = await syncService.perform('growthService', 'updateMeasurement', [id, updates]);
     if (result.success) {
-      if (result.metadata?.enqueued) {
+      if ((result.metadata as { enqueued?: boolean })?.enqueued) {
         showToast('Atualização salva offline.', 'info');
       } else {
         showToast('Medida atualizada!');
-        setMeasurements(prev => prev.map(m => m.id === id ? result.data : m));
+        setMeasurements(prev => prev.map(m => m.id === id ? result.data as GrowthMeasurement : m));
       }
       return true;
     } else {
@@ -92,7 +93,7 @@ export const useGrowth = (activeDependentId: string) => {
   const deleteMeasurement = async (id: string) => {
     const result = await syncService.perform('growthService', 'deleteMeasurement', [id]);
     if (result.success) {
-      if (result.metadata?.enqueued) {
+      if ((result.metadata as { enqueued?: boolean })?.enqueued) {
         showToast('Exclusão pendente.', 'info');
       } else {
         showToast('Medida excluída.');

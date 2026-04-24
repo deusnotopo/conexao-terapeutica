@@ -1,4 +1,6 @@
 ﻿import React from 'react';
+import { RootStackProps } from '../../navigation/types';
+
 import {
   View,
   Text,
@@ -19,7 +21,7 @@ import {
   Star,
 } from 'lucide-react-native';
 
-export const AboutScreen = ({ navigation }: any) => {
+export const AboutScreen = ({ navigation }: RootStackProps<'About'>) => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>

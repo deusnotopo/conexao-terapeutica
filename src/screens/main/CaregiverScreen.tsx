@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { RootStackProps } from '../../navigation/types';
+
 import {
   View,
   Text,
@@ -26,7 +28,7 @@ import {
 } from 'lucide-react-native';
 import { formatShort } from '../../utils/formatDate';
 
-export const CaregiverScreen = ({ navigation }: any) => {
+export const CaregiverScreen = ({ navigation }: RootStackProps<'Caregiver'>) => {
   const { activeDependent, user } = useUser();
   const {
     caregivers,
@@ -54,7 +56,7 @@ export const CaregiverScreen = ({ navigation }: any) => {
       const result = await sendInvite({
         invited_by: user?.id ?? "",
         invited_email: email.trim().toLowerCase(),
-      } as any);
+      });
 
       if (!result.success) throw new Error(result.error ?? undefined);
 
@@ -68,14 +70,15 @@ export const CaregiverScreen = ({ navigation }: any) => {
       );
       void Linking.openURL(`mailto:${email.trim()}?subject=${subject}&body=${body}`
       ).catch(() => {});
-    } catch (e: any) {
-      setErrorMsg(e.message || 'Erro ao enviar convite.');
+    } catch (e: unknown) {
+      setErrorMsg((e as Error)?.message || 'Erro ao enviar convite.');
     } finally {
       setSending(false);
     }
   };
 
-  const handleRevokeAccess = (caregiver: any) => {
+  const handleRevokeAccess = (caregiver: { id?: string; profiles?: { full_name?: string }; invited_email?: string }) => {
+    if (!caregiver.id) return;
     const name =
       caregiver.profiles?.full_name ||
       caregiver.invited_email ||
@@ -85,12 +88,13 @@ export const CaregiverScreen = ({ navigation }: any) => {
       {
         text: 'Remover',
         style: 'destructive',
-        onPress: () => revokeAccess(caregiver.id),
+        onPress: () => revokeAccess(caregiver.id as string),
       },
     ]);
   };
 
-  const handleRevokeInvite = (invite: any) => {
+  const handleRevokeInvite = (invite: { id?: string; invited_email: string; status?: string }) => {
+    if (!invite.id) return;
     webAlert(
       'Revogar Convite',
       `Deseja cancelar o convite para ${invite.invited_email}?`,
@@ -99,18 +103,18 @@ export const CaregiverScreen = ({ navigation }: any) => {
         {
           text: 'Revogar',
           style: 'destructive',
-          onPress: () => revokeInvite(invite.id),
+          onPress: () => revokeInvite(invite.id as string),
         },
       ]
     );
   };
 
-  const STATUS_ICON = {
+  const STATUS_ICON: Record<string, React.ReactNode> = {
     pending: <Clock color="#d97706" size={18} />,
     accepted: <CheckCircle color="#16a34a" size={18} />,
     declined: <XCircle color="#dc2626" size={18} />,
   };
-  const STATUS_LABEL = {
+  const STATUS_LABEL: Record<string, string> = {
     pending: 'Aguardando',
     accepted: 'Aceito',
     declined: 'Recusado',
@@ -182,7 +186,7 @@ export const CaregiverScreen = ({ navigation }: any) => {
         {caregivers.length > 0 && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>✅ Cuidadores com Acesso</Text>
-            {caregivers.map((c: any) => (
+            {caregivers.map((c: { id?: string; profiles?: { full_name?: string }; access_level?: string; invited_email?: string }) => (
               <View key={c.id} style={styles.caregiverCard}>
                 <View style={styles.caregiverIcon}>
                   <Users color={colors.primary} size={20} />
@@ -212,7 +216,7 @@ export const CaregiverScreen = ({ navigation }: any) => {
         {invites.length > 0 && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>📨 Convites Enviados</Text>
-            {invites.map((inv: any) => (
+            {invites.map((inv: { id?: string; status: string; invited_email: string; created_at?: string }) => (
               <View
                 key={inv.id}
                 style={[
@@ -228,9 +232,9 @@ export const CaregiverScreen = ({ navigation }: any) => {
                   </Text>
                 </View>
                 <View style={styles.inviteStatus}>
-                  {(STATUS_ICON as any)[inv.status]}
+                  {STATUS_ICON[inv.status]}
                   <Text style={styles.inviteStatusText}>
-                    {(STATUS_LABEL as any)[inv.status]}
+                    {STATUS_LABEL[inv.status]}
                   </Text>
                 </View>
                 {inv.status === 'pending' && (

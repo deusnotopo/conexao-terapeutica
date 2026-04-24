@@ -16,7 +16,7 @@ export const professionalService = {
       if (!dependentId) return Result.fail('ID do dependente é obrigatório');
 
       if (!options.forceRefresh) {
-        const cached = await storage.getItem<any>(cacheKey);
+        const cached = await storage.getItem<Professional[]>(cacheKey);
         if (cached) return Result.ok(cached, { fromCache: true });
       }
 
@@ -36,8 +36,9 @@ export const professionalService = {
       await storage.setItem(cacheKey, validated.data);
 
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Falha ao carregar profissionais');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Falha ao carregar profissionais';
+      return Result.fail(msg);
     }
   },
 
@@ -60,8 +61,9 @@ export const professionalService = {
       }
       
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Falha ao adicionar profissional');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Falha ao adicionar profissional';
+      return Result.fail(msg);
     }
   },
 
@@ -85,8 +87,9 @@ export const professionalService = {
       }
 
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Falha ao atualizar profissional');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Falha ao atualizar profissional';
+      return Result.fail(msg);
     }
   },
 
@@ -102,8 +105,9 @@ export const professionalService = {
 
       if (error) return Result.fail(`Erro ao excluir profissional: ${error.message}`);
       return Result.ok(true);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Falha ao excluir profissional');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Falha ao excluir profissional';
+      return Result.fail(msg);
     }
   }
 };

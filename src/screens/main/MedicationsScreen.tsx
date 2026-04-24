@@ -1,4 +1,7 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
+import { RootStackProps } from '../../navigation/types';
+import { Medication } from '../../lib/schemas';
+
 import {
   View,
   Text,
@@ -23,7 +26,7 @@ import {
 } from 'lucide-react-native';
 import { LoadingState } from '../../components/LoadingState';
 
-export const MedicationsScreen = ({ navigation }: any) => {
+export const MedicationsScreen = ({ navigation }: RootStackProps<'Medications'>) => {
   const { activeDependent } = useUser();
   const {
     medications,
@@ -38,7 +41,7 @@ export const MedicationsScreen = ({ navigation }: any) => {
 
   const [activeTab, setActiveTab] = useState('active'); // 'active' | 'inactive'
 
-  const handleToggleActive = (med: any) => {
+  const handleToggleActive = (med: Medication) => {
     const action = med.is_active ? 'desativar' : 'reativar';
     webAlert(
       `${med.is_active ? 'Desativar' : 'Reativar'} Medicamento`,
@@ -53,7 +56,7 @@ export const MedicationsScreen = ({ navigation }: any) => {
     );
   };
 
-  const handleDelete = (med: any) => {
+  const handleDelete = (med: Medication) => {
     webAlert(
       'Excluir Medicamento',
       `Deseja excluir permanentemente "${med.name}"?`,
@@ -68,12 +71,12 @@ export const MedicationsScreen = ({ navigation }: any) => {
     );
   };
 
-  const handleUpdateStock = (med: any, delta: any) => {
+  const handleUpdateStock = (med: Medication, delta: number) => {
     const next = Math.max(0, (med.stock_count || 0) + delta);
     updateStock(med.id, next);
   };
 
-  const displayed = medications.filter((m: any) =>
+  const displayed = medications.filter((m: Medication) =>
     activeTab === 'active' ? m.is_active : !m.is_active
   );
 
@@ -108,7 +111,7 @@ export const MedicationsScreen = ({ navigation }: any) => {
 
       <View style={{ backgroundColor: colors.surface }}>
         <View style={styles.tabs}>
-          {['active', 'inactive'].map((tab: any) => (
+          {(['active', 'inactive'] as const).map((tab: string) => (
             <TouchableOpacity
               key={tab}
               style={[styles.tab, activeTab === tab && styles.tabActive]}
@@ -153,7 +156,7 @@ export const MedicationsScreen = ({ navigation }: any) => {
             )}
           </View>
         )}
-        {displayed.map((med: any) => {
+        {displayed.map((med: Medication) => {
           const stockLow =
             med.stock_count != null &&
             med.stock_count <= (med.stock_alert_at ?? 5);

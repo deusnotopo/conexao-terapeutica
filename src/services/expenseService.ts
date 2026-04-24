@@ -30,7 +30,7 @@ export const expenseService = {
     const cacheKey = `expenses:${dependentId}:p${page}`;
     try {
       if (!options.forceRefresh && page === 0) {
-        const cached = await storage.getItem<any>(cacheKey);
+        const cached = await storage.getItem<PaginatedExpenses>(cacheKey);
         if (cached) return Result.ok(cached, { fromCache: true });
       }
 
@@ -56,8 +56,9 @@ export const expenseService = {
       }
 
       return Result.ok(validation.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao buscar despesas');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao buscar despesas';
+      return Result.fail(msg);
     }
   },
 
@@ -84,8 +85,9 @@ export const expenseService = {
       }
 
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao criar despesa');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao criar despesa';
+      return Result.fail(msg);
     }
   },
 
@@ -113,8 +115,9 @@ export const expenseService = {
       }
 
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao atualizar despesa');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao atualizar despesa';
+      return Result.fail(msg);
     }
   },
 
@@ -132,8 +135,9 @@ export const expenseService = {
 
       if (error) return Result.fail(error.message);
       return Result.ok(true);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao excluir despesa');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao excluir despesa';
+      return Result.fail(msg);
     }
   },
 
@@ -149,7 +153,7 @@ export const expenseService = {
     const cacheKey = `expenses_month_total:${dependentId}`;
     try {
       if (!options.forceRefresh) {
-        const cached = await storage.getItem<any>(cacheKey);
+        const cached = await storage.getItem<number>(cacheKey);
         if (cached !== null) return Result.ok(cached, { fromCache: true });
       }
 
@@ -170,8 +174,9 @@ export const expenseService = {
       await storage.setItem(cacheKey, total);
 
       return Result.ok(total);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao calcular total mensal');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao calcular total mensal';
+      return Result.fail(msg);
     }
   },
 };

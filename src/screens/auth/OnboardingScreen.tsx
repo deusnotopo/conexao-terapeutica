@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { RootStackProps } from '../../navigation/types';
+
 import {
   View,
   Text,
@@ -8,6 +10,7 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
+  TextInput,
 } from 'react-native';
 import { syncService } from '../../services/syncService';
 import { useUser } from '../../context/UserContext';
@@ -19,8 +22,10 @@ import { Baby, Calendar, Stethoscope, Heart } from 'lucide-react-native';
 import { logScreen, logEvent } from '../../lib/firebase';
 import { useResponsive } from '../../utils/responsive';
 
-export const OnboardingScreen = ({ navigation, route }: any) => {
-  const isModal = route?.name === 'AddDependent';
+type OnboardingScreenProps = RootStackProps<'Onboarding'> | RootStackProps<'AddDependent'>;
+
+export const OnboardingScreen = ({ navigation, route }: OnboardingScreenProps) => {
+  const isModal = (route?.name as string) === 'AddDependent';
   const { user, refreshContext } = useUser();
   const { isSmall, isTablet, hPad, cardPad } = useResponsive();
 
@@ -32,15 +37,15 @@ export const OnboardingScreen = ({ navigation, route }: any) => {
   const [birthDate, setBirthDate] = useState('');
   const [diagnosis, setDiagnosis] = useState('');
 
-  const lastNameRef = React.useRef<any>(null);
-  const birthDateRef = React.useRef<any>(null);
-  const diagnosisRef = React.useRef<any>(null);
+  const lastNameRef = React.useRef<TextInput>(null);
+  const birthDateRef = React.useRef<TextInput>(null);
+  const diagnosisRef = React.useRef<TextInput>(null);
 
   useEffect(() => {
     logScreen(isModal ? 'AddDependent' : 'Onboarding');
   }, [isModal]);
 
-  const handleDateChange = (text: any) => {
+  const handleDateChange = (text: string) => {
     let raw = text.replace(/\D/g, '');
     if (raw.length > 8) raw = raw.substring(0, 8);
     let masked = raw;
@@ -108,7 +113,7 @@ export const OnboardingScreen = ({ navigation, route }: any) => {
         diagnosis: diagnosis.trim() || null,
       }]);
 
-      if (!result.success && !result.metadata?.enqueued) {
+      if (!result.success && !(result.metadata as { enqueued?: boolean })?.enqueued) {
         setErrorMsg(result.error || 'Não foi possível salvar os dados.');
         return;
       }
@@ -122,10 +127,10 @@ export const OnboardingScreen = ({ navigation, route }: any) => {
         setTimeout(() => {
           try {
             navigation.reset({ index: 0, routes: [{ name: 'MainTabs' }] });
-          } catch (_: any) {}
+          } catch (_: unknown) {}
         }, 300);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       const msg = (error as Error)?.message || 'Não foi possível salvar os dados. Verifique a conexão.';
       setErrorMsg(msg);
     } finally {

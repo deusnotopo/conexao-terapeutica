@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback } from 'react';
+import * as Haptics from 'expo-haptics';
 import { Animated, Text, StyleSheet, View } from 'react-native';
 import { CheckCircle, XCircle, Info } from 'lucide-react-native';
 import { colors, spacing, typography } from '../theme';
@@ -21,6 +22,14 @@ export const Toast: React.FC = () => {
       if (timerRef.current) clearTimeout(timerRef.current);
       setMessage(msg);
       setType(toastType);
+      
+      if (toastType === 'success') {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      } else if (toastType === 'error') {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      } else {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      }
 
       Animated.parallel([
         Animated.spring(opacity, { toValue: 1, useNativeDriver: true }),

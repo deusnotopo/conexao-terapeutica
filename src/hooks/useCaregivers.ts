@@ -63,13 +63,13 @@ export const useCaregivers = (dependentId: string) => {
     ]);
 
     if (result.success) {
-      if (result.metadata?.enqueued) {
+      if ((result.metadata as { enqueued?: boolean })?.enqueued) {
         showToast('Convite enfileirado offline.', 'info');
       } else {
         showToast('Convite enviado!', 'success');
-        if (result.data) setInvites(prev => [result.data, ...prev]);
+        if (result.data) setInvites(prev => [result.data as CaregiverInvite, ...prev]);
       }
-      return { success: true, data: result.data };
+      return { success: true, data: result.data as CaregiverInvite };
     } else {
       webAlert('Erro ao convidar', result.error || 'Falha ao enviar convite');
       return { success: false, error: result.error };
@@ -80,7 +80,7 @@ export const useCaregivers = (dependentId: string) => {
     const result = await syncService.perform('caregiverService', 'revokeAccess', [accessId]);
     if (result.success) {
       setCaregivers(prev => prev.filter(c => c.id !== accessId));
-      if (result.metadata?.enqueued) {
+      if ((result.metadata as { enqueued?: boolean })?.enqueued) {
         showToast('Revogação enfileirada.', 'info');
       } else {
         showToast('Acesso removido.', 'success');
@@ -94,7 +94,7 @@ export const useCaregivers = (dependentId: string) => {
     const result = await syncService.perform('caregiverService', 'revokeInvite', [inviteId]);
     if (result.success) {
       setInvites(prev => prev.filter(i => i.id !== inviteId));
-      if (result.metadata?.enqueued) {
+      if ((result.metadata as { enqueued?: boolean })?.enqueued) {
         showToast('Cancelamento enfileirado.', 'info');
       } else {
         showToast('Convite cancelado.', 'success');

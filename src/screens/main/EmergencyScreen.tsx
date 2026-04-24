@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { RootStackProps } from '../../navigation/types';
+
 import {
   View,
   Text,
@@ -21,7 +23,7 @@ import {
 } from 'lucide-react-native';
 import { logScreen, logEvent } from '../../lib/firebase';
 
-export const EmergencyScreen = ({ navigation }: any) => {
+export const EmergencyScreen = ({ navigation }: RootStackProps<'Emergency'>) => {
   const { activeDependent } = useUser();
   const { record, loading } = useMedicalRecord(activeDependent?.id ?? "");
 
@@ -29,7 +31,7 @@ export const EmergencyScreen = ({ navigation }: any) => {
     logScreen('Emergency');
   }, []);
 
-  const call = (phone: any, contactType: string) => {
+  const call = (phone: string, contactType: string) => {
     if (!phone) return;
     logEvent('emergency_call_attempt', { type: contactType });
     Linking.openURL(`tel:${phone.replace(/\D/g, '')}`);
@@ -144,7 +146,7 @@ export const EmergencyScreen = ({ navigation }: any) => {
                   {record.emergency_contact_phone && (
                     <TouchableOpacity
                       style={styles.callBtn}
-                      onPress={() => call(record.emergency_contact_phone, 'contact')}
+                      onPress={() => call(record.emergency_contact_phone as string, 'contact')}
                     >
                       <Phone color={colors.surface} size={22} />
                       <Text style={styles.callBtnText}>LIGAR</Text>
@@ -176,7 +178,7 @@ export const EmergencyScreen = ({ navigation }: any) => {
                         styles.callBtn,
                         { backgroundColor: colors.primary },
                       ]}
-                      onPress={() => call(record.primary_physician_phone, 'physician')}
+                      onPress={() => call(record.primary_physician_phone as string, 'physician')}
                     >
                       <Phone color={colors.surface} size={22} />
                       <Text style={styles.callBtnText}>LIGAR</Text>

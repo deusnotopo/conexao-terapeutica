@@ -1,6 +1,9 @@
-﻿import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { RootStackProps } from '../../navigation/types';
+
 import { useUser } from '../../context/UserContext';
 import { useExpenses } from '../../hooks/useExpenses';
+import { Expense } from '../../lib/schemas';
 import {
   View,
   Text,
@@ -34,11 +37,11 @@ const CATEGORY_COLORS = {
   Outro: colors.textSecondary,
 };
 
-const formatCurrency = (cents: any) => {
+const formatCurrency = (cents: number) => {
   return `R$ ${(cents / 100).toFixed(2).replace('.', ',')}`;
 };
 
-export const ExpensesScreen = ({ navigation }: any) => {
+export const ExpensesScreen = ({ navigation }: RootStackProps<'Expenses'>) => {
   const { activeDependent } = useUser();
   const {
     expenses,
@@ -54,7 +57,7 @@ export const ExpensesScreen = ({ navigation }: any) => {
     removeExpense,
   } = useExpenses(activeDependent?.id ?? "");
 
-  const handleDelete = (expense: any) => {
+  const handleDelete = (expense: Expense) => {
     webAlert(
       'Excluir Gasto',
       `Deseja excluir este gasto de ${formatCurrency(expense.amount_cents)}?`,
@@ -72,7 +75,7 @@ export const ExpensesScreen = ({ navigation }: any) => {
     );
   };
 
-  const grouped = expenses.reduce((acc: any, e: any) => {
+  const grouped = expenses.reduce((acc: Record<string, Expense[]>, e: Expense) => {
     const month = e.date.substring(0, 7); // YYYY-MM
     if (!acc[month]) acc[month] = [];
     acc[month].push(e);
@@ -132,18 +135,18 @@ export const ExpensesScreen = ({ navigation }: any) => {
         {expenses.length > 0 &&
           (() => {
             const cats = Object.entries(
-              expenses.reduce((acc: any, e: any) => {
+              expenses.reduce((acc: Record<string, number>, e: Expense) => {
                 acc[e.category] = (acc[e.category] || 0) + e.amount_cents;
                 return acc;
               }, {})
-            ).sort((a: any, b: any) => b[1] - a[1]);
-            const total = cats.reduce((s: number, [, v]: any) => s + (v as number), 0);
+            ).sort((a: [string, number], b: [string, number]) => b[1] - a[1]);
+            const total = cats.reduce((s: number, [, v]: [string, number]) => s + v, 0);
             return (
               <View style={styles.catCard}>
                 <Text style={styles.catTitle}>📊 Por Categoria (total)</Text>
-                {cats.map(([cat, val]: any) => {
+                {cats.map(([cat, val]: [string, number]) => {
                   const pct = total > 0 ? (val / total) * 100 : 0;
-                  const col = (CATEGORY_COLORS as any)[cat] || colors.textSecondary;
+                  const col = (CATEGORY_COLORS as Record<string, string>)[cat] || colors.textSecondary;
                   return (
                     <View key={cat} style={styles.catRow}>
                       <Text style={[styles.catLabel, { color: col }]}>
@@ -175,8 +178,8 @@ export const ExpensesScreen = ({ navigation }: any) => {
           </View>
         ) : null}
 
-        {Object.entries(grouped).map(([month, items]: any) => {
-          const monthTotal = items.reduce((s: any, e: any) => s + e.amount_cents, 0);
+        {Object.entries(grouped).map(([month, items]) => {
+          const monthTotal = items.reduce((s: number, e: Expense) => s + e.amount_cents, 0);
           const [year, m] = month.split('-');
           const label = format(
             new Date(Number(year), Number(m) - 1, 1),
@@ -193,14 +196,14 @@ export const ExpensesScreen = ({ navigation }: any) => {
                   {formatCurrency(monthTotal)}
                 </Text>
               </View>
-              {items.map((e: any) => (
+              {items.map((e: Expense) => (
                 <View key={e.id} style={styles.card}>
                   <View
                     style={[
                       styles.categoryDot,
                       {
                         backgroundColor:
-                          (CATEGORY_COLORS as any)[e.category] || colors.textSecondary,
+                          (CATEGORY_COLORS as Record<string, string>)[e.category] || colors.textSecondary,
                       },
                     ]}
                   />

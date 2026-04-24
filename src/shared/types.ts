@@ -1,4 +1,4 @@
-export type Constructor<T = unknown> = new (...args: any[]) => T;
+export type Constructor<T = unknown> = new (...args: unknown[]) => T;
 
 export type Primitive = string | number | boolean | null | undefined;
 
@@ -29,10 +29,10 @@ export interface DomainEvent {
 export type EventPayload<T extends DomainEvent = DomainEvent> = Omit<T, 'type' | 'timestamp' | 'aggregateId' | 'version'>;
 
 export interface ILogger {
-  info(message: string, meta?: Record<string, any>): void;
-  warn(message: string, meta?: Record<string, any>): void;
-  error(message: string, meta?: Record<string, any>): void;
-  debug(message: string, meta?: Record<string, any>): void;
+  info(message: string, meta?: unknown): void;
+  warn(message: string, meta?: unknown): void;
+  error(message: string, meta?: unknown): void;
+  debug(message: string, meta?: unknown): void;
 }
 
 export const createLogger = (context: string): ILogger => {

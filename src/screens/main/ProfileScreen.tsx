@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { MainTabProps } from '../../navigation/types';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
 import {
   View,
   Text,
@@ -12,6 +15,8 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import { webAlert } from '../../lib/webAlert';
 import { useUser } from '../../context/UserContext';
+import { Dependent } from '../../lib/schemas';
+
 import { useTheme } from '../../context/ThemeContext';
 import { colors, spacing, typography } from '../../theme';
 import {
@@ -197,7 +202,15 @@ const SECTIONS = [
   },
 ];
 
-const ActionRow = ({ label, Icon, color, bg, onPress }: any) => (
+interface ActionRowProps {
+  label: string;
+  Icon: React.ElementType;
+  color?: string;
+  bg?: string;
+  onPress?: () => void;
+}
+
+const ActionRow = ({ label, Icon, color, bg, onPress }: ActionRowProps) => (
   <TouchableOpacity
     style={styles.actionRow}
     onPress={onPress}
@@ -216,7 +229,29 @@ const ActionRow = ({ label, Icon, color, bg, onPress }: any) => (
   </TouchableOpacity>
 );
 
-const CollapsibleSection = ({ section, navigation }: any) => {
+interface SectionItem {
+  label: string;
+  icon: React.ElementType;
+  color: string;
+  bg: string;
+  route?: string;
+  routeParams?: Record<string, unknown>;
+}
+
+interface SectionData {
+  key: string;
+  title?: string;
+  color?: string;
+  isSpecial?: boolean;
+  items?: SectionItem[];
+}
+
+interface CollapsibleSectionProps {
+  section: SectionData;
+  navigation: { navigate: (route: string, params?: unknown) => void };
+}
+
+const CollapsibleSection = ({ section, navigation }: CollapsibleSectionProps) => {
   const [open, setOpen] = useState(true);
   return (
     <View style={styles.section}>
@@ -234,7 +269,7 @@ const CollapsibleSection = ({ section, navigation }: any) => {
       </TouchableOpacity>
       {open && (
         <View style={styles.sectionContent}>
-          {section.items.map((item: any) => (
+          {section.items?.map((item: SectionItem) => (
             <ActionRow
               key={item.label}
               label={item.label}
@@ -243,7 +278,7 @@ const CollapsibleSection = ({ section, navigation }: any) => {
               bg={item.bg}
               onPress={
                 item.route
-                  ? () => navigation.navigate(item.route, item.routeParams)
+                  ? () => navigation.navigate(item.route as string, item.routeParams)
                   : undefined
               }
             />
@@ -254,7 +289,7 @@ const CollapsibleSection = ({ section, navigation }: any) => {
   );
 };
 
-export const ProfileScreen = ({ navigation }: any) => {
+export const ProfileScreen = ({ navigation }: MainTabProps<'ProfileTab'>) => {
   const { 
     user, 
     profile, 
@@ -299,21 +334,21 @@ export const ProfileScreen = ({ navigation }: any) => {
         fileBody = await response.blob();
       }
 
-      const res = await updateAvatar(fileBody as any, ext);
+      const res = await updateAvatar(fileBody as unknown as Blob, ext);
       
       if (res.success) {
         logEvent('avatar_update_success', { 
-          from_cache: !!res.metadata?.enqueued 
+          from_cache: !!(res.metadata as { enqueued?: boolean })?.enqueued 
         });
         if (res.data?.avatar_url) {
           setAvatarUri(res.data.avatar_url);
-        } else if (res.metadata?.enqueued) {
+        } else if ((res.metadata as { enqueued?: boolean })?.enqueued) {
           webAlert('Offline', 'Seu novo avatar será enviado assim que você estiver online.');
         }
       } else {
         webAlert('Erro', 'Não foi possível atualizar o avatar.');
       }
-    } catch (_: any) {
+    } catch (_: unknown) {
       // Best-effort: picker cancelled or unavailable, previous avatar unchanged
     } finally {
       setUploadingAvatar(false);
@@ -375,7 +410,7 @@ export const ProfileScreen = ({ navigation }: any) => {
               </Text>
             )}
             <Text style={styles.userRole}>
-              {(profile as any)?.role === 'parent'
+              {profile?.role === 'parent'
                 ? '👨‍👩‍👧 Pai / Responsável'
                 : '🩺 Terapeuta'}
             </Text>
@@ -419,7 +454,7 @@ export const ProfileScreen = ({ navigation }: any) => {
             </TouchableOpacity>
           </View>
           <View style={styles.sectionContent}>
-            {dependents.map((dep: any) => (
+            {dependents.map((dep: Dependent) => (
               <TouchableOpacity
                 key={dep.id}
                 style={[
@@ -482,7 +517,7 @@ export const ProfileScreen = ({ navigation }: any) => {
         </TouchableOpacity>
 
         {/* Collapsible Sections */}
-        {SECTIONS.filter((s: any) => !s.isSpecial).map((section: any) => (
+        {SECTIONS.filter((s: SectionData) => !s.isSpecial).map((section: SectionData) => (
           <CollapsibleSection
             key={section.key}
             section={section}

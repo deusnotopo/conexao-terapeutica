@@ -29,7 +29,7 @@ export const agendaService = {
     const cacheKey = `events:${dependentId}:${type}`;
     try {
       if (!options.forceRefresh) {
-        const cached = await storage.getItem<any>(cacheKey);
+        const cached = await storage.getItem<Event[]>(cacheKey);
         if (cached) return Result.ok(cached, { fromCache: true });
       }
 
@@ -53,8 +53,9 @@ export const agendaService = {
 
       await storage.setItem(cacheKey, validated.data);
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Falha ao carregar agenda');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Falha ao carregar agenda';
+      return Result.fail(msg);
     }
   },
 
@@ -72,7 +73,7 @@ export const agendaService = {
     const cacheKey = `consultations:${dependentId}:p${page}`;
     try {
       if (!options.forceRefresh && page === 1) { // Cache only first page
-        const cached = await storage.getItem<any>(cacheKey);
+        const cached = await storage.getItem<PaginatedResponse<Consultation>>(cacheKey);
         if (cached) return Result.ok(cached, { fromCache: true });
       }
 
@@ -96,8 +97,9 @@ export const agendaService = {
       }
 
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Falha ao carregar consultas');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Falha ao carregar consultas';
+      return Result.fail(msg);
     }
   },
 
@@ -123,8 +125,9 @@ export const agendaService = {
       if (!validated.success) return Result.fail('Evento criado mas com erro de contrato.');
 
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao salvar compromisso');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao salvar compromisso';
+      return Result.fail(msg);
     }
   },
 
@@ -151,8 +154,9 @@ export const agendaService = {
       if (!validated.success) return Result.fail('Evento atualizado mas com erro de contrato.');
 
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Falha ao atualizar evento');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Falha ao atualizar evento';
+      return Result.fail(msg);
     }
   },
 
@@ -164,8 +168,9 @@ export const agendaService = {
       const { error } = await supabase.from('events').delete().eq('id', id);
       if (error) return Result.fail(error.message);
       return Result.ok(true);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Falha ao excluir evento');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Falha ao excluir evento';
+      return Result.fail(msg);
     }
   },
 
@@ -190,8 +195,9 @@ export const agendaService = {
       if (!validated.success) return Result.fail('Consulta criada mas com erro de contrato.');
 
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Falha ao criar consulta');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Falha ao criar consulta';
+      return Result.fail(msg);
     }
   },
 
@@ -217,8 +223,9 @@ export const agendaService = {
       if (!validated.success) return Result.fail('Consulta atualizada mas com erro de contrato.');
 
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Falha ao atualizar consulta');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Falha ao atualizar consulta';
+      return Result.fail(msg);
     }
   },
 
@@ -230,8 +237,9 @@ export const agendaService = {
       const { error } = await supabase.from('consultations').delete().eq('id', id);
       if (error) return Result.fail(error.message);
       return Result.ok(true);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Falha ao excluir consulta');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Falha ao excluir consulta';
+      return Result.fail(msg);
     }
   }
 };

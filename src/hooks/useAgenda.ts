@@ -5,7 +5,7 @@ import { syncService } from '../services/syncService';
 import { webAlert } from '../lib/webAlert';
 import { showToast } from '../components/Toast';
 import { notificationService } from '../services/notificationService';
-import { Event, Medication, MedicationLog } from '../lib/schemas';
+import { Event, Medication, MedicationLog, Consultation } from '../lib/schemas';
 import { Result } from '../lib/result';
 
 export type MedicationWithStatus = Medication & { taken: boolean };
@@ -59,7 +59,7 @@ export function useAgenda(dependentId: string, type: 'upcoming' | 'past' = 'upco
 
     processResults(cEvent, cMed, cLogs);
     
-    if (cEvent.metadata?.fromCache) {
+    if ((cEvent.metadata as { fromCache?: boolean })?.fromCache) {
       setLoading(false);
     }
 
@@ -120,7 +120,7 @@ export function useAgenda(dependentId: string, type: 'upcoming' | 'past' = 'upco
     return result;
   };
 
-  const addConsultation = async (data: any) => {
+  const addConsultation = async (data: Partial<Consultation>) => {
     const result = await syncService.perform('agendaService', 'createConsultation', [data]);
     if (result.success) {
       showToast('Consulta registrada!', 'success');
@@ -131,7 +131,7 @@ export function useAgenda(dependentId: string, type: 'upcoming' | 'past' = 'upco
     return result;
   };
 
-  const updateConsultation = async (id: string, updates: any) => {
+  const updateConsultation = async (id: string, updates: Partial<Consultation>) => {
     const result = await syncService.perform('agendaService', 'updateConsultation', [id, updates]);
     if (result.success) {
       showToast('Consulta atualizada!', 'success');
@@ -160,7 +160,7 @@ export function useAgenda(dependentId: string, type: 'upcoming' | 'past' = 'upco
       setMedications(prev => prev.map(m => 
         m.id === medicationId ? { ...m, taken: true } : m
       ));
-      if (result.metadata?.enqueued) showToast('Registro agendado offline.');
+      if ((result.metadata as { enqueued?: boolean })?.enqueued) showToast('Registro agendado offline.');
       return true;
     } else {
       webAlert('Erro ao registrar', result.error || 'Erro desconhecido');

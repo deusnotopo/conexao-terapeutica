@@ -26,7 +26,7 @@ export const dependentService = {
     const cacheKey = `dependents:${userId}`;
     try {
       if (!options.forceRefresh) {
-        const cached = await storage.getItem<any>(cacheKey);
+        const cached = await storage.getItem<Dependent[]>(cacheKey);
         if (cached) return Result.ok(cached, { fromCache: true });
       }
 
@@ -41,16 +41,16 @@ export const dependentService = {
       if (primaryRes.error) return Result.fail(`Erro primários: ${primaryRes.error.message}`);
       if (sharedRes.error) return Result.fail(`Erro compartilhados: ${sharedRes.error.message}`);
 
-      const sharedDependents = (sharedRes.data || [])
-        .map((a: any) => a.dependents)
-        .filter(Boolean);
+      const sharedDependents = ((sharedRes.data || []) as unknown as { dependents: Dependent }[])
+        .map((a) => a.dependents)
+        .filter(Boolean) as Dependent[];
 
       const primaryDependents = primaryRes.data || [];
 
       const allDependents = [
         ...primaryDependents,
         ...sharedDependents.filter(
-          (shared: any) => !primaryDependents.some((primary: any) => primary.id === shared.id)
+          (shared: Dependent) => !primaryDependents.some((primary: Dependent) => primary.id === shared.id)
         ),
       ];
 
@@ -61,8 +61,9 @@ export const dependentService = {
 
       await storage.setItem(cacheKey, validated.data);
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao buscar dependentes');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao buscar dependentes';
+      return Result.fail(msg);
     }
   },
 
@@ -88,8 +89,9 @@ export const dependentService = {
         return Result.fail('Dependente criado mas com erro de contrato.');
       }
       return Result.ok(parsedResult.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao criar dependente');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao criar dependente';
+      return Result.fail(msg);
     }
   },
 
@@ -119,8 +121,9 @@ export const dependentService = {
         return Result.fail('Dependente atualizado mas com erro de contrato.');
       }
       return Result.ok(parsedResult.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao atualizar dependente');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao atualizar dependente';
+      return Result.fail(msg);
     }
   },
 
@@ -138,8 +141,9 @@ export const dependentService = {
 
       if (error) return Result.fail(error.message);
       return Result.ok({ deletedId: dependentId });
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao excluir dependente');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao excluir dependente';
+      return Result.fail(msg);
     }
   },
 };

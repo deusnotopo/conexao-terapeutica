@@ -19,6 +19,9 @@ import { profileService } from './profileService';
 import { dependentService } from './dependentService';
 import { medicalRecordService } from './medicalRecordService';
 import { caregiverService } from './caregiverService';
+import { createLogger } from '../shared/types';
+
+const logger = createLogger('SyncService');
 
 const QUEUE_KEY = 'sync_mutation_queue';
 
@@ -26,14 +29,14 @@ interface Mutation {
   id: string;
   serviceName: string;
   methodName: string;
-  args: any[];
+  args: unknown[];
   timestamp: string;
   retryCount: number;
   nextRetry: string | null;
 }
 
 type ServiceRegistry = {
-  [key: string]: any;
+  [key: string]: Record<string, Function>;
 };
 
 // Map of services for dynamic dispatch
@@ -73,7 +76,7 @@ export const syncService = {
   /**
    * Add a mutation to the queue.
    */
-  async enqueue(serviceName: string, methodName: string, args: any[]): Promise<string> {
+  async enqueue(serviceName: string, methodName: string, args: unknown[]): Promise<string> {
     const queue = await this.getQueue();
     const mutation: Mutation = {
       id: Math.random().toString(36).substring(7),
@@ -137,12 +140,13 @@ export const syncService = {
       try {
         const service = SERVICES[mutation.serviceName];
         if (!service || !service[mutation.methodName]) {
-          console.error(`[SyncService] Target not found: ${mutation.serviceName}.${mutation.methodName}`);
+          logger.error(`Target not found: ${mutation.serviceName}.${mutation.methodName}`);
           await this.dequeue(mutation.id);
           continue;
         }
 
-        const result = await service[mutation.methodName](...mutation.args, { isSyncing: true });
+        logger.info(`Sincronizando ${mutation.serviceName}.${mutation.methodName}`);
+        const result = await service[mutation.methodName](...mutation.args);
 
         if (result.success) {
           await this.dequeue(mutation.id);
@@ -155,11 +159,11 @@ export const syncService = {
           );
 
           if (isNonRetryable) {
-            console.error(`[SyncService] Non-retryable error for mutation ${mutation.id}:`, result.error);
+            logger.error(`Non-retryable error for mutation ${mutation.id}:`, result.error);
             await this.dequeue(mutation.id);
             failCount++;
           } else {
-            console.warn(`[SyncService] Retryable failure for mutation ${mutation.id}:`, result.error);
+            logger.warn(`Retryable failure for mutation ${mutation.id}:`, result.error);
             // Exponential backoff: 2^retryCount * 5 seconds (starting at 5s, 10s...)
             const retryCount = (mutation.retryCount || 0) + 1;
             const delayMs = Math.min(Math.pow(2, retryCount) * 5000, 3600000); // Max 1 hour
@@ -171,8 +175,8 @@ export const syncService = {
             failCount++;
           }
         }
-      } catch (e) {
-        console.error(`[SyncService] Fatal error processing mutation ${mutation.id}:`, e);
+      } catch (e: unknown) {
+        logger.error(`Fatal error processing mutation ${mutation.id}:`, e);
         // On fatal error, we keep it in queue just in case it's a transient VM error
         failCount++;
       }
@@ -200,7 +204,7 @@ export const syncService = {
   /**
    * Perform a mutation immediately or enqueue if it fails/offline.
    */
-  async perform(serviceName: string, methodName: string, args: any[]): Promise<Result> {
+  async perform(serviceName: string, methodName: string, args: unknown[]): Promise<Result<unknown>> {
     const service = SERVICES[serviceName];
     if (!service) return Result.fail('Serviço não encontrado para sincronização.');
 
@@ -211,12 +215,27 @@ export const syncService = {
         return result;
       }
 
-      // If it's a network error (Supabase unreachable), enqueue for later
-      // For now we enqueue on ANY error to ensure "Nível Akita" resilience, 
-      // but in production we'd filter which errors are "retryable".
+      // IMPORTANTE: Se o Supabase retornou um erro, provavelmente foi um erro de banco de dados
+      // (ex: RLS, Restrição Única, Schema).
+      // Erros de indisponibilidade de internet costumam ter 'fetch', 'network', 'offline', 'timeout'.
+      const errorMessage = result.error ? result.error.toString().toLowerCase() : '';
+      
+      const isNetworkError = 
+        errorMessage.includes('fetch') || 
+        errorMessage.includes('network') || 
+        errorMessage.includes('offline') || 
+        errorMessage.includes('timeout');
+
+      // Se não for um erro claro de rede, é um erro duro (Non-Retryable) e a UI deve saber imediatamente!
+      if (!isNetworkError) {
+        return result; // Retorna a Falha real pra UI exibir
+      }
+
+      // Apenas enfileira se for erro de rede/timeout explícito
       await this.enqueue(serviceName, methodName, args);
       return Result.ok(null, { enqueued: true, message: 'Operação salva offline.' });
-    } catch (e) {
+    } catch (e: unknown) {
+      // Se a biblioteca do supabase CRASHOU por falta de net, cai aqui
       await this.enqueue(serviceName, methodName, args);
       return Result.ok(null, { enqueued: true, message: 'Operação salva offline (erro fatal).' });
     }

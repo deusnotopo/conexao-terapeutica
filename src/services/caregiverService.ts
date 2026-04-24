@@ -44,8 +44,9 @@ export const caregiverService = {
       if (!validated.success) return Result.fail('Erro de integridade nos dados de cuidadores.');
 
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao buscar cuidadores');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao buscar cuidadores';
+      return Result.fail(msg);
     }
   },
 
@@ -66,8 +67,9 @@ export const caregiverService = {
       if (!validated.success) return Result.fail('Erro de integridade nos dados de convites.');
 
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao buscar convites');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao buscar convites';
+      return Result.fail(msg);
     }
   },
 
@@ -102,8 +104,9 @@ export const caregiverService = {
       if (!parsedResult.success) return Result.fail('Convite criado mas com erro de contrato.');
 
       return Result.ok(parsedResult.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao enviar convite');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao enviar convite';
+      return Result.fail(msg);
     }
   },
 
@@ -119,8 +122,9 @@ export const caregiverService = {
 
       if (error) return Result.fail(error.message);
       return Result.ok(true);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao revogar acesso');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao revogar acesso';
+      return Result.fail(msg);
     }
   },
 
@@ -136,8 +140,9 @@ export const caregiverService = {
 
       if (error) return Result.fail(error.message);
       return Result.ok(true);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao cancelar convite');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao cancelar convite';
+      return Result.fail(msg);
     }
   },
 
@@ -159,8 +164,9 @@ export const caregiverService = {
       if (!parsedResult.success) return Result.fail('Convite aceito mas com erro de contrato.');
 
       return Result.ok(parsedResult.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao aceitar convite');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao aceitar convite';
+      return Result.fail(msg);
     }
   },
 };

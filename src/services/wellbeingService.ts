@@ -29,7 +29,7 @@ export const wellbeingService = {
     const cacheKey = `wellbeing:${userId}:p${page}`;
     try {
       if (!options.forceRefresh && page === 0) {
-        const cached = await storage.getItem<any>(cacheKey);
+        const cached = await storage.getItem<PaginatedWellbeing>(cacheKey);
         if (cached) return Result.ok(cached, { fromCache: true });
       }
 
@@ -55,8 +55,9 @@ export const wellbeingService = {
       }
 
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro desconhecido');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro desconhecido';
+      return Result.fail(msg);
     }
   },
 
@@ -79,8 +80,9 @@ export const wellbeingService = {
       }
 
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao criar registro');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao criar registro';
+      return Result.fail(msg);
     }
   },
 
@@ -104,8 +106,9 @@ export const wellbeingService = {
       }
 
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao atualizar registro');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao atualizar registro';
+      return Result.fail(msg);
     }
   },
 
@@ -121,8 +124,9 @@ export const wellbeingService = {
 
       if (error) return Result.fail(error.message);
       return Result.ok(true);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao excluir registro');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao excluir registro';
+      return Result.fail(msg);
     }
   }
 };

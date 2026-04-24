@@ -1,4 +1,6 @@
-﻿import React from 'react';
+import React from 'react';
+import { RootStackProps } from '../../navigation/types';
+
 import {
   View,
   Text,
@@ -12,6 +14,7 @@ import {
 import { useUser } from '../../context/UserContext';
 import { useProfessionals } from '../../hooks/useProfessionals';
 import { webAlert } from '../../lib/webAlert';
+import { Professional } from '../../lib/schemas';
 import { colors, spacing, typography } from '../../theme';
 import {
   ChevronLeft,
@@ -52,12 +55,12 @@ const COLORS = [
   '#6b7280',
 ];
 
-const getColor = (specialty: any) => {
+const getColor = (specialty: string) => {
   const idx = SPECIALTIES.indexOf(specialty) % COLORS.length;
   return COLORS[Math.max(0, idx)];
 };
 
-export const ProfessionalsScreen = ({ navigation }: any) => {
+export const ProfessionalsScreen = ({ navigation }: RootStackProps<'Professionals'>) => {
   const { activeDependent } = useUser();
   const {
     professionals,
@@ -67,7 +70,7 @@ export const ProfessionalsScreen = ({ navigation }: any) => {
     deleteProfessional,
   } = useProfessionals(activeDependent?.id ?? "");
 
-  const handleDelete = (p: any) => {
+  const handleDelete = (p: Professional) => {
     webAlert('Excluir', `Remover ${p.name} do diretório?`, [
       { text: 'Cancelar', style: 'cancel' },
       {
@@ -123,7 +126,7 @@ export const ProfessionalsScreen = ({ navigation }: any) => {
           </View>
         )}
 
-        {professionals.map((p: any) => {
+        {professionals.map((p: Professional) => {
           const color = getColor(p.specialty);
           return (
             <View
@@ -141,7 +144,7 @@ export const ProfessionalsScreen = ({ navigation }: any) => {
                     {p.name
                       .split(' ')
                       .slice(0, 2)
-                      .map((n: any) => n[0])
+                      .map((n: string) => n[0])
                       .join('')
                       .toUpperCase()}
                   </Text>
@@ -184,7 +187,7 @@ export const ProfessionalsScreen = ({ navigation }: any) => {
                     <TouchableOpacity
                       style={styles.contactBtn}
                       onPress={() =>
-                        Linking.openURL(`tel:${p.phone.replace(/\D/g, '')}`)
+                        p.phone && Linking.openURL(`tel:${p.phone.replace(/\D/g, '')}`)
                       }
                     >
                       <Phone color={colors.surface} size={16} />

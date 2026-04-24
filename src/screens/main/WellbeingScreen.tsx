@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { RootStackProps } from '../../navigation/types';
+
 import {
   View,
   Text,
@@ -11,6 +13,7 @@ import {
 } from 'react-native';
 import { useUser } from '../../context/UserContext';
 import { useWellbeing } from '../../hooks/useWellbeing';
+import { CaregiverWellbeing } from '../../lib/schemas';
 import { colors, spacing, typography } from '../../theme';
 import { Button } from '../../components/Button';
 import {
@@ -34,7 +37,7 @@ const MOODS = [
 
 // TIPS moved to hook for logic decoupling
 
-export const WellbeingScreen = ({ navigation }: any) => {
+export const WellbeingScreen = ({ navigation }: RootStackProps<'Wellbeing'>) => {
   const { user } = useUser();
   const { 
     wellbeing, 
@@ -72,7 +75,7 @@ export const WellbeingScreen = ({ navigation }: any) => {
     setSaving(false);
   };
 
-  const getMoodCfg = (key: any) => MOODS.find((m: any) => m.key === key) || MOODS[1];
+  const getMoodCfg = (key: string) => MOODS.find((m) => m.key === key) || MOODS[1];
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -117,7 +120,7 @@ export const WellbeingScreen = ({ navigation }: any) => {
           </Text>
 
           <View style={styles.moodGrid}>
-            {MOODS.map((m: any) => (
+            {MOODS.map((m) => (
               <TouchableOpacity
                 key={m.key}
                 style={[
@@ -168,7 +171,7 @@ export const WellbeingScreen = ({ navigation }: any) => {
           <>
             <Text style={styles.section}>Últimas 2 semanas</Text>
             <View style={styles.moodHistory}>
-              {wellbeing.map((e: any) => {
+              {wellbeing.map((e: CaregiverWellbeing) => {
                 const cfg = getMoodCfg(e.mood);
                 return (
                   <View

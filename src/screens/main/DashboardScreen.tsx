@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { MainTabProps } from '../../navigation/types';
+
 import {
   View,
   Text,
@@ -41,7 +43,7 @@ const TIPS = [
   '"Um dia de cada vez. Você está fazendo um trabalho incrível." 🤍',
 ];
 
-export const DashboardScreen = ({ navigation }: any) => {
+export const DashboardScreen = ({ navigation }: MainTabProps<'DashboardTab'>) => {
   const { profile, activeDependent } = useUser();
   const { pendingCount, triggerSync } = useSync();
   const { isSmall, isTablet, hPad } = useResponsive();

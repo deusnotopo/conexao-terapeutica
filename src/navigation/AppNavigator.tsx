@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { UserProvider, useUser } from '../context/UserContext';
 import { ThemeProvider } from '../context/ThemeContext';
 import { Toast } from '../components/Toast';
@@ -45,7 +45,9 @@ import { CaregiverScreen } from '../screens/main/CaregiverScreen';
 import { MedicationAdherenceScreen } from '../screens/main/MedicationAdherenceScreen';
 import { AboutScreen } from '../screens/main/AboutScreen';
 
-const Stack = createStackNavigator();
+import { RootStackParamList } from './types';
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const NavigationContent = () => {
   const { user, loading, dependents } = useUser();

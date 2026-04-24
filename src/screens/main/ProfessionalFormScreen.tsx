@@ -1,4 +1,6 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
+import { RootStackProps } from '../../navigation/types';
+
 import {
   View,
   Text,
@@ -40,7 +42,7 @@ const SPECIALTIES = [
   'Outro',
 ];
 
-export const ProfessionalFormScreen = ({ navigation, route }: any) => {
+export const ProfessionalFormScreen = ({ navigation, route }: RootStackProps<'ProfessionalForm'>) => {
   const { activeDependent } = useUser();
   const { addProfessional, updateProfessional } = useProfessionals(activeDependent?.id ?? "");
   const professional = route.params?.professional || null;
@@ -94,7 +96,7 @@ export const ProfessionalFormScreen = ({ navigation, route }: any) => {
       } else {
         setErrorMsg(result.error ?? "");
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
       setErrorMsg('Não foi possível salvar.');
     } finally {
       setLoading(false);
@@ -133,7 +135,7 @@ export const ProfessionalFormScreen = ({ navigation, route }: any) => {
 
         <Text style={styles.label}>Especialidade</Text>
         <View style={styles.chips}>
-          {SPECIALTIES.map((s: any) => (
+          {SPECIALTIES.map((s: string) => (
             <TouchableOpacity
               key={s}
               style={[styles.chip, specialty === s && styles.chipActive]}

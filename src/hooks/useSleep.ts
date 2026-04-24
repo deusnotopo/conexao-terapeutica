@@ -33,7 +33,7 @@ export const useSleep = (dependentId: string) => {
     else setLoading(false);
 
     if (result.success) {
-      setLogs(result.data.data); // result.data contains { data, count }
+      setLogs((result.data as { data: SleepLog[] }).data); // result.data contains { data, count }
     } else {
       showToast('Erro ao carregar registros de sono.', 'error');
     }

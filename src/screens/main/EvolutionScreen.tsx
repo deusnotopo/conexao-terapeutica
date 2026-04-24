@@ -1,4 +1,6 @@
-﻿import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { MainTabProps } from '../../navigation/types';
+
 import {
   View,
   Text,
@@ -11,6 +13,7 @@ import {
 import { webAlert } from '../../lib/webAlert';
 import { colors, spacing, typography } from '../../theme';
 import { useTherapyNotes } from '../../hooks/useTherapyNotes';
+import { TherapyNote } from '../../lib/schemas';
 import { ActivityIndicator } from 'react-native';
 import {
   Stethoscope,
@@ -23,14 +26,14 @@ import { LoadingState } from '../../components/LoadingState';
 import { useUser } from '../../context/UserContext';
 import { formatMedium } from '../../utils/formatDate';
 
-export const EvolutionScreen = ({ navigation }: any) => {
+export const EvolutionScreen = ({ navigation }: MainTabProps<'EvolutionTab'>) => {
   const { activeDependent } = useUser();
   const { notes, loading, refreshing, refresh } = useTherapyNotes(activeDependent?.id ?? "");
 
-  const renderStars = (rating: any) => {
+  const renderStars = (rating: number) => {
     return (
       <View style={styles.starsContainer}>
-        {[1, 2, 3, 4, 5].map((star: any) => (
+        {[1, 2, 3, 4, 5].map((star: number) => (
           <Star
             key={star}
             size={16}
@@ -42,7 +45,7 @@ export const EvolutionScreen = ({ navigation }: any) => {
     );
   };
 
-  const renderNoteCard = (note: any) => (
+  const renderNoteCard = (note: TherapyNote & { profiles?: { full_name?: string | null } }) => (
     <View key={note.id} style={styles.timelineItem}>
       <View style={styles.timelineLine} />
       <View style={styles.timelineDot}>

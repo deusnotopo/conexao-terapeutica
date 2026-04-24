@@ -1,4 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { MainTabProps } from '../../navigation/types';
+import { Event, Medication } from '../../lib/schemas';
+
 import {
   View,
   Text,
@@ -29,7 +32,7 @@ import { format, isToday, isTomorrow, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useResponsive } from '../../utils/responsive';
 
-export const AgendaScreen = ({ navigation }: any) => {
+export const AgendaScreen = ({ navigation }: MainTabProps<'AgendaTab'>) => {
   const { activeDependent } = useUser();
   const [activeTab, setActiveTab] = useState('upcoming'); // 'upcoming' ou 'history'
   const { isSmall, hPad, isTablet } = useResponsive();
@@ -42,9 +45,9 @@ export const AgendaScreen = ({ navigation }: any) => {
     refresh,
     deleteEvent,
     logMedication,
-  } = useAgenda(activeDependent?.id ?? "", activeTab as any);
+  } = useAgenda(activeDependent?.id ?? "", activeTab === 'history' ? 'past' : 'upcoming');
 
-  const handleDeleteEvent = async (event: any) => {
+  const handleDeleteEvent = async (event: Event) => {
     webAlert(
       'Excluir Compromisso',
       `Deseja realmente excluir "${event.title}"?`,
@@ -61,13 +64,13 @@ export const AgendaScreen = ({ navigation }: any) => {
     );
   };
 
-  const handleCheckMedication = async (med: any) => {
+  const handleCheckMedication = async (med: Medication & { taken?: boolean }) => {
     if (med.taken) return;
     await logMedication(med.id);
   };
 
 
-  const renderIcon = (type: any) => {
+  const renderIcon = (type: string | undefined | null) => {
     switch (type?.toLowerCase()) {
       case 'equoterapia':
       case 'therapy':
@@ -80,7 +83,7 @@ export const AgendaScreen = ({ navigation }: any) => {
     }
   };
 
-  const renderCard = (event: any) => (
+  const renderCard = (event: Event) => (
     <View key={event.id} style={styles.eventCard}>
       <View style={styles.cardHeader}>
         <View style={styles.iconContainer}>{renderIcon(event.event_type)}</View>
@@ -183,7 +186,7 @@ export const AgendaScreen = ({ navigation }: any) => {
               {activeTab === 'upcoming' && medications.length > 0 && (
                 <>
                   <Text style={styles.sectionHeader}>Medicamentos de Hoje</Text>
-                  {medications.map((med: any) => (
+                  {medications.map((med: Medication & { taken?: boolean, taken_at?: string }) => (
                     <View key={med.id} style={styles.eventCard}>
                       <View style={styles.cardHeader}>
                         <View
@@ -232,13 +235,13 @@ export const AgendaScreen = ({ navigation }: any) => {
               {activeTab === 'upcoming' ? (
                 // Upcoming: group by date
                 (() => {
-                  const grouped = events.reduce((acc: any, ev: any) => {
-                    const key = ev.date;
-                    if (!acc[key]) acc[key] = [];
-                    acc[key].push(ev);
-                    return acc;
+                  const grouped = events.reduce((groups: Record<string, Event[]>, event: Event) => {
+                    const dateStr = event.start_time.split('T')[0];
+                    if (!groups[dateStr]) groups[dateStr] = [];
+                    groups[dateStr].push(event);
+                    return groups;
                   }, {});
-                  return (Object.entries(grouped) as [string, any[]][]).map(([date, evs]: [string, any[]]) => {
+                  return Object.entries(grouped).map(([date, evs]: [string, Event[]]) => {
                     const d = parseISO(date);
                     let label;
                     if (isToday(d)) label = '📆 Hoje';
@@ -256,7 +259,7 @@ export const AgendaScreen = ({ navigation }: any) => {
               ) : (
                 <>
                   <Text style={styles.sectionHeader}>Eventos Passados</Text>
-                  {events.map(renderCard)}
+                  {events.map((evt: Event) => renderCard(evt))}
                 </>
               )}
             </>

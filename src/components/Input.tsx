@@ -8,6 +8,8 @@ import {
   ViewStyle,
   Animated,
   Platform,
+  NativeSyntheticEvent,
+  TextInputFocusEventData
 } from 'react-native';
 import { colors, spacing, typography, radii } from '../theme';
 

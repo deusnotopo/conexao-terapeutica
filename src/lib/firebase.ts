@@ -128,7 +128,7 @@ const REMOTE_CONFIG_DEFAULTS = {
 
 export type RemoteConfigKeys = keyof typeof REMOTE_CONFIG_DEFAULTS;
 
-let _remoteConfig: any = null;
+let _remoteConfig: unknown = null;
 
 export const initRemoteConfig = async () => {
   if (!isWeb) return null;

@@ -1,4 +1,6 @@
-﻿import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { RootStackProps } from '../../navigation/types';
+
 import {
   View,
   Text,
@@ -25,6 +27,7 @@ import { formatWeekday } from '../../utils/formatDate';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { webAlert } from '../../lib/webAlert';
+import { SleepLog } from '../../lib/schemas';
 
 const QUALITY_LABELS = [
   '',
@@ -43,11 +46,11 @@ const QUALITY_COLORS = [
   '#16a34a',
 ];
 
-export const SleepScreen = ({ navigation }: any) => {
+export const SleepScreen = ({ navigation }: RootStackProps<'Sleep'>) => {
   const { activeDependent } = useUser();
   const { logs, loading, refreshing, refresh, deleteLog } = useSleep(activeDependent?.id ?? "");
 
-  const handleDelete = (log: any) => {
+  const handleDelete = (log: SleepLog) => {
     webAlert('Excluir Registro', 'Deseja excluir este registro de sono?', [
       { text: 'Cancelar', style: 'cancel' },
       {
@@ -59,18 +62,18 @@ export const SleepScreen = ({ navigation }: any) => {
   };
 
   // 7-day avg
-  const recent7 = logs.slice(0, 7).filter((l: any) => l.duration_hours != null);
+  const recent7 = logs.slice(0, 7).filter((l: SleepLog) => l.duration_hours != null);
   const avgHours =
     recent7.length > 0
       ? (
-          recent7.reduce((s: any, l: any) => s + parseFloat(String(l.duration_hours ?? 0)), 0) /
+          recent7.reduce((s: number, l: SleepLog) => s + parseFloat(String(l.duration_hours ?? 0)), 0) /
           recent7.length
         ).toFixed(1)
       : null;
   const avgQuality =
     recent7.length > 0
       ? Math.round(
-          recent7.reduce((s: any, l: any) => s + (l.quality || 3), 0) / recent7.length
+          recent7.reduce((s: number, l: SleepLog) => s + (l.quality || 3), 0) / recent7.length
         )
       : null;
 
@@ -144,9 +147,10 @@ export const SleepScreen = ({ navigation }: any) => {
             <View style={styles.bars}>
               {[...recent7].reverse().map((l, i) => {
                 const maxH = 10;
+                const duration = l.duration_hours ?? 0;
                 const pct = Math.min(
                   100,
-                  (parseFloat(String(l.duration_hours ?? 0)) / maxH) * 100
+                  (parseFloat(String(duration)) / maxH) * 100
                 );
                 const color = QUALITY_COLORS[l.quality || 3];
                 return (
@@ -186,10 +190,10 @@ export const SleepScreen = ({ navigation }: any) => {
         )}
         {loading && <LoadingState message="Carregando diário de sono..." />}
 
-        {logs.map((l: any) => (
+        {logs.map((l: SleepLog) => (
           <View
             key={l.id}
-            style={[styles.card, l.quality <= 2 && styles.cardBad]}
+            style={[styles.card, (l.quality ?? 3) <= 2 ? styles.cardBad : null]}
           >
             <View style={styles.cardTop}>
               <View>

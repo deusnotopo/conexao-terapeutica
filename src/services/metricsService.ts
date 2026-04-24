@@ -25,7 +25,7 @@ export const metricsService = {
     const cacheKey = `dashboard_metrics:${dependentId}`;
     try {
       if (!options.forceRefresh) {
-        const cached = await storage.getItem<any>(cacheKey);
+        const cached = await storage.getItem<DashboardMetrics>(cacheKey);
         if (cached) return Result.ok(cached, { fromCache: true });
       }
 
@@ -83,8 +83,9 @@ export const metricsService = {
 
       await storage.setItem(cacheKey, metricsData);
       return Result.ok(metricsData);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao buscar métricas do dashboard');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao buscar métricas do dashboard';
+      return Result.fail(msg);
     }
   },
 };

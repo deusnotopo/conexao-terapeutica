@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -12,6 +12,8 @@ import { showToast } from '../../components/Toast';
 import { useUser } from '../../context/UserContext';
 import { useSleep } from '../../hooks/useSleep';
 import { colors, spacing, typography } from '../../theme';
+import { RootStackProps } from '../../navigation/types';
+import { SleepLog } from '../../lib/schemas';
 import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
 import { ChevronLeft } from 'lucide-react-native';
@@ -24,13 +26,13 @@ const QUALITY_OPTS = [
   { value: 5, label: '😴 Ótimo', color: '#16a34a' },
 ];
 
-const toDisplay = (iso: any) => {
+const toDisplay = (iso: string | undefined | null) => {
   if (!iso) return '';
   const [y, m, d] = iso.split('-');
   return `${d}/${m}/${y}`;
 };
 
-export const SleepFormScreen = ({ navigation, route }: any) => {
+export const SleepFormScreen = ({ navigation, route }: RootStackProps<'SleepForm'>) => {
   const { activeDependent } = useUser();
   const { addLog, updateLog } = useSleep(activeDependent?.id ?? "");
   const sleep = route.params?.sleep || null;
@@ -46,7 +48,7 @@ export const SleepFormScreen = ({ navigation, route }: any) => {
   const [awakenings, setAwakenings] = useState(sleep?.awakenings != null ? String(sleep.awakenings) : '0');
   const [notes, setNotes] = useState(sleep?.notes || '');
 
-  const maskDate = (t: any) => {
+  const maskDate = (t: string) => {
     let r = t.replace(/\D/g, '').substring(0, 8);
     if (r.length > 4)
       r = r.substring(0, 2) + '/' + r.substring(2, 4) + '/' + r.substring(4);
@@ -54,13 +56,13 @@ export const SleepFormScreen = ({ navigation, route }: any) => {
     return r;
   };
   
-  const maskTime = (t: any) => {
+  const maskTime = (t: string) => {
     let r = t.replace(/\D/g, '').substring(0, 4);
     if (r.length > 2) r = r.substring(0, 2) + ':' + r.substring(2);
     return r;
   };
   
-  const toISO = (d: any) => {
+  const toISO = (d: string) => {
     const p = d.split('/');
     return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : null;
   };
@@ -103,10 +105,10 @@ export const SleepFormScreen = ({ navigation, route }: any) => {
 
       let result;
       if (isEditing) {
-        result = await updateLog(sleep.id, payload as any);
+        result = await updateLog(sleep.id, payload as Partial<SleepLog>);
       } else {
-        (payload as any).dependent_id = activeDependent?.id;
-        result = await addLog(payload as any);
+        (payload as Partial<SleepLog>).dependent_id = activeDependent?.id;
+        result = await addLog(payload as Partial<SleepLog>);
       }
 
       if (result.success) {
@@ -114,7 +116,7 @@ export const SleepFormScreen = ({ navigation, route }: any) => {
       } else {
         setErrorMsg(result.error || 'Erro ao salvar.');
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
       setErrorMsg((e as Error)?.message || 'Não foi possível salvar.');
     } finally {
       setLoading(false);
@@ -184,7 +186,7 @@ export const SleepFormScreen = ({ navigation, route }: any) => {
 
         <Text style={styles.label}>Qualidade do Sono</Text>
         <View style={styles.qualityRow}>
-          {QUALITY_OPTS.map((q: any) => (
+          {QUALITY_OPTS.map((q: { value: number; label: string; color: string; }) => (
             <TouchableOpacity
               key={q.value}
               style={[

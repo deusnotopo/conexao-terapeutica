@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -13,6 +13,8 @@ import { showToast } from '../../components/Toast';
 import { useUser } from '../../context/UserContext';
 import { useCrises } from '../../hooks/useCrises';
 import { colors, spacing, typography } from '../../theme';
+import { RootStackProps } from '../../navigation/types';
+import { CrisisEvent } from '../../lib/schemas';
 import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
 import { ChevronLeft, Clock, Pill } from 'lucide-react-native';
@@ -47,13 +49,13 @@ const TRIGGER_OPTS = [
   'Sem causa aparente',
 ];
 
-const toDisplay = (iso: any) => {
+const toDisplay = (iso: string | undefined | null) => {
   if (!iso) return '';
   const [y, m, d] = iso.split('-');
   return `${d}/${m}/${y}`;
 };
 
-export const CrisisFormScreen = ({ navigation, route }: any) => {
+export const CrisisFormScreen = ({ navigation, route }: RootStackProps<'CrisisForm'>) => {
   const { activeDependent } = useUser();
   const { addCrisis, updateCrisis } = useCrises(activeDependent?.id ?? "");
   const crisis = route.params?.crisis || null;
@@ -73,7 +75,7 @@ export const CrisisFormScreen = ({ navigation, route }: any) => {
   const [medicationGiven, setMedicationGiven] = useState(crisis?.medication_given || '');
   const [notes, setNotes] = useState(crisis?.notes || '');
 
-  const maskDate = (text: any) => {
+  const maskDate = (text: string) => {
     let raw = text.replace(/\D/g, '').substring(0, 8);
     if (raw.length > 4)
       raw =
@@ -86,20 +88,20 @@ export const CrisisFormScreen = ({ navigation, route }: any) => {
     return raw;
   };
   
-  const maskTime = (text: any) => {
+  const maskTime = (text: string) => {
     let raw = text.replace(/\D/g, '').substring(0, 4);
     if (raw.length > 2) raw = raw.substring(0, 2) + ':' + raw.substring(2);
     return raw;
   };
   
-  const toISO = (d: any) => {
+  const toISO = (d: string) => {
     const p = d.split('/');
     return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : null;
   };
 
-  const toggleTrigger = (t: any) =>
-    setTriggers((prev: any) =>
-      prev.includes(t) ? prev.filter((x: any) => x !== t) : [...prev, t]
+  const toggleTrigger = (t: string) =>
+    setTriggers((prev: string[]) =>
+      prev.includes(t) ? prev.filter((x: string) => x !== t) : [...prev, t]
     );
 
   const handleSave = async () => {
@@ -130,16 +132,16 @@ export const CrisisFormScreen = ({ navigation, route }: any) => {
 
       let success = false;
       if (isEditing) {
-        success = await updateCrisis(crisis.id, payload as any);
+        success = await updateCrisis(crisis.id, payload as Partial<CrisisEvent>);
       } else {
-        if (activeDependent) (payload as any).dependent_id = activeDependent.id;
-        success = await addCrisis(payload as any);
+        if (activeDependent) (payload as Partial<CrisisEvent>).dependent_id = activeDependent.id;
+        success = await addCrisis(payload as Partial<CrisisEvent>);
       }
 
       if (success) {
         navigation.goBack();
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
       setErrorMsg((e as Error)?.message || 'Não foi possível salvar.');
     } finally {
       setLoading(false);
@@ -170,7 +172,7 @@ export const CrisisFormScreen = ({ navigation, route }: any) => {
           keyboardShouldPersistTaps="handled">
         <Text style={styles.label}>Tipo de Episódio *</Text>
         <View style={styles.chips}>
-          {CRISIS_TYPES.map((t: any) => (
+          {CRISIS_TYPES.map((t: string) => (
             <TouchableOpacity
               key={t}
               style={[styles.chip, type === t && styles.chipActive]}
@@ -187,7 +189,7 @@ export const CrisisFormScreen = ({ navigation, route }: any) => {
 
         <Text style={styles.label}>Gravidade</Text>
         <View style={styles.severityRow}>
-          {SEVERITY_OPTS.map((s: any) => (
+          {SEVERITY_OPTS.map((s: { value: number; color: string; label: string; }) => (
             <TouchableOpacity
               key={s.value}
               style={[
@@ -246,7 +248,7 @@ export const CrisisFormScreen = ({ navigation, route }: any) => {
 
         <Text style={styles.label}>Possíveis Gatilhos</Text>
         <View style={styles.chips}>
-          {TRIGGER_OPTS.map((t: any) => (
+          {TRIGGER_OPTS.map((t: string) => (
             <TouchableOpacity
               key={t}
               style={[styles.chip, triggers.includes(t) && styles.chipActive]}

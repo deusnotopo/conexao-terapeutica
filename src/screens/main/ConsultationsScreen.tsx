@@ -1,4 +1,6 @@
-﻿import React from 'react';
+import React from 'react';
+import { RootStackProps } from '../../navigation/types';
+
 import {
   View,
   Text,
@@ -10,6 +12,7 @@ import {
 } from 'react-native';
 import { useUser } from '../../context/UserContext';
 import { useConsultations } from '../../hooks/useConsultations';
+import { Consultation } from '../../lib/schemas';
 import { webAlert } from '../../lib/webAlert';
 import { colors, spacing, typography } from '../../theme';
 import {
@@ -23,7 +26,7 @@ import {
 import { formatShort, formatShortYear2 } from '../../utils/formatDate';
 import { LoadingState } from '../../components/LoadingState';
 
-export const ConsultationsScreen = ({ navigation }: any) => {
+export const ConsultationsScreen = ({ navigation }: RootStackProps<'Consultations'>) => {
   const { activeDependent } = useUser();
   const {
     items: consultations,
@@ -37,7 +40,7 @@ export const ConsultationsScreen = ({ navigation }: any) => {
     deleteById,
   } = useConsultations(activeDependent?.id ?? "");
 
-  const handleDelete = (c: any) => {
+  const handleDelete = (c: Consultation) => {
     webAlert(
       'Excluir Consulta',
       `Deseja excluir a consulta de ${c.specialty}? Esta ação não pode ser desfeita.`,
@@ -103,7 +106,7 @@ export const ConsultationsScreen = ({ navigation }: any) => {
           <LoadingState message="Carregando consultas..." />
         ) : null}
 
-        {consultations.map((c: any) => (
+        {consultations.map((c: Consultation) => (
           <View key={c.id} style={styles.card}>
             <View style={styles.cardLeft}>
               <View style={styles.iconBox}>

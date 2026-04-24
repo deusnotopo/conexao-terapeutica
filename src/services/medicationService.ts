@@ -30,7 +30,7 @@ export const medicationService = {
     try {
       // 1. Check cache first
       if (!options.forceRefresh) {
-        const cached = await storage.getItem<any>(cacheKey);
+        const cached = await storage.getItem<Medication[]>(cacheKey);
         if (cached) return Result.ok(cached, { fromCache: true });
       }
 
@@ -52,8 +52,9 @@ export const medicationService = {
       await storage.setItem(cacheKey, validated.data);
 
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao buscar medicamentos');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao buscar medicamentos';
+      return Result.fail(msg);
     }
   },
 
@@ -77,8 +78,9 @@ export const medicationService = {
       }
 
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao atualizar estoque');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao atualizar estoque';
+      return Result.fail(msg);
     }
   },
 
@@ -102,8 +104,9 @@ export const medicationService = {
       }
 
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao alterar status');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao alterar status';
+      return Result.fail(msg);
     }
   },
 
@@ -119,8 +122,9 @@ export const medicationService = {
 
       if (error) return Result.fail(error.message);
       return Result.ok(true);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao excluir medicamento');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao excluir medicamento';
+      return Result.fail(msg);
     }
   },
 
@@ -146,8 +150,9 @@ export const medicationService = {
       if (!validated.success) return Result.fail('Dose registrada mas com erro de contrato.');
 
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao registrar dose');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao registrar dose';
+      return Result.fail(msg);
     }
   },
 
@@ -158,7 +163,7 @@ export const medicationService = {
     const cacheKey = `medication_logs_today:${dependentId}`;
     try {
       if (!options.forceRefresh) {
-        const cached = await storage.getItem<any>(cacheKey);
+        const cached = await storage.getItem<MedicationLog[]>(cacheKey);
         if (cached) return Result.ok(cached, { fromCache: true });
       }
 
@@ -172,21 +177,22 @@ export const medicationService = {
 
       if (error) return Result.fail(error.message);
 
-      const filtered = (data || []).filter((log: any) => log.medication?.dependent_id === dependentId);
+      const filtered = (data || []).filter((log: { medication?: { dependent_id: string } }) => log.medication?.dependent_id === dependentId);
       const validated = MedicationLogListSchema.safeParse(filtered);
       if (!validated.success) return Result.fail('Erro de integridade nos logs de hoje.');
 
       await storage.setItem(cacheKey, validated.data);
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao buscar logs de hoje');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao buscar logs de hoje';
+      return Result.fail(msg);
     }
   },
 
   /**
    * Fetch logs within a date range for a dependent.
    */
-  async getHistoricalLogs(dependentId: string, startDateISO: string): Promise<Result<any[]>> {
+  async getHistoricalLogs(dependentId: string, startDateISO: string): Promise<Result<MedicationLog[]>> {
     try {
       const { data, error } = await supabase
         .from('medication_logs')
@@ -197,10 +203,11 @@ export const medicationService = {
       if (error) return Result.fail(error.message);
 
       // Filter by dependent_id since it's a join
-      const filtered = (data || []).filter((log: any) => log.medication?.dependent_id === dependentId);
+      const filtered = (data || []).filter((log: { medication?: { dependent_id: string } }) => log.medication?.dependent_id === dependentId) as MedicationLog[];
       return Result.ok(filtered);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao buscar histórico de doses');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao buscar histórico de doses';
+      return Result.fail(msg);
     }
   },
 
@@ -226,8 +233,9 @@ export const medicationService = {
       if (!result.success) return Result.fail('Medicamento criado mas com erro de contrato.');
 
       return Result.ok(result.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Falha ao adicionar medicamento');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Falha ao adicionar medicamento';
+      return Result.fail(msg);
     }
   },
 
@@ -254,8 +262,9 @@ export const medicationService = {
       if (!result.success) return Result.fail('Medicamento atualizado mas com erro de contrato.');
 
       return Result.ok(result.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Falha ao atualizar medicamento');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Falha ao atualizar medicamento';
+      return Result.fail(msg);
     }
   }
 };

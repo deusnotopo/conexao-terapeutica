@@ -38,7 +38,7 @@ export const useCrises = (activeDependentId: string) => {
       // 1. SWR Cycle: Try cache first (only for first page)
       if (reset) {
         const cacheResult = await crisisService.getCrises(activeDependentId, 0, 20, { forceRefresh: false });
-        if (cacheResult.success && cacheResult.data && cacheResult.metadata?.fromCache) {
+        if (cacheResult.success && cacheResult.data && (cacheResult.metadata as { fromCache?: boolean })?.fromCache) {
           setEvents(cacheResult.data.data);
           setTotal(cacheResult.data.count);
           setPage(1);
@@ -90,11 +90,11 @@ export const useCrises = (activeDependentId: string) => {
   const addCrisis = async (data: Partial<CrisisEvent>) => {
     const result = await syncService.perform('crisisService', 'addCrisis', [data]);
     if (result.success) {
-      if (result.metadata?.enqueued) {
+      if ((result.metadata as { enqueued?: boolean })?.enqueued) {
         showToast('Crise salva offline.', 'info');
       } else {
         showToast('Evento de crise registrado!', 'success');
-        setEvents(prev => [result.data, ...prev]);
+        setEvents(prev => [result.data as CrisisEvent, ...prev]);
         setTotal(prev => prev + 1);
       }
       return true;
@@ -107,11 +107,11 @@ export const useCrises = (activeDependentId: string) => {
   const updateCrisis = async (id: string, updates: Partial<CrisisEvent>) => {
     const result = await syncService.perform('crisisService', 'updateCrisis', [id, updates]);
     if (result.success) {
-      if (result.metadata?.enqueued) {
+      if ((result.metadata as { enqueued?: boolean })?.enqueued) {
         showToast('Atualização salva offline.', 'info');
       } else {
         showToast('Crise atualizada!', 'success');
-        setEvents(prev => prev.map(e => e.id === id ? result.data : e));
+        setEvents(prev => prev.map(e => e.id === id ? result.data as CrisisEvent : e));
       }
       return true;
     } else {
@@ -125,7 +125,7 @@ export const useCrises = (activeDependentId: string) => {
     if (result.success) {
       setEvents((prev) => prev.filter((e) => e.id !== id));
       setTotal((prev) => prev - 1);
-      if (result.metadata?.enqueued) {
+      if ((result.metadata as { enqueued?: boolean })?.enqueued) {
         showToast('Exclusão pendente offline.', 'info');
       } else {
         showToast('Evento excluído.', 'success');

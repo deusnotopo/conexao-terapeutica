@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "conexao-terapeutica",
+    "name": "Conexão Terapêutica",
     "slug": "conexao-terapeutica",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -12,9 +12,11 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.conexaoterapeutica.app"
     },
     "android": {
+      "package": "com.conexaoterapeutica.app",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",

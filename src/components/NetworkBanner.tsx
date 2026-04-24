@@ -48,9 +48,12 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     backgroundColor: '#dc2626',
-    zIndex: 9999, // Super high z-index to stay above navigators
+    zIndex: 9999,
     elevation: 20,
-    ...shadows.card,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
   },
   content: {
     flexDirection: 'row',

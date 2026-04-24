@@ -24,7 +24,7 @@ export function useProfessionals(dependentId: string) {
     const cachedResult = await professionalService.getByDependent(dependentId);
     if (cachedResult.success && cachedResult.data) {
       setProfessionals(cachedResult.data);
-      if (cachedResult.metadata?.fromCache) {
+      if ((cachedResult.metadata as { fromCache?: boolean })?.fromCache) {
         setLoading(false);
       }
     }
@@ -55,7 +55,7 @@ export function useProfessionals(dependentId: string) {
   const addProfessional = async (data: Partial<Professional>) => {
     const result = await syncService.perform('professionalService', 'create', [data]);
     if (result.success) {
-      if (result.metadata?.enqueued) {
+      if ((result.metadata as { enqueued?: boolean })?.enqueued) {
         showToast('Profissional cadastrado offline!', 'info');
       } else {
         showToast('Profissional cadastrado!', 'success');
@@ -68,7 +68,7 @@ export function useProfessionals(dependentId: string) {
   const updateProfessional = async (id: string, data: Partial<Professional>) => {
     const result = await syncService.perform('professionalService', 'update', [id, data]);
     if (result.success) {
-      if (result.metadata?.enqueued) {
+      if ((result.metadata as { enqueued?: boolean })?.enqueued) {
         showToast('Alterações salvas offline!', 'info');
       } else {
         showToast('Profissional atualizado!', 'success');
@@ -82,7 +82,7 @@ export function useProfessionals(dependentId: string) {
     const result = await syncService.perform('professionalService', 'delete', [id]);
     if (result.success) {
       setProfessionals(prev => prev.filter(p => p.id !== id));
-      if (result.metadata?.enqueued) {
+      if ((result.metadata as { enqueued?: boolean })?.enqueued) {
         showToast('Exclusão agendada offline.', 'info');
       } else {
         showToast('Profissional removido.', 'success');
@@ -100,7 +100,7 @@ export function useProfessionals(dependentId: string) {
       setProfessionals(prev => 
         prev.map(p => p.id === professional.id ? { ...p, is_primary: nextValue } : p)
       );
-      if (result.metadata?.enqueued) showToast('Alteração salva offline.', 'info');
+      if ((result.metadata as { enqueued?: boolean })?.enqueued) showToast('Alteração salva offline.', 'info');
     } else {
       webAlert('Erro', result.error || 'Falha ao atualizar profissional');
     }

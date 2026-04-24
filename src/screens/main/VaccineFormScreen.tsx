@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -10,6 +10,8 @@ import {
 import { KeyboardAvoidingView as KAV, Platform } from 'react-native';
 import { showToast } from '../../components/Toast';
 import { useUser } from '../../context/UserContext';
+import { RootStackProps } from '../../navigation/types';
+import { Vaccine } from '../../lib/schemas';
 import { useVaccines } from '../../hooks/useVaccines';
 import { colors, spacing, typography } from '../../theme';
 import { Button } from '../../components/Button';
@@ -33,13 +35,13 @@ const COMMON_VACCINES = [
   'Outra',
 ];
 
-const toDisplay = (iso: any) => {
+const toDisplay = (iso: string | undefined | null) => {
   if (!iso) return '';
   const [y, m, d] = iso.split('-');
   return `${d}/${m}/${y}`;
 };
 
-export const VaccineFormScreen = ({ navigation, route }: any) => {
+export const VaccineFormScreen = ({ navigation, route }: RootStackProps<'VaccineForm'>) => {
   const { activeDependent } = useUser();
   const { addVaccine, updateVaccine } = useVaccines(activeDependent?.id ?? "");
   const vaccine = route.params?.vaccine || null;
@@ -54,7 +56,7 @@ export const VaccineFormScreen = ({ navigation, route }: any) => {
   const [doseNumber, setDoseNumber] = useState(vaccine?.dose_number ? String(vaccine.dose_number) : '1');
   const [notes, setNotes] = useState(vaccine?.notes || '');
 
-  const maskDate = (text: any, setter: any) => {
+  const maskDate = (text: string, setter: (val: string) => void) => {
     let raw = text.replace(/\D/g, '').substring(0, 8);
     if (raw.length > 4)
       raw =
@@ -67,7 +69,7 @@ export const VaccineFormScreen = ({ navigation, route }: any) => {
     setter(raw);
   };
 
-  const toISO = (d: any) => {
+  const toISO = (d: string) => {
     const p = d.split('/');
     return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : null;
   };
@@ -91,10 +93,10 @@ export const VaccineFormScreen = ({ navigation, route }: any) => {
 
       let result;
       if (isEditing) {
-        result = await updateVaccine(vaccine.id, payload);
+        result = await updateVaccine(vaccine.id, payload as Partial<Vaccine>);
       } else {
-        (payload as any).dependent_id = activeDependent?.id;
-        result = await addVaccine(payload);
+        if (activeDependent) (payload as Partial<Vaccine>).dependent_id = activeDependent.id;
+        result = await addVaccine(payload as Partial<Vaccine>);
       }
 
       if (result.success) {
@@ -102,7 +104,7 @@ export const VaccineFormScreen = ({ navigation, route }: any) => {
       } else {
         setErrorMsg(result.error || 'Erro ao salvar.');
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
       setErrorMsg((e as Error)?.message || 'Não foi possível salvar.');
     } finally {
       setLoading(false);
@@ -133,7 +135,7 @@ export const VaccineFormScreen = ({ navigation, route }: any) => {
           keyboardShouldPersistTaps="handled">
         <Text style={styles.label}>Vacina</Text>
         <View style={styles.chips}>
-          {COMMON_VACCINES.map((v: any) => (
+          {COMMON_VACCINES.map((v: string) => (
             <TouchableOpacity
               key={v}
               style={[styles.chip, name === v && styles.chipActive]}

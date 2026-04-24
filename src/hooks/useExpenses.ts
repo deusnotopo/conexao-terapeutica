@@ -59,7 +59,7 @@ export const useExpenses = (dependentId: string) => {
         const cached = await expenseService.fetchExpenses(dependentId, 0, PAGE_SIZE);
         if (cached.success) {
           processResult(cached);
-          if (cached.metadata?.fromCache) {
+          if ((cached.metadata as { fromCache?: boolean })?.fromCache) {
             setLoading(false);
           }
         }
@@ -106,11 +106,11 @@ export const useExpenses = (dependentId: string) => {
   const addExpense = async (data: Partial<Expense>) => {
     const result = await syncService.perform('expenseService', 'createExpense', [data]);
     if (result.success) {
-      if (result.metadata?.enqueued) {
+      if ((result.metadata as { enqueued?: boolean })?.enqueued) {
         showToast('Gasto salvo offline.', 'info');
       } else {
         showToast('Gasto registrado!', 'success');
-        setExpenses((prev) => [result.data, ...prev]);
+        setExpenses((prev) => [result.data as Expense, ...prev]);
         setTotalCount((prev) => prev + 1);
       }
       return true;
@@ -123,11 +123,11 @@ export const useExpenses = (dependentId: string) => {
   const updateExpense = async (id: string, data: Partial<Expense>) => {
     const result = await syncService.perform('expenseService', 'updateExpense', [id, data]);
     if (result.success) {
-      if (result.metadata?.enqueued) {
+      if ((result.metadata as { enqueued?: boolean })?.enqueued) {
         showToast('Alteração salva offline.', 'info');
       } else {
         showToast('Gasto atualizado!', 'success');
-        setExpenses((prev) => prev.map((e) => (e.id === id ? { ...e, ...result.data } : e)));
+        setExpenses((prev) => prev.map((e) => (e.id === id ? { ...e, ...(result.data as Partial<Expense>) } : e)));
       }
       return true;
     } else {
@@ -140,7 +140,7 @@ export const useExpenses = (dependentId: string) => {
     const result = await syncService.perform('expenseService', 'deleteExpense', [id]);
     if (result.success) {
       setExpenses((prev) => prev.filter((e) => e.id !== id));
-      if (result.metadata?.enqueued) {
+      if ((result.metadata as { enqueued?: boolean })?.enqueued) {
         showToast('Exclusão pendente offline.', 'info');
       } else {
         showToast('Despesa excluída.', 'success');

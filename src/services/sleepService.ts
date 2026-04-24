@@ -2,9 +2,9 @@ import { supabase } from '../lib/supabase';
 import { Result } from '../lib/result';
 import { 
   SleepLogSchema, 
-  SleepLogListSchema, 
   PaginatedSleepLogSchema,
-  SleepLog 
+  SleepLog,
+  PaginatedResponse,
 } from '../lib/schemas';
 import { storage } from '../lib/storage';
 
@@ -21,13 +21,13 @@ export const sleepService = {
     page: number = 0, 
     pageSize: number = 20, 
     options: { forceRefresh?: boolean } = { forceRefresh: false }
-  ): Promise<Result<any>> {
+  ): Promise<Result<PaginatedResponse<SleepLog>>> {
     if (!dependentId) return Result.fail('ID do dependente não fornecido.');
 
     const cacheKey = `sleep:${dependentId}:p${page}`;
     try {
       if (!options.forceRefresh && page === 0) {
-        const cached = await storage.getItem(cacheKey);
+        const cached = await storage.getItem<PaginatedResponse<SleepLog>>(cacheKey);
         if (cached) return Result.ok(cached, { fromCache: true });
       }
 
@@ -53,8 +53,9 @@ export const sleepService = {
       }
 
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao buscar registros de sono');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao buscar registros de sono';
+      return Result.fail(msg);
     }
   },
 
@@ -77,8 +78,9 @@ export const sleepService = {
       }
 
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao criar registro de sono');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao criar registro de sono';
+      return Result.fail(msg);
     }
   },
 
@@ -102,8 +104,9 @@ export const sleepService = {
       }
 
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao atualizar registro de sono');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao atualizar registro de sono';
+      return Result.fail(msg);
     }
   },
 
@@ -119,8 +122,9 @@ export const sleepService = {
 
       if (error) return Result.fail(error.message);
       return Result.ok(true);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao excluir registro de sono');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao excluir registro de sono';
+      return Result.fail(msg);
     }
   }
 };

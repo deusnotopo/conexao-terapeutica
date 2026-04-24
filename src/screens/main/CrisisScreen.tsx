@@ -1,4 +1,6 @@
-﻿import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { RootStackProps } from '../../navigation/types';
+
 import {
   View,
   Text,
@@ -13,6 +15,7 @@ import { useUser } from '../../context/UserContext';
 import { webAlert } from '../../lib/webAlert';
 import { colors, spacing, typography } from '../../theme';
 import { useCrises } from '../../hooks/useCrises';
+import { CrisisEvent } from '../../lib/schemas';
 import {
   ChevronLeft,
   Plus,
@@ -38,7 +41,7 @@ const SEVERITY_LABELS = [
 
 const PAGE_SIZE = 20;
 
-export const CrisisScreen = ({ navigation }: any) => {
+export const CrisisScreen = ({ navigation }: RootStackProps<'Crisis'>) => {
   const { activeDependent } = useUser();
   const {
     events,
@@ -52,7 +55,7 @@ export const CrisisScreen = ({ navigation }: any) => {
     deleteCrisis,
   } = useCrises(activeDependent?.id ?? "");
 
-  const handleDelete = (ev: any) => {
+  const handleDelete = (ev: CrisisEvent) => {
     webAlert('Excluir Registro', 'Deseja excluir este registro de crise?', [
       { text: 'Cancelar', style: 'cancel' },
       {
@@ -64,7 +67,7 @@ export const CrisisScreen = ({ navigation }: any) => {
   };
 
   // Stats — computed on-the-fly
-  const thisMonthCount = events.filter((e: any) => {
+  const thisMonthCount = events.filter((e: CrisisEvent) => {
     const d = new Date(e.date + 'T12:00:00');
     const now = new Date();
     return (
@@ -155,7 +158,7 @@ export const CrisisScreen = ({ navigation }: any) => {
           />
         )}
 
-        {events.map((ev: any) => (
+        {events.map((ev: CrisisEvent) => (
           <View
             key={ev.id}
             style={[styles.card, ev.severity >= 4 && styles.cardSevere]}

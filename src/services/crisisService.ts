@@ -24,7 +24,7 @@ export const crisisService = {
     const cacheKey = `crises:${dependentId}:p${page}`;
     try {
       if (!options.forceRefresh && page === 0) {
-        const cached = await storage.getItem<any>(cacheKey);
+        const cached = await storage.getItem<PaginatedCrises>(cacheKey);
         if (cached) return Result.ok(cached, { fromCache: true });
       }
 
@@ -51,8 +51,9 @@ export const crisisService = {
       }
 
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao buscar crises');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao buscar crises';
+      return Result.fail(msg);
     }
   },
 
@@ -75,8 +76,9 @@ export const crisisService = {
       }
 
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao registrar crise');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao registrar crise';
+      return Result.fail(msg);
     }
   },
 
@@ -100,8 +102,9 @@ export const crisisService = {
       }
 
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao atualizar crise');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao atualizar crise';
+      return Result.fail(msg);
     }
   },
 
@@ -117,8 +120,9 @@ export const crisisService = {
 
       if (error) return Result.fail(error.message);
       return Result.ok(true);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao excluir crise');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao excluir crise';
+      return Result.fail(msg);
     }
   }
 };

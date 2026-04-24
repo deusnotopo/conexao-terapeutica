@@ -20,7 +20,7 @@ export const vaccineService = {
     const cacheKey = `vaccines:${dependentId}`;
     try {
       if (!options.forceRefresh) {
-        const cached = await storage.getItem<any>(cacheKey);
+        const cached = await storage.getItem<Vaccine[]>(cacheKey);
         if (cached) return Result.ok(cached, { fromCache: true });
       }
 
@@ -39,8 +39,9 @@ export const vaccineService = {
 
       await storage.setItem(cacheKey, validated.data);
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao buscar vacinas');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao buscar vacinas';
+      return Result.fail(msg);
     }
   },
 
@@ -63,8 +64,9 @@ export const vaccineService = {
       }
 
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao registrar vacina');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao registrar vacina';
+      return Result.fail(msg);
     }
   },
 
@@ -88,8 +90,9 @@ export const vaccineService = {
       }
 
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao atualizar vacina');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao atualizar vacina';
+      return Result.fail(msg);
     }
   },
 
@@ -105,8 +108,9 @@ export const vaccineService = {
 
       if (error) return Result.fail(error.message);
       return Result.ok(true);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao excluir vacina');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao excluir vacina';
+      return Result.fail(msg);
     }
   }
 };

@@ -3,13 +3,11 @@ import { Result } from '../lib/result';
 import { 
   GrowthMeasurementSchema, 
   GrowthMeasurementListSchema,
-  Event, // Growth doesn't have a specific type yet in schemas, let's use any or define it
-  // Wait, I should check schemas.ts for Growth types
+  GrowthMeasurement,
 } from '../lib/schemas';
 import { storage } from '../lib/storage';
 
-// Since I didn't see an explicit "GrowthMeasurement" type exported in the earlier view of schemas.ts (I only saw the Schema),
-// I will ensure I infer it or just use the Schema validation.
+export type { GrowthMeasurement };
 
 /**
  * Growth Service (Akita Mode)
@@ -22,13 +20,13 @@ export const growthService = {
   async getMeasurements(
     dependentId: string, 
     options: { forceRefresh?: boolean } = { forceRefresh: false }
-  ): Promise<Result<any[]>> {
+  ): Promise<Result<GrowthMeasurement[]>> {
     if (!dependentId) return Result.fail('ID do dependente não fornecido.');
 
     const cacheKey = `growth:${dependentId}`;
     try {
       if (!options.forceRefresh) {
-        const cached = await storage.getItem<any>(cacheKey);
+        const cached = await storage.getItem<GrowthMeasurement[]>(cacheKey);
         if (cached) return Result.ok(cached, { fromCache: true });
       }
 
@@ -47,15 +45,16 @@ export const growthService = {
 
       await storage.setItem(cacheKey, validated.data);
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao buscar medidas de crescimento');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao buscar medidas de crescimento';
+      return Result.fail(msg);
     }
   },
 
   /**
    * Record a new growth measurement.
    */
-  async addMeasurement(measurementData: any): Promise<Result<any>> {
+  async addMeasurement(measurementData: Omit<GrowthMeasurement, 'id' | 'created_at'>): Promise<Result<GrowthMeasurement>> {
     try {
       const { data, error } = await supabase
         .from('growth_measurements')
@@ -71,15 +70,16 @@ export const growthService = {
       }
 
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao adicionar medida');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao adicionar medida';
+      return Result.fail(msg);
     }
   },
 
   /**
    * Update an existing measurement.
    */
-  async updateMeasurement(id: string, updates: any): Promise<Result<any>> {
+  async updateMeasurement(id: string, updates: Partial<GrowthMeasurement>): Promise<Result<GrowthMeasurement>> {
     try {
       const { data, error } = await supabase
         .from('growth_measurements')
@@ -96,8 +96,9 @@ export const growthService = {
       }
 
       return Result.ok(validated.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao atualizar medida');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao atualizar medida';
+      return Result.fail(msg);
     }
   },
 
@@ -113,8 +114,9 @@ export const growthService = {
 
       if (error) return Result.fail(error.message);
       return Result.ok(true);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao excluir medida');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao excluir medida';
+      return Result.fail(msg);
     }
   }
 };

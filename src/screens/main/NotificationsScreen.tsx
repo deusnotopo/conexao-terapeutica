@@ -1,6 +1,8 @@
-﻿declare class Notification { static readonly permission: string; static requestPermission(): Promise<string>; }
-declare const window: any;
+declare class Notification { static readonly permission: string; static requestPermission(): Promise<string>; }
+import { isNotificationSupported } from '../../lib/platform';
 import React, { useState, useEffect, useMemo } from 'react';
+import { RootStackProps } from '../../navigation/types';
+
 import {
   View,
   Text,
@@ -14,6 +16,7 @@ import { useUser } from '../../context/UserContext';
 import { useMedications } from '../../hooks/useMedications';
 import { useAgenda } from '../../hooks/useAgenda';
 import { useGoals } from '../../hooks/useGoals';
+import { Medication, Event, Goal } from '../../lib/schemas';
 import { colors, spacing, typography } from '../../theme';
 import {
   ChevronLeft,
@@ -27,7 +30,7 @@ import { requestNotificationPermission } from '../../lib/notifications';
 import { format, isToday, isTomorrow, addDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
-export const NotificationsScreen = ({ navigation }: any) => {
+export const NotificationsScreen = ({ navigation }: RootStackProps<'Notifications'>) => {
   const { activeDependent } = useUser();
   const [notifEnabled, setNotifEnabled] = useState(false);
 
@@ -53,7 +56,7 @@ export const NotificationsScreen = ({ navigation }: any) => {
   const loading = loadingMeds || loadingEvents || loadingGoals;
 
   const checkNotifPermission = async () => {
-    if (typeof window !== 'undefined' && 'Notification' in window) {
+    if (isNotificationSupported()) {
       setNotifEnabled(Notification.permission === 'granted');
     }
   };
@@ -69,17 +72,17 @@ export const NotificationsScreen = ({ navigation }: any) => {
 
   // Derived Data
   const filteredMeds = useMemo(() => 
-    medications.filter((m: any) => m.is_active), 
+    medications.filter((m: Medication) => m.is_active), 
   [medications]);
 
   const filteredEvents = useMemo(() => {
     const nextWeek = addDays(new Date(), 7);
-    return events.filter((ev: any) => new Date(ev.start_time) <= nextWeek);
+    return events.filter((ev: Event) => new Date(ev.start_time) <= nextWeek);
   }, [events]);
 
   const filteredGoals = useMemo(() => {
     const nextFortnight = addDays(new Date(), 14);
-    return goals.filter((g: any) => 
+    return goals.filter((g: Goal) => 
       ['pending', 'in_progress'].includes(g.status) && 
       g.target_date && 
       new Date(g.target_date) <= nextFortnight
@@ -92,7 +95,7 @@ export const NotificationsScreen = ({ navigation }: any) => {
     refreshGoals();
   };
 
-  const formatEventTime = (ts: any) => {
+  const formatEventTime = (ts: string) => {
     const d = new Date(ts);
     if (isToday(d)) return `Hoje às ${format(d, 'HH:mm')}`;
     if (isTomorrow(d)) return `Amanhã às ${format(d, 'HH:mm')}`;
@@ -175,7 +178,7 @@ export const NotificationsScreen = ({ navigation }: any) => {
         {filteredMeds.length > 0 && (
           <>
             <Text style={styles.section}>💊 Medicamentos Ativos</Text>
-            {filteredMeds.map((med: any) => (
+            {filteredMeds.map((med: Medication) => (
               <View
                 key={med.id}
                 style={[styles.card, { borderLeftColor: '#7c3aed' }]}
@@ -208,7 +211,7 @@ export const NotificationsScreen = ({ navigation }: any) => {
         {filteredEvents.length > 0 && (
           <>
             <Text style={styles.section}>📅 Próximos Eventos (7 dias)</Text>
-            {filteredEvents.map((ev: any) => (
+            {filteredEvents.map((ev: Event) => (
               <View
                 key={ev.id}
                 style={[styles.card, { borderLeftColor: colors.primary }]}
@@ -232,7 +235,7 @@ export const NotificationsScreen = ({ navigation }: any) => {
         {filteredGoals.length > 0 && (
           <>
             <Text style={styles.section}>🎯 Metas com Prazo Próximo</Text>
-            {filteredGoals.map((g: any) => (
+            {filteredGoals.map((g: Goal) => (
               <View
                 key={g.id}
                 style={[styles.card, { borderLeftColor: colors.secondary }]}
@@ -241,7 +244,7 @@ export const NotificationsScreen = ({ navigation }: any) => {
                 <View style={styles.cardInfo}>
                   <Text style={styles.cardTitle}>{g.title}</Text>
                   <Text style={styles.cardSub}>
-                    Prazo: {g.target_date.split('-').reverse().join('/')}
+                    Prazo: {g.target_date ? format(new Date(g.target_date), 'dd/MM/yyyy') : ''}
                   </Text>
                 </View>
               </View>

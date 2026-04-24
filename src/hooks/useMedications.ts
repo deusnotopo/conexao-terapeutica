@@ -39,7 +39,7 @@ export const useMedications = (activeDependentId: string) => {
     if (cachedResult.success) {
       setMedications(cachedResult.data!);
       processResults(cachedResult);
-      if (cachedResult.metadata?.fromCache) {
+      if ((cachedResult.metadata as { fromCache?: boolean })?.fromCache) {
         setLoading(false);
       }
     }
@@ -106,7 +106,7 @@ export const useMedications = (activeDependentId: string) => {
       setMedications((prev) =>
         prev.map((m) => (m.id === medId ? { ...m, stock_count: nextCount } : m))
       );
-      if (result.metadata?.enqueued) showToast('Salvo offline.');
+      if ((result.metadata as { enqueued?: boolean })?.enqueued) showToast('Salvo offline.');
       return result;
     } else {
       showToast(result.error || 'Erro ao atualizar estoque.', 'error');
@@ -120,7 +120,7 @@ export const useMedications = (activeDependentId: string) => {
       setMedications((prev) =>
         prev.map((m) => (m.id === medId ? { ...m, is_active: isActive } : m))
       );
-      if (result.metadata?.enqueued) showToast('Salvo offline.');
+      if ((result.metadata as { enqueued?: boolean })?.enqueued) showToast('Salvo offline.');
       return result;
     } else {
       showToast(result.error || 'Erro ao alterar status.', 'error');

@@ -1,4 +1,6 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { RootStackProps } from '../../navigation/types';
+
 import {
   View,
   Text,
@@ -19,7 +21,7 @@ import { Eye, EyeOff, LogIn, UserPlus, Sparkles } from 'lucide-react-native';
 import { logScreen, logEvent } from '../../lib/firebase';
 import { useResponsive } from '../../utils/responsive';
 
-export const LoginScreen = ({ navigation }: any) => {
+export const LoginScreen = ({ navigation }: RootStackProps<'Login'>) => {
   const { isSmall, isTablet, hPad, cardPad } = useResponsive();
 
   const [email, setEmail]         = useState('');
@@ -82,7 +84,7 @@ export const LoginScreen = ({ navigation }: any) => {
     if (!result.success) {
       setErrorMsg(result.error ?? '');
     } else {
-      if (!result.data.session) setWaitingEmailConfirm(true);
+      if (!result.data?.session) setWaitingEmailConfirm(true);
       logEvent('sign_up', { method: 'email' });
     }
     setLoading(false);

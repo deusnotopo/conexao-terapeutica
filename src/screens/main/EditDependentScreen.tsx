@@ -1,4 +1,6 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { RootStackProps } from '../../navigation/types';
+
 import {
   View,
   Text,
@@ -22,7 +24,7 @@ import {
   Trash2,
 } from 'lucide-react-native';
 
-export const EditDependentScreen = ({ navigation, route }: any) => {
+export const EditDependentScreen = ({ navigation, route }: RootStackProps<'EditDependent'>) => {
   const { dependent } = route.params;
   const { refreshContext, setActiveDependent } = useUser();
   const [loading, setLoading] = useState(false);
@@ -41,10 +43,10 @@ export const EditDependentScreen = ({ navigation, route }: any) => {
   const nameParts = (dependent.name || '').split(' ');
   const [firstName, setFirstName] = useState(nameParts[0] || '');
   const [lastName, setLastName] = useState(nameParts.slice(1).join(' ') || '');
-  const [birthDate, setBirthDate] = useState(initialFormattedDate);
+  const [birthDate, setBirthDate] = useState<string>(initialFormattedDate ?? '');
   const [diagnosis, setDiagnosis] = useState(dependent.diagnosis || '');
 
-  const handleDateChange = (text: any) => {
+  const handleDateChange = (text: string) => {
     let raw = text.replace(/\D/g, '');
     if (raw.length > 8) raw = raw.substring(0, 8);
     let masked = raw;
@@ -85,7 +87,7 @@ export const EditDependentScreen = ({ navigation, route }: any) => {
       } else {
         setErrorMsg(result.error || 'Não foi possível salvar as alterações.');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       setErrorMsg('Ocorreu um erro inesperado.');
     } finally {
       setLoading(false);
@@ -114,7 +116,7 @@ export const EditDependentScreen = ({ navigation, route }: any) => {
               } else {
                 setErrorMsg(result.error || 'Não foi possível excluir o perfil.');
               }
-            } catch (error: any) {
+            } catch (error: unknown) {
               setErrorMsg('Erro ao excluir dependente.');
             } finally {
               setLoading(false);

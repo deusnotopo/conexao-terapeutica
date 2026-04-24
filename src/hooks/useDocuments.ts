@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { documentService, Document, DocumentQueryOptions } from '../services/documentService';
+import { documentService, DocumentQueryOptions } from '../services/documentService';
+import { Document } from '../lib/schemas';
 import { storageService } from '../services/storageService';
 import { syncService } from '../services/syncService';
 import { showToast } from '../components/Toast';
@@ -81,11 +82,11 @@ export const useDocuments = (dependentId: string) => {
     ]);
 
     if (result.success) {
-      if (result.metadata?.enqueued) {
+      if ((result.metadata as { enqueued?: boolean })?.enqueued) {
         showToast('Upload enfileirado offline. Fique tranquilo.', 'info');
       } else {
         showToast('Documento salvo com sucesso!', 'success');
-        if (result.data) setDocuments(prev => [result.data, ...prev]);
+        if (result.data) setDocuments(prev => [result.data as Document, ...prev]);
         setTotal(prev => prev + 1);
       }
       return true;
@@ -104,7 +105,7 @@ export const useDocuments = (dependentId: string) => {
       setDocuments(prev => prev.filter(d => d.id !== doc.id));
       setTotal(prev => prev - 1);
       
-      if (dbResult.metadata?.enqueued) {
+      if ((dbResult.metadata as { enqueued?: boolean })?.enqueued) {
         showToast('Exclusão pendente offline.', 'info');
       } else {
         showToast('Documento excluído.', 'success');

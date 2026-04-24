@@ -8,6 +8,7 @@ type EmptyStateProps = {
   subtitle?: string;
   actionLabel?: string;
   onAction?: () => void;
+  variant?: 'default' | 'card';
 };
 
 export const EmptyState: React.FC<EmptyStateProps> = ({
@@ -16,8 +17,9 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   subtitle,
   actionLabel,
   onAction,
+  variant = 'default',
 }) => (
-  <View style={styles.container}>
+  <View style={[styles.container, variant === 'card' && styles.cardVariant]}>
     {icon ?? null}
     <Text style={styles.title}>{title}</Text>
     {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
@@ -38,6 +40,19 @@ const styles = StyleSheet.create({
   },
   title: { ...(typography.h3 as object), color: colors.textSecondary, textAlign: 'center' },
   subtitle: { ...(typography.body2 as object), color: colors.textSecondary, textAlign: 'center', lineHeight: 20 },
+  cardVariant: {
+    backgroundColor: colors.surface,
+    borderRadius: 24,
+    margin: spacing.l,
+    paddingVertical: spacing.xxl,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 12,
+    elevation: 2,
+    borderWidth: 1,
+    borderColor: `${colors.primary}10`,
+  },
   btn: {
     backgroundColor: colors.primary,
     borderRadius: 12,

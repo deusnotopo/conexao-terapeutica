@@ -1,5 +1,7 @@
-﻿declare const window: any;
+import { webAlert } from '../../lib/webAlert';
 import React, { useState } from 'react';
+import { RootStackProps } from '../../navigation/types';
+
 import {
   View,
   Text,
@@ -37,7 +39,7 @@ const EVENT_TYPES = [
   'Outro',
 ];
 
-const toDisplayDate = (iso: any) => {
+const toDisplayDate = (iso: string) => {
   if (!iso) return '';
   const d = new Date(iso);
   const dd = String(d.getDate()).padStart(2, '0');
@@ -46,7 +48,7 @@ const toDisplayDate = (iso: any) => {
   return `${dd}/${mm}/${yyyy}`;
 };
 
-const toDisplayTime = (iso: any) => {
+const toDisplayTime = (iso: string) => {
   if (!iso) return '';
   const d = new Date(iso);
   const hh = String(d.getHours()).padStart(2, '0');
@@ -54,7 +56,7 @@ const toDisplayTime = (iso: any) => {
   return `${hh}:${min}`;
 };
 
-export const EventFormScreen = ({ navigation, route }: any) => {
+export const EventFormScreen = ({ navigation, route }: RootStackProps<'EventForm'>) => {
   const { activeDependent } = useUser();
   const { addEvent, updateEvent, deleteEvent } = useAgenda(activeDependent?.id ?? "", "upcoming");
   const event = route.params?.event || null;
@@ -77,7 +79,7 @@ export const EventFormScreen = ({ navigation, route }: any) => {
   const [description, setDescription] = useState(event?.description || '');
   const [preNotes, setPreNotes] = useState(event?.pre_notes || '');
 
-  const handleDateChange = (text: any) => {
+  const handleDateChange = (text: string) => {
     let raw = text.replace(/\D/g, '').substring(0, 8);
     if (raw.length > 4)
       raw = raw.substring(0, 2) + '/' + raw.substring(2, 4) + '/' + raw.substring(4);
@@ -86,7 +88,7 @@ export const EventFormScreen = ({ navigation, route }: any) => {
     setErrorMsg('');
   };
 
-  const handleTimeChange = (text: any) => {
+  const handleTimeChange = (text: string) => {
     let raw = text.replace(/\D/g, '').substring(0, 4);
     if (raw.length > 2) raw = raw.substring(0, 2) + ':' + raw.substring(2);
     setTime(raw);
@@ -141,7 +143,7 @@ export const EventFormScreen = ({ navigation, route }: any) => {
       } else {
         setErrorMsg(result.error ?? "");
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
       setErrorMsg('Não foi possível salvar o compromisso.');
     } finally {
       setLoading(false);
@@ -154,20 +156,26 @@ export const EventFormScreen = ({ navigation, route }: any) => {
     // For now, I'll keep the logic but use the service.
     // The webAlert was imported. Wait, I removed the import.
     // Let's use a simple confirm for now if available, or just the service logic.
-    const confirmed = window.confirm(`Excluir "${event.title}" permanentemente?`);
-    if (!confirmed) return;
-
-    (async () => {
-      setLoading(true);
-      const result = await deleteEvent(event.id);
-      setLoading(false);
-      
-      if (result.success) {
-        navigation.goBack();
-      } else {
-        setErrorMsg(result.error ?? "");
-      }
-    })();
+    if (!event) return;
+    // Use webAlert destructive confirm pattern — works on web and native
+    webAlert(
+      `Excluir "${event.title}"?`,
+      'Essa ação não pode ser desfeita.',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Excluir',
+          style: 'destructive',
+          onPress: async () => {
+            setLoading(true);
+            const result = await deleteEvent(event.id);
+            setLoading(false);
+            if (result.success) navigation.goBack();
+          },
+        },
+      ]
+    );
+    return;
   };
 
   return (
@@ -201,7 +209,7 @@ export const EventFormScreen = ({ navigation, route }: any) => {
 
         <Text style={styles.label}>Tipo de Atividade</Text>
         <View style={styles.chips}>
-          {EVENT_TYPES.map((t: any) => (
+          {EVENT_TYPES.map((t: string) => (
             <TouchableOpacity
               key={t}
               style={[styles.chip, eventType === t && styles.chipActive]}

@@ -3,19 +3,7 @@ import { z } from 'zod';
 import { storageService } from './storageService';
 import { Result } from '../lib/result';
 
-// ─── Schema ───────────────────────────────────────────────────────────────────
-
-export const DocumentSchema = z.object({
-  id: z.string().optional(),
-  dependent_id: z.string().uuid(),
-  title: z.string().min(1, 'Título é obrigatório'),
-  category: z.enum(['Laudo', 'Exame', 'Receita', 'Outro']),
-  file_path: z.string().min(1, 'Caminho do arquivo é obrigatório'),
-  file_type: z.string().optional(),
-  uploaded_at: z.string().optional(),
-});
-
-export type Document = z.infer<typeof DocumentSchema>;
+import { Document, DocumentSchema } from '../lib/schemas';
 
 export type DocumentQueryOptions = {
   category?: string;
@@ -58,8 +46,9 @@ export const documentService = {
       if (!validated.success) return Result.fail('Erro de integridade nos documentos.');
 
       return Result.ok({ documents: validated.data, total: count ?? 0 });
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao listar documentos');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao listar documentos';
+      return Result.fail(msg);
     }
   },
 
@@ -85,8 +74,9 @@ export const documentService = {
       if (!parsedResult.success) return Result.fail('Documento criado mas com erro de contrato.');
 
       return Result.ok(parsedResult.data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao criar documento');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao criar documento';
+      return Result.fail(msg);
     }
   },
 
@@ -102,8 +92,9 @@ export const documentService = {
 
       if (error) return Result.fail(error.message);
       return Result.ok(true);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao excluir documento');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao excluir documento';
+      return Result.fail(msg);
     }
   },
 
@@ -130,8 +121,9 @@ export const documentService = {
         ...documentData,
         file_path: storageResult.data?.path,
       });
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro no processo de salvamento do documento.');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro no processo de salvamento do documento.';
+      return Result.fail(msg);
     }
   },
 };

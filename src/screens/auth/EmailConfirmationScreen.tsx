@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -10,7 +10,7 @@ import {
 import { Button } from '../../components/Button';
 import { colors, spacing, typography } from '../../theme';
 
-export const EmailConfirmationScreen = ({ email, onConfirm, onBack }: any) => {
+export const EmailConfirmationScreen = ({ email, onConfirm, onBack }: { email: string; onConfirm: () => void; onBack: () => void }) => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView

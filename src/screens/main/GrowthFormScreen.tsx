@@ -1,4 +1,5 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
+import { RootStackProps } from '../../navigation/types';
 import {
   View,
   Text,
@@ -16,16 +17,16 @@ import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
 import { ChevronLeft, Calendar } from 'lucide-react-native';
 
-const toDisplay = (iso: any) => {
+const toDisplay = (iso: string | undefined | null): string => {
   if (!iso) return '';
   const [y, m, d] = iso.split('-');
   return `${d}/${m}/${y}`;
 };
 
-export const GrowthFormScreen = ({ navigation, route }: any) => {
+export const GrowthFormScreen = ({ navigation, route }: RootStackProps<'GrowthForm'>) => {
   const { activeDependent } = useUser();
   const { addMeasurement, updateMeasurement } = useGrowth(activeDependent?.id ?? "");
-  const growth = route.params?.growth || null;
+  const growth = route.params?.measurement || null;
   const isEditing = !!growth;
 
   const [loading, setLoading] = useState(false);
@@ -37,7 +38,7 @@ export const GrowthFormScreen = ({ navigation, route }: any) => {
   const [head, setHead] = useState(growth?.head_cm ? String(growth.head_cm) : '');
   const [notes, setNotes] = useState(growth?.notes || '');
 
-  const maskDate = (text: any) => {
+  const maskDate = (text: string): string => {
     let raw = text.replace(/\D/g, '').substring(0, 8);
     if (raw.length > 4)
       raw =
@@ -50,7 +51,7 @@ export const GrowthFormScreen = ({ navigation, route }: any) => {
     return raw;
   };
   
-  const toISO = (d: any) => {
+  const toISO = (d: string): string | null => {
     const p = d.split('/');
     return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : null;
   };
@@ -69,7 +70,7 @@ export const GrowthFormScreen = ({ navigation, route }: any) => {
     
     try {
       const payload = {
-        date: toISO(date),
+        date: toISO(date) ?? undefined,
         weight_kg: weight ? parseFloat(weight.replace(',', '.')) : null,
         height_cm: height ? parseFloat(height.replace(',', '.')) : null,
         head_cm: head ? parseFloat(head.replace(',', '.')) : null,
@@ -80,14 +81,13 @@ export const GrowthFormScreen = ({ navigation, route }: any) => {
       if (isEditing) {
         success = await updateMeasurement(growth.id, payload);
       } else {
-        (payload as any).dependent_id = activeDependent?.id;
-        success = await addMeasurement(payload);
+        success = await addMeasurement({ ...payload, dependent_id: activeDependent?.id });
       }
 
       if (success) {
         navigation.goBack();
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
       setErrorMsg((e as Error)?.message || 'Não foi possível salvar.');
     } finally {
       setLoading(false);

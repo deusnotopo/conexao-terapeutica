@@ -2,14 +2,15 @@ import { supabase } from '../lib/supabase';
 import { Result } from '../lib/result';
 import { Platform } from 'react-native';
 
+import { User, Session } from '@supabase/supabase-js';
+
 // URL base do app — web usa Firebase Hosting, nativo usa deep link
 const APP_URL = Platform.OS === 'web'
   ? 'https://conexao-unicornio.web.app'
   : 'conexaoterapeutica://';
 
-// Use a loose type to accommodate Supabase's complex auth union types
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type AuthData = any;
+// Tipagem rigorosa para resposta de Auth
+type AuthData = { user: User | null; session: Session | null };
 
 export const authService = {
   async signIn(email: string, password: string): Promise<Result<AuthData>> {
@@ -25,8 +26,9 @@ export const authService = {
 
       if (error) return Result.fail(error.message);
       return Result.ok(data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao fazer login');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao fazer login';
+      return Result.fail(msg);
     }
   },
 
@@ -52,8 +54,9 @@ export const authService = {
 
       if (error) return Result.fail(error.message);
       return Result.ok(data);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao criar conta');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao criar conta';
+      return Result.fail(msg);
     }
   },
 
@@ -62,8 +65,9 @@ export const authService = {
       const { error } = await supabase.auth.signOut();
       if (error) return Result.fail(error.message);
       return Result.ok(true);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao sair');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao sair';
+      return Result.fail(msg);
     }
   },
 
@@ -77,8 +81,9 @@ export const authService = {
       });
       if (error) return Result.fail(error.message);
       return Result.ok(true);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao enviar e-mail de recuperação.');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao enviar e-mail de recuperação.';
+      return Result.fail(msg);
     }
   },
 };

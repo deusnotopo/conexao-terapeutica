@@ -1,4 +1,6 @@
 import React from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
+import { ENV } from './src/lib/env'; // Validate env on app boot
 import { View, Text, ScrollView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -9,53 +11,23 @@ import { NetworkBanner } from './src/components/NetworkBanner';
 import { notificationService } from './src/services/notificationService';
 import { initAnalytics, initPerformance, initAppCheck, initRemoteConfig } from './src/lib/firebase';
 
-// ── Error Boundary ──────────────────────────────────────────────────────────────
-type ErrorBoundaryProps = {
-  children: React.ReactNode;
-};
-type ErrorBoundaryState = {
-  hasError: boolean;
-  error: Error | null;
-  errorInfo: React.ErrorInfo | null;
-};
-
-class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  constructor(props: ErrorBoundaryProps) {
-    super(props);
-    this.state = { hasError: false, error: null, errorInfo: null };
-  }
-
-  static getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState> {
-    return { hasError: true, error };
-  }
-
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
-    this.setState({ errorInfo });
-    console.error('App Error Boundary caught:', error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20, backgroundColor: '#1a1a2e' }}>
-          <Text style={{ color: '#e94560', fontSize: 22, fontWeight: 'bold', marginBottom: 12 }}>
-            ⚠️ Erro no Aplicativo
-          </Text>
-          <ScrollView style={{ maxHeight: 400, width: '100%' }}>
-            <Text style={{ color: '#ffffff', fontSize: 14, fontFamily: 'monospace' }}>
-              {this.state.error?.toString()}
-            </Text>
-            <Text style={{ color: '#cccccc', fontSize: 12, marginTop: 10, fontFamily: 'monospace' }}>
-              {this.state.errorInfo?.componentStack}
-            </Text>
-          </ScrollView>
-        </View>
-      );
-    }
-    return this.props.children;
-  }
-}
-
+const ErrorFallback = ({ error, resetErrorBoundary }: any) => (
+  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20, backgroundColor: '#1a1a2e' }}>
+    <Text style={{ color: '#e94560', fontSize: 22, fontWeight: 'bold', marginBottom: 12 }}>
+      ⚠️ Algo deu errado!
+    </Text>
+    <ScrollView style={{ maxHeight: 200, width: '100%', marginBottom: 20 }}>
+      <Text style={{ color: '#ffffff', fontSize: 14, fontFamily: 'monospace' }}>
+        {error?.message || error?.toString()}
+      </Text>
+    </ScrollView>
+    <View style={{ backgroundColor: '#e94560', borderRadius: 8, overflow: 'hidden' }}>
+      <Text style={{ color: 'white', padding: 12, fontWeight: 'bold', textAlign: 'center' }} onPress={resetErrorBoundary}>
+        Tentar Novamente
+      </Text>
+    </View>
+  </View>
+);
 // ── App Root ─────────────────────────────────────────────────────────────────────
 export default function App() {
   React.useEffect(() => {
@@ -70,7 +42,7 @@ export default function App() {
   }, []);
 
   return (
-    <ErrorBoundary>
+    <ErrorBoundary FallbackComponent={ErrorFallback} onReset={() => { /* reset app state if needed */ }}>
       <SafeAreaProvider style={{ flex: 1 }}>
         <SyncProvider>
           <StatusBar style="auto" />

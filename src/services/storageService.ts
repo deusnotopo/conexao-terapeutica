@@ -42,8 +42,9 @@ export const storageService = {
         path: data.path,
         fullPath: `${bucket}/${data.path}`,
       });
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro inesperado no upload');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro inesperado no upload';
+      return Result.fail(msg);
     }
   },
 
@@ -63,8 +64,9 @@ export const storageService = {
       const { error } = await supabase.storage.from(bucket).remove([path]);
       if (error) return Result.fail(error.message);
       return Result.ok(true);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao remover arquivo');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao remover arquivo';
+      return Result.fail(msg);
     }
   },
 
@@ -85,8 +87,9 @@ export const storageService = {
       
       await FileSystem.copyAsync({ from: fileUri, to: destination });
       return Result.ok(destination);
-    } catch (e: any) {
-      return Result.fail(e?.message || 'Erro ao criar cache local do arquivo');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao criar cache local do arquivo';
+      return Result.fail(msg);
     }
   },
 };

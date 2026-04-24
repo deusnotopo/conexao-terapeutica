@@ -7,7 +7,7 @@ import { Result } from '../lib/result';
 export const CaregiverAccessSchema = z.object({
   id: z.string().optional(),
   dependent_id: z.string().uuid(),
-  caregiver_id: z.string().uuid(),
+  user_id: z.string().uuid(),
   access_level: z.enum(['admin', 'editor', 'viewer']).default('viewer'),
 });
 
@@ -35,7 +35,7 @@ export const caregiverService = {
     try {
       const { data, error } = await supabase
         .from('caregiver_access')
-        .select('*, profiles:caregiver_id(full_name, id)')
+        .select('*, profiles:user_id(full_name, id)')
         .eq('dependent_id', dependentId);
 
       if (error) return Result.fail(error.message);

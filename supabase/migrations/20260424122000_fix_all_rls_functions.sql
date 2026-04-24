@@ -22,7 +22,7 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
   SELECT EXISTS (
-    SELECT 1 FROM public.caregiver_access WHERE dependent_id = dep_id AND user_id = auth.uid()
+    SELECT 1 FROM public.caregiver_access WHERE dependent_id = dep_id AND caregiver_id = auth.uid()
   );
 $$;
 

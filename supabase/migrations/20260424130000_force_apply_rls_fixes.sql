@@ -25,7 +25,7 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
   SELECT EXISTS (
-    SELECT 1 FROM public.caregiver_access WHERE dependent_id = dep_id AND user_id = auth.uid()
+    SELECT 1 FROM public.caregiver_access WHERE dependent_id = dep_id AND caregiver_id = auth.uid()
   );
 $$;
 
@@ -85,4 +85,4 @@ CREATE POLICY "Primary parent can manage access" ON public.caregiver_access FOR 
   WITH CHECK (public.is_primary_caregiver(dependent_id));
 
 CREATE POLICY "Caregivers can view own access" ON public.caregiver_access FOR SELECT
-  USING (user_id = auth.uid());
+  USING (caregiver_id = auth.uid());

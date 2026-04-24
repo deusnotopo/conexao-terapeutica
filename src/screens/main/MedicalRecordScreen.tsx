@@ -82,7 +82,7 @@ export const MedicalRecordScreen = ({ navigation }: RootStackProps<'MedicalRecor
   const handleSave = async () => {
     setSaving(true);
     setErrorMsg('');
-    const success = await saveRecord(record);
+    const success = await saveRecord({ ...record, id: fetchedRecord?.id });
     if (success) {
       setEditing(false);
     }
@@ -96,15 +96,7 @@ export const MedicalRecordScreen = ({ navigation }: RootStackProps<'MedicalRecor
 
   const update = (field: keyof typeof record, val: string) => setRecord((r) => ({ ...r, [field]: val }));
 
-  const Section = ({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) => (
-    <View style={styles.section}>
-      <View style={styles.sectionHeader}>
-        {icon}
-        <Text style={styles.sectionTitle}>{title}</Text>
-      </View>
-      {children}
-    </View>
-  );
+  // Moved Section to file scope to prevent unmounting!
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -324,6 +316,16 @@ export const MedicalRecordScreen = ({ navigation }: RootStackProps<'MedicalRecor
     </SafeAreaView>
   );
 };
+
+const Section = ({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) => (
+  <View style={styles.section}>
+    <View style={styles.sectionHeader}>
+      {icon}
+      <Text style={styles.sectionTitle}>{title}</Text>
+    </View>
+    {children}
+  </View>
+);
 
 const InfoRow = ({ label, value }: { label: string; value: string | null | undefined }) => (
   <View style={styles.infoRow}>

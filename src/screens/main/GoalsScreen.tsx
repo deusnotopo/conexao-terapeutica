@@ -253,7 +253,7 @@ export const GoalsScreen = ({ navigation }: RootStackProps<'Goals'>) => {
         </TouchableOpacity>
       </View>
 
-      <ScrollView
+      <ScrollView keyboardShouldPersistTaps="handled"
         style={{ flex: 1 }}
         contentContainerStyle={styles.container}
         refreshControl={

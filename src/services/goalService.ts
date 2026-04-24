@@ -6,6 +6,9 @@ import {
   GoalSchema,
   GoalNoteSchema,
   GoalNoteListSchema,
+  GoalNoteCreateSchema,
+  GoalCreateSchema,
+  GoalUpdateSchema,
   PaginatedGoalSchema,
 } from '../lib/schemas';
 import { storage } from '../lib/storage';
@@ -69,9 +72,13 @@ export const goalService = {
    */
   async createGoal(goalData: Partial<Goal>): Promise<Result<Goal>> {
     try {
+      const validatedCreate = GoalCreateSchema.safeParse(goalData);
+      if (!validatedCreate.success) {
+        return Result.fail(`Dados da meta inválidos: ${validatedCreate.error.issues[0].message}`);
+      }
       const { data, error } = await supabase
         .from('goals')
-        .insert([goalData])
+        .insert([validatedCreate.data])
         .select()
         .single();
 
@@ -94,9 +101,13 @@ export const goalService = {
    */
   async updateGoal(id: string, updates: Partial<Goal>): Promise<Result<Goal>> {
     try {
+      const validatedUpdate = GoalUpdateSchema.safeParse(updates);
+      if (!validatedUpdate.success) {
+        return Result.fail(`Atualização inválida: ${validatedUpdate.error.issues[0].message}`);
+      }
       const { data, error } = await supabase
         .from('goals')
-        .update(updates)
+        .update(validatedUpdate.data)
         .eq('id', id)
         .select()
         .single();
@@ -163,9 +174,13 @@ export const goalService = {
    */
   async addGoalNote(goalId: string, note: string): Promise<Result<GoalNote>> {
     try {
+      const validatedNote = GoalNoteCreateSchema.safeParse({ goal_id: goalId, note });
+      if (!validatedNote.success) {
+        return Result.fail(`Nota inválida: ${validatedNote.error.issues[0].message}`);
+      }
       const { data, error } = await supabase
         .from('goal_notes')
-        .insert([{ goal_id: goalId, note }])
+        .insert([validatedNote.data])
         .select()
         .single();
 

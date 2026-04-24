@@ -73,7 +73,6 @@ export const EventSchema = z.object({
   start_time: z.string(),
   end_time: z.string().nullable().optional(),
   location: z.string().nullable().optional(),
-  category: z.string().optional(),
   created_at: z.string().optional(),
 });
 
@@ -140,7 +139,8 @@ export const MedicationSchema = z.object({
 export const MedicationLogSchema = z.object({
   id: z.string().uuid(),
   medication_id: z.string().uuid(),
-  taken_at: z.string(),
+  scheduled_for: z.string().nullable().optional(),
+  taken_at: z.string().nullable().optional(),
   status: z.enum(['taken', 'missed', 'late']).default('taken'),
   notes: z.string().nullable().optional(),
   created_at: z.string().optional(),
@@ -265,6 +265,8 @@ export const DocumentSchema = z.object({
   title: z.string().min(1, 'Título é obrigatório'),
   category: z.string().default('Outro'),
   file_path: z.string().min(1, 'Caminho do arquivo é obrigatório'),
+  file_type: z.string().nullable().optional(),
+  uploaded_by: z.string().uuid().nullable().optional(),
   uploaded_at: z.string().optional(),
 });
 export type Document = z.infer<typeof DocumentSchema>;
@@ -362,4 +364,17 @@ export const SleepLogUpdateSchema = SleepLogSchema.partial().omit({ id: true, de
 
 export const VaccineCreateSchema = VaccineSchema.omit({ id: true, created_at: true });
 export const VaccineUpdateSchema = VaccineSchema.partial().omit({ id: true, dependent_id: true, created_at: true });
+
+export const GrowthCreateSchema = GrowthMeasurementSchema.omit({ id: true, created_at: true });
+export const GrowthUpdateSchema = GrowthMeasurementSchema.partial().omit({ id: true, dependent_id: true, created_at: true });
+
+export const GoalNoteCreateSchema = GoalNoteSchema.omit({ id: true, created_at: true });
+
+export const ParentDiaryCreateSchema = ParentDiarySchema.omit({ id: true, created_at: true });
+export const ParentDiaryUpdateSchema = ParentDiarySchema.partial().omit({ id: true, dependent_id: true, created_at: true });
+
+export const WellbeingCreateSchema = CaregiverWellbeingSchema.omit({ id: true, created_at: true });
+export const WellbeingUpdateSchema = CaregiverWellbeingSchema.partial().omit({ id: true, user_id: true, created_at: true });
+
+export const DocumentCreateSchema = DocumentSchema.omit({ id: true, uploaded_at: true });
 

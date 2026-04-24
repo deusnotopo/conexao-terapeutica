@@ -1,6 +1,6 @@
 import { supabase } from '../lib/supabase';
 import { Result } from '../lib/result';
-import { ProfessionalSchema, Professional, ProfessionalListSchema } from '../lib/schemas';
+import { ProfessionalSchema, ProfessionalCreateSchema, ProfessionalUpdateSchema, Professional, ProfessionalListSchema } from '../lib/schemas';
 import { storage } from '../lib/storage';
 
 export const professionalService = {
@@ -47,9 +47,13 @@ export const professionalService = {
    */
   async create(professionalData: Partial<Professional>): Promise<Result<Professional>> {
     try {
+      const validatedCreate = ProfessionalCreateSchema.safeParse(professionalData);
+      if (!validatedCreate.success) {
+        return Result.fail(`Dados do profissional inválidos: ${validatedCreate.error.issues[0].message}`);
+      }
       const { data, error } = await supabase
         .from('professionals')
-        .insert([professionalData])
+        .insert([validatedCreate.data])
         .select()
         .single();
 
@@ -72,9 +76,13 @@ export const professionalService = {
    */
   async update(id: string, updates: Partial<Professional>): Promise<Result<Professional>> {
     try {
+      const validatedUpdate = ProfessionalUpdateSchema.safeParse(updates);
+      if (!validatedUpdate.success) {
+        return Result.fail(`Atualização inválida: ${validatedUpdate.error.issues[0].message}`);
+      }
       const { data, error } = await supabase
         .from('professionals')
-        .update(updates)
+        .update(validatedUpdate.data)
         .eq('id', id)
         .select()
         .single();

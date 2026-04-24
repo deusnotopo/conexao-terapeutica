@@ -1,6 +1,6 @@
 import { supabase } from '../lib/supabase';
 import { Result } from '../lib/result';
-import { ParentDiarySchema, ParentDiary, PaginatedDiarySchema } from '../lib/schemas';
+import { ParentDiarySchema, ParentDiaryCreateSchema, ParentDiaryUpdateSchema, ParentDiary, PaginatedDiarySchema } from '../lib/schemas';
 import { storage } from '../lib/storage';
 
 export type PaginatedDiary = { data: ParentDiary[]; count: number };
@@ -61,9 +61,13 @@ export const diaryService = {
    */
   async createDiaryEntry(entryData: Partial<ParentDiary>): Promise<Result<ParentDiary>> {
     try {
+      const validatedCreate = ParentDiaryCreateSchema.safeParse(entryData);
+      if (!validatedCreate.success) {
+        return Result.fail(`Dados do diário inválidos: ${validatedCreate.error.issues[0].message}`);
+      }
       const { data, error } = await supabase
         .from('parent_diary')
-        .insert([entryData])
+        .insert([validatedCreate.data])
         .select()
         .single();
 
@@ -86,9 +90,13 @@ export const diaryService = {
    */
   async updateDiaryEntry(id: string, updates: Partial<ParentDiary>): Promise<Result<ParentDiary>> {
     try {
+      const validatedUpdate = ParentDiaryUpdateSchema.safeParse(updates);
+      if (!validatedUpdate.success) {
+        return Result.fail(`Atualização inválida: ${validatedUpdate.error.issues[0].message}`);
+      }
       const { data, error } = await supabase
         .from('parent_diary')
-        .update(updates)
+        .update(validatedUpdate.data)
         .eq('id', id)
         .select()
         .single();

@@ -3,6 +3,8 @@ import { Result } from '../lib/result';
 import { 
   SleepLogSchema, 
   PaginatedSleepLogSchema,
+  SleepLogCreateSchema,
+  SleepLogUpdateSchema,
   SleepLog,
   PaginatedResponse,
 } from '../lib/schemas';
@@ -64,9 +66,13 @@ export const sleepService = {
    */
   async createSleepLog(logData: Partial<SleepLog>): Promise<Result<SleepLog>> {
     try {
+      const validatedCreate = SleepLogCreateSchema.safeParse(logData);
+      if (!validatedCreate.success) {
+        return Result.fail(`Dados do sono inválidos: ${validatedCreate.error.issues[0].message}`);
+      }
       const { data, error } = await supabase
         .from('sleep_logs')
-        .insert([logData])
+        .insert([validatedCreate.data])
         .select()
         .single();
 
@@ -89,9 +95,13 @@ export const sleepService = {
    */
   async updateSleepLog(id: string, updates: Partial<SleepLog>): Promise<Result<SleepLog>> {
     try {
+      const validatedUpdate = SleepLogUpdateSchema.safeParse(updates);
+      if (!validatedUpdate.success) {
+        return Result.fail(`Atualização inválida: ${validatedUpdate.error.issues[0].message}`);
+      }
       const { data, error } = await supabase
         .from('sleep_logs')
-        .update(updates)
+        .update(validatedUpdate.data)
         .eq('id', id)
         .select()
         .single();

@@ -135,7 +135,7 @@ export const CaregiverScreen = ({ navigation }: RootStackProps<'Caregiver'>) => 
         <View style={{ width: 40 }} />
       </View>
 
-      <ScrollView
+      <ScrollView keyboardShouldPersistTaps="handled"
         style={{ flex: 1 }}
         contentContainerStyle={styles.container}
         refreshControl={

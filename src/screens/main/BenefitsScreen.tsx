@@ -185,7 +185,7 @@ export const BenefitsScreen = ({ navigation }: RootStackProps<'Benefits'>) => {
         <View style={{ width: 40 }} />
       </View>
 
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container}>
+      <ScrollView keyboardShouldPersistTaps="handled" style={{ flex: 1 }} contentContainerStyle={styles.container}>
         <View style={styles.banner}>
           <Text style={styles.bannerTitle}>⚖️ Conheça seus Direitos</Text>
           <Text style={styles.bannerText}>
@@ -212,7 +212,7 @@ export const BenefitsScreen = ({ navigation }: RootStackProps<'Benefits'>) => {
         </View>
 
         {/* Categoria chips */}
-        <ScrollView
+        <ScrollView keyboardShouldPersistTaps="handled"
           horizontal
           showsHorizontalScrollIndicator={false}
           style={styles.catsRow}

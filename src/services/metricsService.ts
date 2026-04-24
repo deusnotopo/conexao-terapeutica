@@ -45,7 +45,7 @@ export const metricsService = {
             .gte('start_time', now)
             .order('start_time', { ascending: true })
             .limit(1)
-            .single(),
+            .maybeSingle(),
           supabase
             .from('events')
             .select('*', { count: 'exact', head: true })

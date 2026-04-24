@@ -1,6 +1,6 @@
 import { supabase } from '../lib/supabase';
 import { Result } from '../lib/result';
-import { VaccineSchema, VaccineListSchema, Vaccine } from '../lib/schemas';
+import { VaccineSchema, VaccineListSchema, VaccineCreateSchema, VaccineUpdateSchema, Vaccine } from '../lib/schemas';
 import { storage } from '../lib/storage';
 
 /**
@@ -50,9 +50,13 @@ export const vaccineService = {
    */
   async createVaccine(vaccineData: Partial<Vaccine>): Promise<Result<Vaccine>> {
     try {
+      const validatedCreate = VaccineCreateSchema.safeParse(vaccineData);
+      if (!validatedCreate.success) {
+        return Result.fail(`Dados da vacina inválidos: ${validatedCreate.error.issues[0].message}`);
+      }
       const { data, error } = await supabase
         .from('vaccines')
-        .insert([vaccineData])
+        .insert([validatedCreate.data])
         .select()
         .single();
 
@@ -75,9 +79,13 @@ export const vaccineService = {
    */
   async updateVaccine(id: string, updates: Partial<Vaccine>): Promise<Result<Vaccine>> {
     try {
+      const validatedUpdate = VaccineUpdateSchema.safeParse(updates);
+      if (!validatedUpdate.success) {
+        return Result.fail(`Atualização inválida: ${validatedUpdate.error.issues[0].message}`);
+      }
       const { data, error } = await supabase
         .from('vaccines')
-        .update(updates)
+        .update(validatedUpdate.data)
         .eq('id', id)
         .select()
         .single();

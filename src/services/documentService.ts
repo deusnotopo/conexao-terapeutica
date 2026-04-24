@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { storageService } from './storageService';
 import { Result } from '../lib/result';
 
-import { Document, DocumentSchema } from '../lib/schemas';
+import { Document, DocumentSchema, DocumentCreateSchema } from '../lib/schemas';
 
 export type DocumentQueryOptions = {
   category?: string;
@@ -56,7 +56,7 @@ export const documentService = {
    * Adiciona um novo registro de documento.
    */
   async create(documentData: Partial<Document>): Promise<Result<Document>> {
-    const validated = DocumentSchema.safeParse(documentData);
+    const validated = DocumentCreateSchema.safeParse(documentData);
     if (!validated.success) {
       return Result.fail(`Dados do documento inválidos: ${validated.error.issues[0].message}`);
     }

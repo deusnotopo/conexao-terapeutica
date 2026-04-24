@@ -86,7 +86,7 @@ export const ParentDiaryScreen = ({ navigation }: RootStackProps<'ParentDiary'>)
         <View style={{ width: 40 }} />
       </View>
 
-      <ScrollView
+      <ScrollView keyboardShouldPersistTaps="handled"
         style={{ flex: 1 }}
         contentContainerStyle={styles.container}
         refreshControl={

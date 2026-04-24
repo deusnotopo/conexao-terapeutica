@@ -61,8 +61,12 @@ export const medicalRecordService = {
    */
   async upsertRecord(record: Partial<MedicalRecord>): Promise<Result<MedicalRecord>> {
     try {
-      const validated = MedicalRecordSchema.partial().parse(record);
-      
+      const validationResult = MedicalRecordSchema.partial().safeParse(record);
+      if (!validationResult.success) {
+        return Result.fail(`Dados da ficha médica inválidos: ${validationResult.error.issues[0].message}`);
+      }
+      const validated = validationResult.data;
+
       let query;
       if (validated.id) {
         query = supabase

@@ -43,6 +43,6 @@ DROP POLICY IF EXISTS "Users can manage documents" ON public.documents;
 
 -- =============================================================================
 -- Agora sim é 100% seguro apagar as funções V1:
-DROP FUNCTION IF EXISTS public.is_primary_caregiver(uuid);
-DROP FUNCTION IF EXISTS public.is_shared_caregiver(uuid);
-DROP FUNCTION IF EXISTS public.log_belongs_to_user(uuid);
+DROP FUNCTION IF EXISTS public.is_primary_caregiver(uuid) CASCADE;
+DROP FUNCTION IF EXISTS public.is_shared_caregiver(uuid) CASCADE;
+DROP FUNCTION IF EXISTS public.log_belongs_to_user(uuid) CASCADE;

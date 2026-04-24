@@ -106,7 +106,7 @@ export const UploadDocScreen = ({ navigation }: RootStackProps<'UploadDoc'>) => 
         <View style={{ width: 28 }} />
       </View>
 
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container}>
+      <ScrollView keyboardShouldPersistTaps="handled" style={{ flex: 1 }} contentContainerStyle={styles.container}>
         <Input
           label="Título do Documento"
           value={title}

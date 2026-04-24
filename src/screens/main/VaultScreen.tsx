@@ -188,7 +188,7 @@ export const VaultScreen = ({ navigation }: MainTabProps<'VaultTab'>) => {
         </View>
 
         {/* Categories */}
-        <ScrollView
+        <ScrollView keyboardShouldPersistTaps="handled"
           horizontal
           showsHorizontalScrollIndicator={false}
           style={styles.categoriesContainer}
@@ -216,7 +216,7 @@ export const VaultScreen = ({ navigation }: MainTabProps<'VaultTab'>) => {
         </ScrollView>
 
         {/* Documents List */}
-        <ScrollView
+        <ScrollView keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
           style={styles.listContainer}
           contentContainerStyle={styles.listContent}

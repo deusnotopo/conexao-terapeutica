@@ -1,6 +1,6 @@
 import { supabase } from '../lib/supabase';
 import { Result } from '../lib/result';
-import { CrisisEvent, CrisisEventSchema, PaginatedCrisisSchema } from '../lib/schemas';
+import { CrisisEvent, CrisisEventSchema, CrisisEventCreateSchema, CrisisEventUpdateSchema, PaginatedCrisisSchema } from '../lib/schemas';
 import { storage } from '../lib/storage';
 
 export type PaginatedCrises = { data: CrisisEvent[]; count: number };
@@ -62,9 +62,13 @@ export const crisisService = {
    */
   async addCrisis(crisisData: Partial<CrisisEvent>): Promise<Result<CrisisEvent>> {
     try {
+      const validatedCreate = CrisisEventCreateSchema.safeParse(crisisData);
+      if (!validatedCreate.success) {
+        return Result.fail(`Dados da crise inválidos: ${validatedCreate.error.issues[0].message}`);
+      }
       const { data, error } = await supabase
         .from('crisis_events')
-        .insert([crisisData])
+        .insert([validatedCreate.data])
         .select()
         .single();
 
@@ -87,9 +91,13 @@ export const crisisService = {
    */
   async updateCrisis(id: string, updates: Partial<CrisisEvent>): Promise<Result<CrisisEvent>> {
     try {
+      const validatedUpdate = CrisisEventUpdateSchema.safeParse(updates);
+      if (!validatedUpdate.success) {
+        return Result.fail(`Atualização inválida: ${validatedUpdate.error.issues[0].message}`);
+      }
       const { data, error } = await supabase
         .from('crisis_events')
-        .update(updates)
+        .update(validatedUpdate.data)
         .eq('id', id)
         .select()
         .single();

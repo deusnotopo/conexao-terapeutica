@@ -30,7 +30,7 @@ export const Input = React.forwardRef<TextInput, InputProps>(
   const [focused, setFocused] = useState(false);
   const borderAnim = useRef(new Animated.Value(0)).current;
 
-  const handleFocus = (e: any) => {
+  const handleFocus = (e: Parameters<NonNullable<TextInputProps['onFocus']>>[0]) => {
     setFocused(true);
     Animated.timing(borderAnim, {
       toValue: 1,
@@ -40,7 +40,7 @@ export const Input = React.forwardRef<TextInput, InputProps>(
     onFocus?.(e);
   };
 
-  const handleBlur = (e: any) => {
+  const handleBlur = (e: Parameters<NonNullable<TextInputProps['onBlur']>>[0]) => {
     setFocused(false);
     Animated.timing(borderAnim, {
       toValue: 0,
@@ -84,7 +84,7 @@ export const Input = React.forwardRef<TextInput, InputProps>(
             icon ? styles.inputWithIcon : null,
             rightIcon ? styles.inputWithRightIcon : null,
             // Web: remove browser default outline that overlaps our custom border
-            Platform.OS === 'web' ? ({ outlineStyle: 'none' } as any) : null,
+            Platform.OS === 'web' ? { outlineWidth: 0 } as import('react-native').TextStyle : null,
           ]}
           placeholderTextColor={colors.textSecondary + '99'}
           onFocus={handleFocus}

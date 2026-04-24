@@ -4,6 +4,8 @@ import {
   CaregiverWellbeingSchema, 
   CaregiverWellbeingListSchema, 
   PaginatedWellbeingSchema,
+  WellbeingCreateSchema,
+  WellbeingUpdateSchema,
   CaregiverWellbeing 
 } from '../lib/schemas';
 import { storage } from '../lib/storage';
@@ -66,9 +68,13 @@ export const wellbeingService = {
    */
   async createWellbeingLog(logData: Partial<CaregiverWellbeing>): Promise<Result<CaregiverWellbeing>> {
     try {
+      const validatedCreate = WellbeingCreateSchema.safeParse(logData);
+      if (!validatedCreate.success) {
+        return Result.fail(`Dados de bem-estar inválidos: ${validatedCreate.error.issues[0].message}`);
+      }
       const { data, error } = await supabase
         .from('caregiver_wellbeing')
-        .insert([logData])
+        .insert([validatedCreate.data])
         .select()
         .single();
 
@@ -91,9 +97,13 @@ export const wellbeingService = {
    */
   async updateWellbeingLog(id: string, updates: Partial<CaregiverWellbeing>): Promise<Result<CaregiverWellbeing>> {
     try {
+      const validatedUpdate = WellbeingUpdateSchema.safeParse(updates);
+      if (!validatedUpdate.success) {
+        return Result.fail(`Atualização inválida: ${validatedUpdate.error.issues[0].message}`);
+      }
       const { data, error } = await supabase
         .from('caregiver_wellbeing')
-        .update(updates)
+        .update(validatedUpdate.data)
         .eq('id', id)
         .select()
         .single();

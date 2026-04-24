@@ -91,7 +91,10 @@ export const useMedicationAdherence = (activeDependentId: string) => {
       
       const byMonth: MedicationMonthStat[] = months.map((m) => {
         const monthLogs = medLogs.filter(
-          (l) => l.taken_at >= m.start && l.taken_at <= m.end
+          (l) => {
+            const dateStr = l.taken_at ?? l.scheduled_for ?? '';
+            return dateStr >= m.start && dateStr <= m.end;
+          }
         );
         
         const taken = monthLogs.filter((l) => l.status === 'taken').length;

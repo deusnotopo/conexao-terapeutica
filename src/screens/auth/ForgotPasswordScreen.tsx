@@ -61,7 +61,7 @@ export const ForgotPasswordScreen = ({ navigation }: RootStackProps<'ForgotPassw
         <View style={{ width: 40 }} />
       </View>
 
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container}>
+      <ScrollView keyboardShouldPersistTaps="handled" style={{ flex: 1 }} contentContainerStyle={styles.container}>
         <View style={styles.iconContainer}>
           <Mail size={48} color={colors.primary} />
         </View>

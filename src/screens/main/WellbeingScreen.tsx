@@ -92,7 +92,7 @@ export const WellbeingScreen = ({ navigation }: RootStackProps<'Wellbeing'>) => 
         <View style={{ width: 40 }} />
       </View>
 
-      <ScrollView
+      <ScrollView keyboardShouldPersistTaps="handled"
         style={{ flex: 1 }}
         contentContainerStyle={styles.container}
         refreshControl={

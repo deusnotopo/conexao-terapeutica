@@ -169,11 +169,12 @@ export const medicationService = {
 
       const startOfDay = new Date();
       startOfDay.setHours(0, 0, 0, 0);
+      const startISO = startOfDay.toISOString();
 
       const { data, error } = await supabase
         .from('medication_logs')
         .select('*, medication:medications(dependent_id)')
-        .gte('taken_at', startOfDay.toISOString());
+        .or(`taken_at.gte.${startISO},and(taken_at.is.null,scheduled_for.gte.${startISO})`);
 
       if (error) return Result.fail(error.message);
 
@@ -197,8 +198,8 @@ export const medicationService = {
       const { data, error } = await supabase
         .from('medication_logs')
         .select('*, medication:medications(dependent_id, name, dosage)')
-        .gte('taken_at', startDateISO)
-        .order('taken_at', { ascending: false });
+        .or(`taken_at.gte.${startDateISO},and(taken_at.is.null,scheduled_for.gte.${startDateISO})`)
+        .order('scheduled_for', { ascending: false });
 
       if (error) return Result.fail(error.message);
 

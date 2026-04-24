@@ -3,6 +3,8 @@ import { Result } from '../lib/result';
 import { 
   GrowthMeasurementSchema, 
   GrowthMeasurementListSchema,
+  GrowthCreateSchema,
+  GrowthUpdateSchema,
   GrowthMeasurement,
 } from '../lib/schemas';
 import { storage } from '../lib/storage';
@@ -56,9 +58,13 @@ export const growthService = {
    */
   async addMeasurement(measurementData: Omit<GrowthMeasurement, 'id' | 'created_at'>): Promise<Result<GrowthMeasurement>> {
     try {
+      const validatedCreate = GrowthCreateSchema.safeParse(measurementData);
+      if (!validatedCreate.success) {
+        return Result.fail(`Dados de crescimento inválidos: ${validatedCreate.error.issues[0].message}`);
+      }
       const { data, error } = await supabase
         .from('growth_measurements')
-        .insert([measurementData])
+        .insert([validatedCreate.data])
         .select()
         .single();
 
@@ -81,9 +87,13 @@ export const growthService = {
    */
   async updateMeasurement(id: string, updates: Partial<GrowthMeasurement>): Promise<Result<GrowthMeasurement>> {
     try {
+      const validatedUpdate = GrowthUpdateSchema.safeParse(updates);
+      if (!validatedUpdate.success) {
+        return Result.fail(`Atualização inválida: ${validatedUpdate.error.issues[0].message}`);
+      }
       const { data, error } = await supabase
         .from('growth_measurements')
-        .update(updates)
+        .update(validatedUpdate.data)
         .eq('id', id)
         .select()
         .single();

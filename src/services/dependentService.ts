@@ -35,7 +35,7 @@ export const dependentService = {
         supabase
           .from('caregiver_access')
           .select('dependent_id, dependents:dependent_id(*)')
-          .eq('user_id', userId),
+          .eq('caregiver_id', userId),
       ]);
 
       if (primaryRes.error) return Result.fail(`Erro primários: ${primaryRes.error.message}`);

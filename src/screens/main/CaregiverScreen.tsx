@@ -55,7 +55,7 @@ export const CaregiverScreen = ({ navigation }: RootStackProps<'Caregiver'>) => 
     try {
       const result = await sendInvite({
         invited_by: user?.id ?? "",
-        invited_email: email.trim().toLowerCase(),
+        email: email.trim().toLowerCase(),
       });
 
       if (!result.success) throw new Error(result.error ?? undefined);
@@ -77,11 +77,11 @@ export const CaregiverScreen = ({ navigation }: RootStackProps<'Caregiver'>) => 
     }
   };
 
-  const handleRevokeAccess = (caregiver: { id?: string; profiles?: { full_name?: string }; invited_email?: string }) => {
+  const handleRevokeAccess = (caregiver: { id?: string; profiles?: { full_name?: string }; email?: string }) => {
     if (!caregiver.id) return;
     const name =
       caregiver.profiles?.full_name ||
-      caregiver.invited_email ||
+      caregiver.email ||
       'este cuidador';
     webAlert('Remover Acesso', `Deseja remover o acesso de ${name}?`, [
       { text: 'Cancelar', style: 'cancel' },
@@ -93,11 +93,11 @@ export const CaregiverScreen = ({ navigation }: RootStackProps<'Caregiver'>) => 
     ]);
   };
 
-  const handleRevokeInvite = (invite: { id?: string; invited_email: string; status?: string }) => {
+  const handleRevokeInvite = (invite: { id?: string; email: string; status?: string }) => {
     if (!invite.id) return;
     webAlert(
       'Revogar Convite',
-      `Deseja cancelar o convite para ${invite.invited_email}?`,
+      `Deseja cancelar o convite para ${invite.email}?`,
       [
         { text: 'Cancelar', style: 'cancel' },
         {
@@ -216,7 +216,7 @@ export const CaregiverScreen = ({ navigation }: RootStackProps<'Caregiver'>) => 
         {invites.length > 0 && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>📨 Convites Enviados</Text>
-            {invites.map((inv: { id?: string; status: string; invited_email: string; created_at?: string }) => (
+            {invites.map((inv: { id?: string; status: string; email: string; created_at?: string }) => (
               <View
                 key={inv.id}
                 style={[
@@ -226,7 +226,7 @@ export const CaregiverScreen = ({ navigation }: RootStackProps<'Caregiver'>) => 
                 ]}
               >
                 <View style={{ flex: 1 }}>
-                  <Text style={styles.inviteEmail}>{inv.invited_email}</Text>
+                  <Text style={styles.inviteEmail}>{inv.email}</Text>
                   <Text style={styles.inviteDate}>
                     {formatShort(inv.created_at)}
                   </Text>

@@ -263,9 +263,8 @@ export const DocumentSchema = z.object({
   id: z.string().uuid().optional(),
   dependent_id: z.string().uuid(),
   title: z.string().min(1, 'Título é obrigatório'),
-  category: z.enum(['Laudo', 'Exame', 'Receita', 'Outro']),
+  category: z.string().default('Outro'),
   file_path: z.string().min(1, 'Caminho do arquivo é obrigatório'),
-  file_type: z.string().optional(),
   uploaded_at: z.string().optional(),
 });
 export type Document = z.infer<typeof DocumentSchema>;

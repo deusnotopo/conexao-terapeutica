@@ -107,10 +107,9 @@ export const documentService = {
   ): Promise<Result<Document>> {
     try {
       const storageResult = await storageService.uploadFile(
-        'vault',
+        'documents',
         documentData.file_path || '',
-        fileUri,
-        { contentType: documentData.file_type }
+        fileUri
       );
 
       if (!storageResult.success) {

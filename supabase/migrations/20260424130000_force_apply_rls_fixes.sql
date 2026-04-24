@@ -39,7 +39,7 @@ AS $$
     SELECT 1 
     FROM public.medications m
     JOIN public.dependents d ON m.dependent_id = d.id
-    WHERE m.id = med_id AND d.user_id = auth.uid()
+    WHERE m.id = med_id AND (d.user_id = auth.uid() OR public.is_shared_caregiver(d.id))
   );
 $$;
 

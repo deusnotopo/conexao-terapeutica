@@ -8,7 +8,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "build:web": "npx expo export --platform web",
-    "deploy": "npm run build:web && npx firebase-tools deploy --only hosting"
+    "deploy": "npx tsc --noEmit && npm run build:web && npx firebase-tools deploy --only hosting"
   },
   "dependencies": {
     "@expo/metro-runtime": "~55.0.6",
